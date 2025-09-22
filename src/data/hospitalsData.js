@@ -5,8 +5,7 @@ export const nabhaHospitals = [
     name: "Sawhney Hospital & Maternity Home",
     type: "Multi-specialty",
     specialties: ["Maternity", "General Medicine", "Pediatrics"],
-    address:
-      "Ripudaman Pura, Nabha, Patiala Gate, Near Gurudwara Akalgarh, Munshian St, Nabha - 147201",
+    address: "Ripudaman Pura, Nabha, Patiala Gate, Near Gurudwara Akalgarh, Munshian St, Nabha - 147201",
     landmark: "Near Gurudwara Akalgarh, inside Patiala Gate Nabha",
     phones: ["+91-1765-229611"],
     primaryPhone: "+91-1765-229611",
@@ -21,8 +20,7 @@ export const nabhaHospitals = [
     name: "Goyal Healthcare Hospital",
     type: "General Hospital",
     specialties: ["General Medicine", "Surgery", "Orthopedics"],
-    address:
-      "College Road, Hira Mahal Colony, Nabha - 147201 (Opposite College Ground)",
+    address: "College Road, Hira Mahal Colony, Nabha - 147201 (Opposite College Ground)",
     landmark: "Opposite College Ground, Hira Mahal Colony",
     phones: ["+91-1765-220001", "+91-1765-220002"],
     primaryPhone: "+91-1765-220001",
@@ -36,11 +34,7 @@ export const nabhaHospitals = [
     id: 3,
     name: "Bansal Hospital & Laparoscopic Centre",
     type: "Surgical Hospital",
-    specialties: [
-      "Laparoscopic Surgery",
-      "General Surgery",
-      "Gastroenterology",
-    ],
+    specialties: ["Laparoscopic Surgery", "General Surgery", "Gastroenterology"],
     address: "Hira Mahal Colony, Circular Road, Nabha - 147201",
     landmark: "Circular Road, Hira Mahal Colony",
     phones: ["01765-226301"],
@@ -49,7 +43,7 @@ export const nabhaHospitals = [
     verified: true,
     rating: 4.3,
     services: ["Laparoscopic Surgery", "General Surgery", "Endoscopy", "OPD"],
-    coordinates: { lat: 30.374, lng: 76.1545 },
+    coordinates: { lat: 30.3740, lng: 76.1545 },
   },
   {
     id: 4,
@@ -64,7 +58,7 @@ export const nabhaHospitals = [
     verified: true,
     rating: 3.8,
     services: ["General OPD", "Emergency", "Women's Health"],
-    coordinates: { lat: 30.376, lng: 76.153 },
+    coordinates: { lat: 30.3760, lng: 76.1530 },
   },
   {
     id: 5,
@@ -93,12 +87,7 @@ export const nabhaHospitals = [
     area: "Sangatpura Colony",
     verified: true,
     rating: 4.5,
-    services: [
-      "Eye Checkup",
-      "Cataract Surgery",
-      "Retina Treatment",
-      "Glasses",
-    ],
+    services: ["Eye Checkup", "Cataract Surgery", "Retina Treatment", "Glasses"],
     coordinates: { lat: 30.3748, lng: 76.1542 },
   },
   {
@@ -129,9 +118,10 @@ export const nabhaHospitals = [
     verified: true,
     rating: 4.1,
     services: ["Surgery", "Child Care", "Emergency", "OPD"],
-    coordinates: { lat: 30.3742, lng: 76.155 },
-  },
+    coordinates: { lat: 30.3742, lng: 76.1550 },
+  }
 ];
+
 
 // Hospital categories
 export const hospitalCategories = [
@@ -140,7 +130,7 @@ export const hospitalCategories = [
   "General Hospital",
   "Surgical Hospital",
   "Eye Hospital",
-  "Pediatric & Maternity",
+  "Pediatric & Maternity"
 ];
 
 // Emergency contacts
@@ -148,64 +138,63 @@ export const emergencyContacts = [
   {
     service: "Ambulance",
     number: "108",
-    description: "24x7 Free Ambulance Service",
+    description: "24x7 Free Ambulance Service"
   },
   {
     service: "Police",
     number: "100",
-    description: "Emergency Police Service",
+    description: "Emergency Police Service"
   },
   {
     service: "Fire",
     number: "101",
-    description: "Fire Emergency Service",
+    description: "Fire Emergency Service"
   },
   {
     service: "Women Helpline",
     number: "1091",
-    description: "Women in Distress",
-  },
+    description: "Women in Distress"
+  }
 ];
 
 // Hospital areas in Nabha
 export const nabhaAreas = [
   "Patiala Gate",
-  "Hira Mahal Colony",
+  "Hira Mahal Colony", 
   "Bouran Gate",
   "New Defence Colony",
   "Circular Road",
-  "Sangatpura Colony",
+  "Sangatpura Colony"
 ];
 
 // Helper functions
 export const getHospitalsByArea = (area) => {
-  return nabhaHospitals.filter((hospital) => hospital.area === area);
+  return nabhaHospitals.filter(hospital => hospital.area === area);
 };
 
 export const getHospitalsByType = (type) => {
   if (type === "All Hospitals") return nabhaHospitals;
-  return nabhaHospitals.filter((hospital) => hospital.type === type);
+  return nabhaHospitals.filter(hospital => hospital.type === type);
 };
 
 export const searchHospitals = (query) => {
   const searchTerm = query.toLowerCase();
-  return nabhaHospitals.filter(
-    (hospital) =>
-      hospital.name.toLowerCase().includes(searchTerm) ||
-      hospital.specialties.some((specialty) =>
-        specialty.toLowerCase().includes(searchTerm)
-      ) ||
-      hospital.area.toLowerCase().includes(searchTerm) ||
-      hospital.services.some((service) =>
-        service.toLowerCase().includes(searchTerm)
-      )
+  return nabhaHospitals.filter(hospital => 
+    hospital.name.toLowerCase().includes(searchTerm) ||
+    hospital.specialties.some(specialty => 
+      specialty.toLowerCase().includes(searchTerm)
+    ) ||
+    hospital.area.toLowerCase().includes(searchTerm) ||
+    hospital.services.some(service => 
+      service.toLowerCase().includes(searchTerm)
+    )
   );
 };
 
 export const getVerifiedHospitals = () => {
-  return nabhaHospitals.filter((hospital) => hospital.verified);
+  return nabhaHospitals.filter(hospital => hospital.verified);
 };
 
 export const getHospitalsWithPhone = () => {
-  return nabhaHospitals.filter((hospital) => hospital.phones.length > 0);
+  return nabhaHospitals.filter(hospital => hospital.phones.length > 0);
 };
