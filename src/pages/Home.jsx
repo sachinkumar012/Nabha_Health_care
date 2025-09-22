@@ -1,13 +1,50 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Heart, Users, Shield, Clock, ArrowRight, Building2 } from 'lucide-react';
+import { Heart, Users, Shield, Clock, ArrowRight, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import AppointmentChatBot from '../components/AppointmentChatBot';
 import AnimatedCounter from '../components/UI/AnimatedCounter';
 import { nabhaHospitals } from '../data/hospitalsData';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
   const { t } = useLanguage();
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const carouselImages = [
+    {
+      url: 'https://images.pexels.com/photos/40568/medical-appointment-doctor-healthcare-40568.jpeg?auto=compress&cs=tinysrgb&w=800',
+      title: 'Expert Medical Consultation',
+      description: 'Connect with qualified doctors for personalized healthcare'
+    },
+    {
+      url: 'https://images.pexels.com/photos/3845810/pexels-photo-3845810.jpeg?auto=compress&cs=tinysrgb&w=800',
+      title: 'Modern Healthcare Technology',
+      description: 'State-of-the-art medical equipment and digital solutions'
+    },
+    {
+      url: 'https://images.pexels.com/photos/7089020/pexels-photo-7089020.jpeg?auto=compress&cs=tinysrgb&w=800',
+      title: 'Community Healthcare',
+      description: 'Serving rural communities with compassionate care'
+    }
+  ];
+
+  // Auto-scroll functionality
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
+    }, 4000); // Change slide every 4 seconds
+
+    return () => clearInterval(timer);
+  }, [carouselImages.length]);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + carouselImages.length) % carouselImages.length);
+  };
 
   const features = [
     {
