@@ -12,6 +12,7 @@ export default function Header() {
   const navigation = [
     { name: t('home'), href: '/', key: 'home' },
     { name: t('doctors'), href: '/doctors', key: 'doctors' },
+    { name: 'Hospitals', href: '/hospitals', key: 'hospitals' },
     { name: t('records'), href: '/records', key: 'records' },
     { name: t('pharmacy'), href: '/pharmacy', key: 'pharmacy' },
     { name: t('symptoms'), href: '/symptoms', key: 'symptoms' },

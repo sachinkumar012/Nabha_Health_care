@@ -164,13 +164,13 @@ const Pharmacy = () => {
   // Authentication functions
   const handleLogin = (e) => {
     e.preventDefault();
-    if (loginForm.username === 'nikunj' && loginForm.password === '12345') {
-      setCurrentUser({ username: 'nikunj', name: 'Nikunj' });
+    if (loginForm.username === 'sachin' && loginForm.password === '12345') {
+      setCurrentUser({ username: 'sachin', name: 'Sachin' });
       setCurrentView('dashboard');
       setShowLogin(false);
       setLoginForm({ username: '', password: '' });
     } else {
-      alert('Invalid credentials! Use username: nikunj, password: 12345');
+      alert('Invalid credentials! Use username: sachin, password: 12345');
     }
   };
 

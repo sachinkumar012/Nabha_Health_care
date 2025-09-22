@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Heart, Users, Shield, Clock, ArrowRight } from 'lucide-react';
+import { Heart, Users, Shield, Clock, ArrowRight, Building2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import AppointmentChatBot from '../components/AppointmentChatBot';
+import AnimatedCounter from '../components/UI/AnimatedCounter';
+import { nabhaHospitals } from '../data/hospitalsData';
 
 export default function Home() {
   const { t } = useLanguage();
@@ -12,6 +14,11 @@ export default function Home() {
       icon: Heart,
       title: 'Expert Doctors',
       description: 'Connect with qualified doctors specializing in rural healthcare needs.',
+    },
+    {
+      icon: Building2,
+      title: 'Hospital Directory',
+      description: 'Complete information about hospitals in Nabha with contact details and services.',
     },
     {
       icon: Users,
@@ -33,7 +40,7 @@ export default function Home() {
   const stats = [
     { number: '500+', label: 'Patients Served' },
     { number: '50+', label: 'Expert Doctors' },
-    { number: '10+', label: 'Locations' },
+    { number: `${nabhaHospitals.length}+`, label: 'Hospitals Listed' },
     { number: '24/7', label: 'Support' },
   ];
 
@@ -102,7 +109,13 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="stat-item"
               >
-                <div className="stat-number">{stat.number}</div>
+                <div className="stat-number">
+                  <AnimatedCounter 
+                    end={stat.number}
+                    duration={2500}
+                    delay={index * 200}
+                  />
+                </div>
                 <div className="stat-label">{stat.label}</div>
               </motion.div>
             ))}

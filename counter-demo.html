@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Counter Demo - Nabha Healthcare</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #059669;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #6b7280;
+            margin-bottom: 3rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #059669, #3b82f6);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-color: #a7f3d0;
+        }
+        
+        .stat-item:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #059669;
+            margin-bottom: 0.5rem;
+            font-variant-numeric: tabular-nums;
+            transition: all 0.3s ease;
+        }
+        
+        /* Fix hover state to maintain text visibility with solid color */
+        .stat-item:hover .stat-number {
+            color: #047857;
+            transform: scale(1.05);
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+        
+        /* Ensure label visibility on hover */
+        .stat-item:hover .stat-label {
+            color: #374151;
+        }
+        
+        .demo-note {
+            background: #fef3c7;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #f59e0b;
+            margin: 2rem 0;
+            text-align: left;
+        }
+        
+        .demo-note h3 {
+            color: #92400e;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .demo-note p {
+            color: #78350f;
+            margin: 0;
+        }
+        
+        .reload-btn {
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 2rem;
+            transition: background 0.3s ease;
+        }
+        
+        .reload-btn:hover {
+            background: #047857;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1 class="title">🎯 Animated Counter Demo</h1>
+        <p class="subtitle">Watch the numbers count up when they come into view!</p>
+        
+        <div class="demo-note">
+            <h3>🚀 Animation Features:</h3>
+            <p>
+                ✅ <strong>Scroll-triggered:</strong> Animations start when the section becomes visible<br>
+                ✅ <strong>Smooth counting:</strong> Numbers count up with easing animation<br>
+                ✅ <strong>Special formats:</strong> Handles "+" suffixes and fraction formats like "24/7"<br>
+                ✅ <strong>Staggered timing:</strong> Each counter starts with a slight delay<br>
+                ✅ <strong>One-time animation:</strong> Won't re-animate on subsequent scrolls<br>
+                ✅ <strong>Hover visibility:</strong> Text remains visible and enhanced during hover states
+            </p>
+        </div>
+        
+        <div class="demo-note" style="background: #dcfce7; border-left-color: #16a34a;">
+            <h3 style="color: #15803d;">✨ Hover to Test Visibility:</h3>
+            <p style="color: #166534;">
+                <strong>Hover over each statistic card</strong> to verify that both numbers and labels remain clearly visible with enhanced colors and smooth animations.
+            </p>
+        </div>
+        
+        <div class="stats-grid" id="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="counter1">500+</div>
+                <div class="stat-label">Patients Served</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="counter2">50+</div>
+                <div class="stat-label">Expert Doctors</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="counter3">10+</div>
+                <div class="stat-label">Locations</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="counter4">24/7</div>
+                <div class="stat-label">Support</div>
+            </div>
+        </div>
+        
+        <button class="reload-btn" onclick="reloadCounters()">🔄 Replay Animations</button>
+    </div>
+    
+    <script>
+        class AnimatedCounter {
+            constructor(element, end, duration = 2500, delay = 0) {
+                this.element = element;
+                this.end = end;
+                this.duration = duration;
+                this.delay = delay;
+                this.hasAnimated = false;
+                this.init();
+            }
+            
+            getNumericValue(value) {
+                if (typeof value === 'number') return value;
+                if (typeof value === 'string') {
+                    if (value.includes('/')) {
+                        return parseInt(value.split('/')[0]);
+                    }
+                    const match = value.match(/\d+/);
+                    return match ? parseInt(match[0]) : 0;
+                }
+                return 0;
+            }
+            
+            formatDisplay(count) {
+                if (typeof this.end === 'string') {
+                    if (this.end.includes('/')) {
+                        return `${count}${this.end.substring(this.end.indexOf('/'))}`;
+                    }
+                    if (this.end.includes('+')) {
+                        return `${count}+`;
+                    }
+                }
+                return count.toString();
+            }
+            
+            animate() {
+                if (this.hasAnimated) return;
+                this.hasAnimated = true;
+                
+                const numericEnd = this.getNumericValue(this.end);
+                
+                setTimeout(() => {
+                    const startTime = Date.now();
+                    const startValue = 0;
+                    
+                    const animateFrame = () => {
+                        const elapsed = Date.now() - startTime;
+                        const progress = Math.min(elapsed / this.duration, 1);
+                        
+                        // Easing function for smooth animation
+                        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                        
+                        const currentValue = Math.floor(startValue + (numericEnd - startValue) * easeOutQuart);
+                        this.element.textContent = this.formatDisplay(currentValue);
+                        
+                        if (progress < 1) {
+                            requestAnimationFrame(animateFrame);
+                        } else {
+                            this.element.textContent = this.formatDisplay(numericEnd);
+                        }
+                    };
+                    
+                    requestAnimationFrame(animateFrame);
+                }, this.delay);
+            }
+            
+            reset() {
+                this.hasAnimated = false;
+                this.element.textContent = this.formatDisplay(0);
+            }
+            
+            init() {
+                // Set initial value to 0
+                this.element.textContent = this.formatDisplay(0);
+                
+                // Create intersection observer
+                const observer = new IntersectionObserver(
+                    ([entry]) => {
+                        if (entry.isIntersecting && !this.hasAnimated) {
+                            this.animate();
+                        }
+                    },
+                    { threshold: 0.3 }
+                );
+                
+                observer.observe(this.element);
+            }
+        }
+        
+        // Initialize counters
+        let counters = [];
+        
+        function initCounters() {
+            counters = [
+                new AnimatedCounter(document.getElementById('counter1'), '500+', 2500, 0),
+                new AnimatedCounter(document.getElementById('counter2'), '50+', 2500, 200),
+                new AnimatedCounter(document.getElementById('counter3'), '10+', 2500, 400),
+                new AnimatedCounter(document.getElementById('counter4'), '24/7', 2500, 600)
+            ];
+        }
+        
+        function reloadCounters() {
+            counters.forEach(counter => counter.reset());
+            setTimeout(() => {
+                counters.forEach(counter => counter.animate());
+            }, 100);
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initCounters);
+    </script>
+</body>
+</html>

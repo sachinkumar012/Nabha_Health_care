@@ -813,7 +813,7 @@ p {
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   border: 1px solid var(--gray-200);
-  transition: all 0.3s ease;
+  transition: all 0.3s ease, border-color 0.3s ease;
   position: relative;
   overflow: hidden;
 }
@@ -834,6 +834,7 @@ p {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
   background: white;
+  border-color: var(--primary-200);
 }
 
 .stat-item:hover::before {
@@ -843,12 +844,50 @@ p {
 .stat-number {
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 900;
-  background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  /* Use solid color with fallback to ensure visibility */
+  color: var(--primary-500, #059669);
   margin-bottom: var(--space-2);
   transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Fix hover state to maintain text visibility with solid color */
+.stat-item:hover .stat-number {
+  color: var(--primary-600, #047857);
+  transform: scale(1.02);
+}
+
+/* Enhanced Animated Counter Styles */
+.animated-counter {
+  font-variant-numeric: tabular-nums;
+  transition: all 0.2s ease;
+  display: inline-block;
+  font-feature-settings: 'tnum';
+  color: inherit;
+}
+
+.stat-item:hover .animated-counter {
+  transform: scale(1.05);
+}
+
+/* Pulse animation for counters when they start */
+@keyframes counter-pulse {
+  0% { 
+    transform: scale(1); 
+    opacity: 0.8;
+  }
+  50% { 
+    transform: scale(1.02); 
+    opacity: 1;
+  }
+  100% { 
+    transform: scale(1); 
+    opacity: 1;
+  }
+}
+
+.stat-number .animated-counter {
+  animation: counter-pulse 0.6s ease-out;
 }
 
 .stat-label {
@@ -857,6 +896,12 @@ p {
   font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  transition: color 0.3s ease;
+}
+
+/* Ensure label visibility on hover */
+.stat-item:hover .stat-label {
+  color: var(--gray-700);
 }
 
 /* Enhanced Features Section */
@@ -881,10 +926,132 @@ p {
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: var(--space-8);
   position: relative;
   z-index: 1;
+}
+
+/* Enhanced spacing utilities */
+.pl-13 {
+  padding-left: 3.25rem;
+}
+
+.space-y-3 > * + * {
+  margin-top: 0.75rem;
+}
+
+/* Hospital card enhancements */
+.hospital-card {
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.hospital-card:hover {
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+}
+
+.hospital-section {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.hospital-icon-wrapper {
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+  border-radius: 1rem;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+.hospital-button {
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+.hospital-button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+}
+
+.hospital-button.secondary {
+  background: linear-gradient(135deg, var(--secondary-500) 0%, var(--secondary-600) 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.hospital-button.secondary:hover {
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+/* Enhanced hospital grid */
+@media (min-width: 1280px) {
+  .hospital-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  .hospital-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .hospital-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Smooth scroll animations */
+.hospital-card-fade {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced hover effects */
+.hospital-card-content:hover .hospital-icon {
+  transform: scale(1.1) rotate(5deg);
+  transition: transform 0.3s ease;
+}
+
+.hospital-specialty-tag {
+  transition: all 0.2s ease;
+}
+
+.hospital-specialty-tag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .feature-card {

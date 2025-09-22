@@ -18,7 +18,7 @@ export default function Doctors() {
       image: 'https://images.pexels.com/photos/5452293/pexels-photo-5452293.jpeg?auto=compress&cs=tinysrgb&w=400',
       available: true,
       languages: ['English', 'Hindi', 'Punjabi'],
-      phone: '+91 98765 43210',
+      phone: '+91 9318496221',
       availableTime: '9:00 AM - 6:00 PM',
     },
     {

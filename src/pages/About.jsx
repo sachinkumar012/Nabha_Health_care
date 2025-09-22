@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Heart, Users, Shield, Globe, Award, Target } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import AnimatedCounter from '../components/UI/AnimatedCounter';
 
 export default function About() {
   const { t } = useLanguage();
@@ -50,10 +51,10 @@ export default function About() {
   ];
 
   const stats = [
-    { icon: Users, number: '10,000+', label: 'Patients Served' },
-    { icon: Heart, number: '500+', label: 'Consultations' },
-    { icon: Award, number: '50+', label: 'Partner Doctors' },
-    { icon: Target, number: '15+', label: 'Rural Locations' },
+    { icon: Users, number: '10,000+', numericValue: 10000, suffix: '+', label: 'Patients Served' },
+    { icon: Heart, number: '500+', numericValue: 500, suffix: '+', label: 'Consultations' },
+    { icon: Award, number: '50+', numericValue: 50, suffix: '+', label: 'Partner Doctors' },
+    { icon: Target, number: '15+', numericValue: 15, suffix: '+', label: 'Rural Locations' },
   ];
 
   return (
@@ -191,7 +192,14 @@ export default function About() {
                 <div className="feature-icon" style={{ margin: '0 auto 1rem' }}>
                   <stat.icon size={32} />
                 </div>
-                <div className="stat-number">{stat.number}</div>
+                <div className="stat-number">
+                  <AnimatedCounter 
+                    end={stat.numericValue}
+                    duration={2500}
+                    delay={700 + index * 100}
+                    suffix={stat.suffix}
+                  />
+                </div>
                 <div className="stat-label">{stat.label}</div>
               </motion.div>
             ))}
