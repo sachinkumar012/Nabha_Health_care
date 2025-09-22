@@ -1,7 +1,9 @@
 # WebRTC Video Call Production Deployment Guide
 
 ## Problem
+
 Your video calls work locally but fail on Vercel because:
+
 1. WebRTC requires a signaling server for peer connection
 2. Production needs TURN servers for NAT traversal
 3. HTTPS is required for WebRTC in production
@@ -12,6 +14,7 @@ Your video calls work locally but fail on Vercel because:
 ### Step 1: Deploy the Signaling Server
 
 **Option A: Deploy to Heroku (Recommended)**
+
 1. Install Heroku CLI: https://devcenter.heroku.com/articles/heroku-cli
 2. Navigate to the server folder:
    ```bash
@@ -27,6 +30,7 @@ Your video calls work locally but fail on Vercel because:
    ```
 
 **Option B: Deploy to Railway**
+
 1. Go to https://railway.app
 2. Create new project from GitHub
 3. Connect your repository
@@ -34,6 +38,7 @@ Your video calls work locally but fail on Vercel because:
 5. Deploy automatically
 
 **Option C: Deploy to Render**
+
 1. Go to https://render.com
 2. Create new Web Service
 3. Connect your repository
@@ -61,18 +66,21 @@ Your video calls work locally but fail on Vercel because:
 ## Technical Details
 
 ### What We Fixed:
+
 1. **Environment-based server URLs**: The app now uses `REACT_APP_SOCKET_SERVER` environment variable
 2. **TURN servers**: Added free TURN servers for NAT traversal
 3. **Complete signaling server**: Created a full Socket.IO server with room management
 4. **CORS configuration**: Properly configured for your Vercel domain
 
 ### Files Modified:
+
 - `src/services/VideoCallService.js` - Updated with production-ready WebRTC config
 - `server/index.js` - Complete signaling server implementation
 - `server/package.json` - Server dependencies
 - `.env` and `.env.production` - Environment configuration
 
 ### Server Features:
+
 - Room management for video calls
 - Doctor availability tracking
 - WebRTC signaling (offer/answer/ICE candidates)
@@ -81,18 +89,21 @@ Your video calls work locally but fail on Vercel because:
 ## Troubleshooting
 
 If video calls still don't work:
+
 1. Check browser console for errors
 2. Verify the signaling server is accessible
 3. Make sure HTTPS is working (required for WebRTC)
 4. Test with different browsers/devices
 
 ## Cost Considerations
+
 - Heroku: Free tier available (with sleep after 30 min inactivity)
 - Railway: Free tier with limited hours
 - Render: Free tier available
 - TURN servers: Using free openrelay.metered.ca (limited but should work for testing)
 
 ## Next Steps After Deployment
+
 1. Monitor server logs for any issues
 2. Consider upgrading to paid TURN servers for production use
 3. Add error handling and reconnection logic

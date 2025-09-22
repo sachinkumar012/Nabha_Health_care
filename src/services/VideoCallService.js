@@ -22,18 +22,18 @@ class VideoCallService {
         {
           urls: "turn:openrelay.metered.ca:80",
           username: "openrelayproject",
-          credential: "openrelayproject"
+          credential: "openrelayproject",
         },
         {
           urls: "turn:openrelay.metered.ca:443",
-          username: "openrelayproject", 
-          credential: "openrelayproject"
+          username: "openrelayproject",
+          credential: "openrelayproject",
         },
         {
           urls: "turn:openrelay.metered.ca:443?transport=tcp",
           username: "openrelayproject",
-          credential: "openrelayproject"
-        }
+          credential: "openrelayproject",
+        },
       ],
     };
 
@@ -56,12 +56,13 @@ class VideoCallService {
   async initializeSocket(serverUrl) {
     try {
       // Use environment-based server URL
-      const socketUrl = serverUrl || 
-                       process.env.REACT_APP_SOCKET_SERVER || 
-                       (process.env.NODE_ENV === 'production' 
-                         ? 'https://your-socket-server.herokuapp.com' 
-                         : 'http://localhost:3001');
-      
+      const socketUrl =
+        serverUrl ||
+        process.env.REACT_APP_SOCKET_SERVER ||
+        (process.env.NODE_ENV === "production"
+          ? "https://your-socket-server.herokuapp.com"
+          : "http://localhost:3001");
+
       this.socket = io(socketUrl, {
         transports: ["websocket", "polling"],
       });
