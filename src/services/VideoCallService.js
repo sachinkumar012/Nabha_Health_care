@@ -17,12 +17,23 @@ class VideoCallService {
       iceServers: [
         { urls: "stun:stun.l.google.com:19302" },
         { urls: "stun:stun1.l.google.com:19302" },
-        // Add TURN servers for production
-        // {
-        //   urls: 'turn:your-turn-server.com:3478',
-        //   username: 'your-username',
-        //   credential: 'your-password'
-        // }
+        { urls: "stun:stun2.l.google.com:19302" },
+        // Add free TURN servers
+        {
+          urls: "turn:openrelay.metered.ca:80",
+          username: "openrelayproject",
+          credential: "openrelayproject"
+        },
+        {
+          urls: "turn:openrelay.metered.ca:443",
+          username: "openrelayproject", 
+          credential: "openrelayproject"
+        },
+        {
+          urls: "turn:openrelay.metered.ca:443?transport=tcp",
+          username: "openrelayproject",
+          credential: "openrelayproject"
+        }
       ],
     };
 
@@ -42,9 +53,16 @@ class VideoCallService {
   }
 
   // Initialize socket connection
-  async initializeSocket(serverUrl = "http://localhost:3001") {
+  async initializeSocket(serverUrl) {
     try {
-      this.socket = io(serverUrl, {
+      // Use environment-based server URL
+      const socketUrl = serverUrl || 
+                       process.env.REACT_APP_SOCKET_SERVER || 
+                       (process.env.NODE_ENV === 'production' 
+                         ? 'https://your-socket-server.herokuapp.com' 
+                         : 'http://localhost:3001');
+      
+      this.socket = io(socketUrl, {
         transports: ["websocket", "polling"],
       });
 
