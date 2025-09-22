@@ -792,7 +792,7 @@ const Pharmacy = () => {
                     className="form-input"
                     value={loginForm.username}
                     onChange={(e) => setLoginForm({...loginForm, username: e.target.value})}
-                    placeholder="Enter username (nikunj)"
+                    placeholder="Enter username (sachin)"
                     required
                   />
                 </div>
