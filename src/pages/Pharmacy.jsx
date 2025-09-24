@@ -1,7 +1,6 @@
 import  { useState, useEffect } from 'react';
 import { Search, Plus, Edit3, User, Lock, Mail, Phone, Clock, MapPin, Package } from 'lucide-react';
 import NabhaHealthIcon from '../components/UI/NabhaHealthIcon';
-import IconShowcase from '../components/UI/IconShowcase';
 
 const Pharmacy = () => {
   // State management
@@ -1085,12 +1084,9 @@ const Pharmacy = () => {
         {/* Nabha Health Care Header */}
         <div style={{
           textAlign: 'center',
-          padding: '2rem 1rem',
-          marginBottom: '1rem',
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-          borderRadius: '16px',
-          border: '2px solid #e5e7eb',
-          boxShadow: '0 4px 12px rgba(31, 41, 55, 0.05)'
+          padding: '3rem 1rem 2rem 1rem',
+          marginTop: '3rem',
+          marginBottom: '2rem'
         }}>
           <div style={{
             display: 'flex',
@@ -1100,7 +1096,7 @@ const Pharmacy = () => {
             marginBottom: '1rem',
             flexWrap: 'wrap'
           }}>
-            <NabhaHealthIcon size={64} variant="gradient" />
+            <NabhaHealthIcon size={64} variant="default" />
             <div>
               <h1 style={{
                 margin: 0,
@@ -1141,7 +1137,7 @@ const Pharmacy = () => {
                 color: '#10b981',
                 fontWeight: '600'
               }}>
-                <NabhaHealthIcon size={20} variant="filled" color="#10b981" />
+                <NabhaHealthIcon size={20} variant="default" />
                 <span>Trusted Care</span>
               </div>
             </div>
@@ -1173,11 +1169,6 @@ const Pharmacy = () => {
             </div>
           </div>
         </div>
-
-        {/* Icon Showcase - Show only when no user is logged in */}
-        {!currentUser && (
-          <IconShowcase />
-        )}
 
         {/* Pharmacist Login Section */}
         <div className="pharmacist-login-section">
@@ -1312,7 +1303,7 @@ const Pharmacy = () => {
           <div className="dashboard">
             <div className="dashboard-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <NabhaHealthIcon size={40} variant="filled" color="#10b981" />
+                <NabhaHealthIcon size={40} variant="default" />
                 <h2 className="dashboard-title">Pharmacist Dashboard - Manage Medicines</h2>
               </div>
               <button
@@ -1409,7 +1400,7 @@ const Pharmacy = () => {
 
               <div className="auth-header">
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                  <NabhaHealthIcon size={48} variant="gradient" />
+                  <NabhaHealthIcon size={48} variant="default" />
                   <div>
                     <h2 className="auth-title" style={{ margin: 0 }}>Pharmacist Portal</h2>
                     <p className="auth-subtitle" style={{ margin: '0.25rem 0 0 0' }}>Access your pharmacy management dashboard</p>
