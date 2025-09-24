@@ -1,23 +1,28 @@
 # Using ngrok to Share Your Local Video Call App
 
 ## 🚀 What is ngrok?
+
 ngrok creates a secure tunnel from the internet to your localhost, allowing anyone to access your local app via a public URL.
 
 ## 📦 Installation & Setup:
 
 ### 1. Install ngrok
+
 **Download from:** https://ngrok.com/download
 
 **Or install via npm:**
+
 ```bash
 npm install -g ngrok
 ```
 
 ### 2. Sign up for ngrok account
+
 - Go to https://ngrok.com/signup
 - Get your auth token from the dashboard
 
 ### 3. Setup Auth Token
+
 ```bash
 ngrok authtoken YOUR_AUTH_TOKEN
 ```
@@ -25,19 +30,24 @@ ngrok authtoken YOUR_AUTH_TOKEN
 ## 🎯 Running Your App with ngrok:
 
 ### Step 1: Start Your React App
+
 ```bash
 cd "e:\PROJECTS\Nabha_Health_care"
 npm run dev
 ```
+
 Your app runs on `http://localhost:3000`
 
 ### Step 2: Start ngrok Tunnel (New Terminal)
+
 ```bash
 ngrok http 3000
 ```
 
 ### Step 3: Get Public URLs
+
 ngrok will show:
+
 ```
 Session Status    online
 Web Interface     http://127.0.0.1:4040
@@ -46,6 +56,7 @@ Forwarding        http://abc123.ngrok.io -> http://localhost:3000
 ```
 
 ### Step 4: Share the HTTPS URL
+
 Share `https://abc123.ngrok.io` with others - they can access your app from anywhere!
 
 ## 🎮 Testing Video Calls:
@@ -57,6 +68,7 @@ Share `https://abc123.ngrok.io` with others - they can access your app from anyw
 5. **Both Connect**: Both users can now video chat!
 
 ## 🌟 Benefits of ngrok:
+
 - ✅ **Internet Access**: Anyone can join from anywhere
 - ✅ **HTTPS**: Works with all browser features
 - ✅ **Easy Setup**: Just one command
@@ -65,6 +77,7 @@ Share `https://abc123.ngrok.io` with others - they can access your app from anyw
 ## ⚠️ Important for Video Calls:
 
 ### Update Your Environment Variable:
+
 When using ngrok, update your `.env` file:
 
 ```env
@@ -76,13 +89,14 @@ REACT_APP_SOCKET_SERVER=https://abc123.ngrok.io
 ```
 
 ### Start Local Signaling Server:
+
 You also need to run your signaling server locally:
 
 ```bash
 # Terminal 1: React App
 npm run dev
 
-# Terminal 2: Signaling Server  
+# Terminal 2: Signaling Server
 cd server
 npm install
 npm start
@@ -97,7 +111,7 @@ ngrok http 3001
 ## 🎯 Complete Test Flow:
 
 1. Start React app: `npm run dev`
-2. Start ngrok: `ngrok http 3000` 
+2. Start ngrok: `ngrok http 3000`
 3. Share ngrok URL with friend
 4. Both open the ngrok URL
 5. You: Go to Doctors → Click "Video Call"
@@ -108,11 +122,13 @@ ngrok http 3001
 ## 🆓 Free vs Paid ngrok:
 
 **Free Tier:**
+
 - Random URLs (changes each restart)
 - 1 tunnel at a time
 - Limited bandwidth
 
 **Paid Tier:**
+
 - Custom domains
 - Multiple tunnels
 - Better performance
