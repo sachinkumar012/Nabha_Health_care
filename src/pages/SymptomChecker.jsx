@@ -791,7 +791,6 @@ I'll help you track your symptoms for better diagnosis:
               </div>
               <div>
                 <h1 style={styles.title}>🤖 AI Health Agent</h1>
-                <p style={styles.subtitle}>Intelligent health assistant with decision-making capabilities</p>
               </div>
             </div>
             <div style={styles.headerRight}>
