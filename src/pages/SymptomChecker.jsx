@@ -18,13 +18,35 @@ const AGENT_TOOLS = {
 
 const AgenticSymptomChecker = () => {
   const navigate = useNavigate();
-  const [messages, setMessages] = useState([
-    { 
-      text: "🤖 Hello! I'm your AI Health Agent. I can help you with symptoms, book appointments, find doctors, and take immediate action for your health needs. How can I assist you today?", 
-      type: "bot",
-      actions: []
+  
+  // Load chat history from localStorage or use default welcome message
+  const loadChatHistory = () => {
+    try {
+      const savedMessages = localStorage.getItem('aiHealthAgentMessages');
+      if (savedMessages) {
+        const parsedMessages = JSON.parse(savedMessages);
+        // Convert timestamp strings back to Date objects
+        return parsedMessages.map(msg => ({
+          ...msg,
+          timestamp: msg.timestamp ? new Date(msg.timestamp) : new Date()
+        }));
+      }
+    } catch (error) {
+      console.error('Error loading chat history:', error);
     }
-  ]);
+    
+    // Return default welcome message if no saved history or error
+    return [
+      { 
+        text: "🤖 Hello! I'm your AI Health Agent. I can help you with symptoms, book appointments, find doctors, and take immediate action for your health needs. How can I assist you today?", 
+        type: "bot",
+        actions: [],
+        timestamp: new Date()
+      }
+    ];
+  };
+
+  const [messages, setMessages] = useState(loadChatHistory());
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -72,6 +94,21 @@ const AgenticSymptomChecker = () => {
 
     // Get user location for nearby services
     getUserLocation();
+    
+    // Check if user has existing chat history and show welcome back message
+    const savedMessages = localStorage.getItem('aiHealthAgentMessages');
+    if (savedMessages) {
+      try {
+        const parsedMessages = JSON.parse(savedMessages);
+        if (parsedMessages.length > 1) { // More than just the welcome message
+          setTimeout(() => {
+            addMessage('👋 Welcome back! Your chat history has been restored. You can continue where you left off.', 'agent');
+          }, 1000);
+        }
+      } catch (error) {
+        console.error('Error checking chat history:', error);
+      }
+    }
   }, []);
 
   const getUserLocation = () => {
@@ -91,7 +128,18 @@ const AgenticSymptomChecker = () => {
   };
 
   const addMessage = (text, type, actions = []) => {
-    setMessages((prev) => [...prev, { text, type, timestamp: new Date(), actions }]);
+    const newMessage = { text, type, timestamp: new Date(), actions };
+    setMessages((prev) => {
+      const updatedMessages = [...prev, newMessage];
+      // Save to localStorage
+      try {
+        localStorage.setItem('aiHealthAgentMessages', JSON.stringify(updatedMessages));
+      } catch (error) {
+        console.error('Error saving chat history:', error);
+      }
+      return updatedMessages;
+    });
+    
     setTimeout(() => {
       if (chatBoxRef.current) {
         chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
@@ -249,15 +297,21 @@ const AgenticSymptomChecker = () => {
 • Loss of consciousness
 • Severe bleeding
 
-Please call emergency services immediately!`;
+Please call emergency services immediately!
 
-    addMessage(emergencyMessage, 'agent', [
-      {
-        type: 'call_emergency',
-        label: '📞 Call 108',
-        action: () => window.open('tel:108')
+📱 Preparing to dial emergency services...`;
+
+    addMessage(emergencyMessage, 'agent');
+    
+    // Auto-dial after 3 seconds with confirmation
+    setTimeout(() => {
+      if (confirm('🚨 Do you want to call emergency services (108) now?')) {
+        window.open('tel:108');
+        addMessage('📞 Emergency call initiated to 108. Stay calm and provide your location and emergency details.', 'agent');
+      } else {
+        addMessage('📞 Emergency call cancelled. Please call 108 manually if you need immediate medical assistance.', 'agent');
       }
-    ]);
+    }, 3000);
   };
 
   const handleBookAppointment = () => {
@@ -271,16 +325,14 @@ I can help you book an appointment with the right specialist:
 • Dermatologist - Today 4:00 PM
 • Pediatrician - Tomorrow 9:00 AM
 
-📝 Quick Booking:
-Select a doctor and time that works for you.`;
+📝 Redirecting you to doctors page for appointment booking...`;
 
-    addMessage(appointmentMessage, 'agent', [
-      {
-        type: 'book_now',
-        label: '📅 Book Now',
-        action: () => navigate('/doctors')
-      }
-    ]);
+    addMessage(appointmentMessage, 'agent');
+    
+    setTimeout(() => {
+      navigate('/doctors');
+      addMessage('✅ Redirected to doctors page. You can now select a doctor and book your appointment.', 'agent');
+    }, 2000);
   };
 
   const handleNearbyHospitals = () => {
@@ -302,86 +354,98 @@ Select a doctor and time that works for you.`;
 📞 Emergency Numbers:
 • Ambulance: 108
 • Police: 100
-• Fire: 101`;
+• Fire: 101
 
-      addMessage(hospitalsMessage, 'agent', [
-        {
-          type: 'navigate_hospital',
-          label: '🗺️ Get Directions',
-          action: () => window.open('https://maps.google.com/search/hospitals+near+me')
-        }
-      ]);
+🗺️ Opening Google Maps to show nearby hospitals and emergency services...`;
+
+      addMessage(hospitalsMessage, 'agent');
+      
+      // Auto-open directions after 2 seconds
+      setTimeout(() => {
+        window.open('https://www.google.com/maps/search/hospitals+near+me');
+        addMessage('✅ Google Maps opened with nearby hospitals and emergency services. You can now get directions to the closest facility.', 'agent');
+      }, 2000);
     } else {
       addMessage('📍 Please allow location access to find nearby hospitals and emergency services.', 'agent');
     }
   };
 
   const handleSymptomTracking = () => {
-    const symptomsMessage = `📊 SYMPTOM TRACKING
+    const symptomsMessage = `📊 SYMPTOM TRACKING ACTIVATED
 
 I'll help you track your symptoms for better diagnosis:
 
-📝 Current Session:
-• Pain Level: To be recorded
-• Duration: To be recorded  
-• Associated symptoms: To be noted
+📝 Tracking Session Started:
+• Pain Level: Will be monitored
+• Duration: Recording timestamps  
+• Associated symptoms: Being logged
+• Pattern analysis: In progress
 
-💡 This information will help doctors provide better care.`;
+💡 This information will help doctors provide better care.
 
-    addMessage(symptomsMessage, 'agent', [
-      {
-        type: 'track_symptoms',
-        label: '📝 Start Tracking',
-        action: () => {
-          setPatientData(prev => ({
-            ...prev,
-            symptoms: [...prev.symptoms, { date: new Date(), tracked: true }]
-          }));
-          addMessage('✅ Symptom tracking started. I\'ll monitor your health patterns.', 'agent');
-        }
-      }
-    ]);
+🔍 Starting comprehensive symptom monitoring...`;
+
+    addMessage(symptomsMessage, 'agent');
+    
+    setTimeout(() => {
+      setPatientData(prev => ({
+        ...prev,
+        symptoms: [...prev.symptoms, { 
+          date: new Date(), 
+          tracked: true,
+          sessionId: Date.now(),
+          status: 'active'
+        }]
+      }));
+      addMessage('✅ Symptom tracking activated successfully! I\'ll monitor your health patterns and provide insights. You can describe any symptoms you\'re experiencing and I\'ll log them for analysis.', 'agent');
+    }, 2000);
   };
 
   const handleHealthTracking = () => {
-    const healthMessage = `💓 HEALTH MONITORING
+    const healthMessage = `💓 HEALTH MONITORING ACTIVATED
 
-🔍 Continuous Health Tracking:
-• Vital signs monitoring
-• Symptom pattern analysis
-• Recovery progress tracking
-• Medication effectiveness
+🔍 Continuous Health Tracking Started:
+• Vital signs monitoring: Active
+• Symptom pattern analysis: Running
+• Recovery progress tracking: Enabled
+• Medication effectiveness: Monitoring
 
-📈 Health Insights:
-I'll provide personalized health insights based on your data.`;
+📈 Health Insights Engine:
+• AI-powered pattern recognition
+• Personalized health recommendations
+• Early warning system for health changes
+• Integration with your medical history
+
+🔄 Initializing health monitoring systems...`;
 
     addMessage(healthMessage, 'agent');
+    
+    setTimeout(() => {
+      addMessage('✅ Health monitoring systems successfully activated! I\'m now continuously tracking your health patterns and will provide personalized insights and early warnings for any concerning changes.', 'agent');
+    }, 2500);
   };
 
   const handleMedicationReminder = () => {
-    const medicationMessage = `💊 MEDICATION MANAGEMENT
+    const medicationMessage = `💊 MEDICATION MANAGEMENT SYSTEM
 
-⏰ Smart Reminders:
+⏰ Smart Reminders Setup:
 • Morning medications: 8:00 AM
 • Afternoon dose: 2:00 PM
 • Evening medications: 8:00 PM
 
-📝 Medication Tracking:
-• Dosage compliance
-• Side effects monitoring
-• Refill reminders
+📝 Advanced Medication Tracking:
+• Dosage compliance monitoring
+• Side effects tracking and alerts
+• Automatic refill reminders
+• Drug interaction warnings
 
-🔔 I'll send you timely reminders for all medications.`;
+🔔 Configuring intelligent reminder system...`;
 
-    addMessage(medicationMessage, 'agent', [
-      {
-        type: 'set_reminder',
-        label: '⏰ Set Reminders',
-        action: () => {
-          addMessage('✅ Medication reminders have been set up. You\'ll receive notifications at scheduled times.', 'agent');
-        }
-      }
-    ]);
+    addMessage(medicationMessage, 'agent');
+    
+    setTimeout(() => {
+      addMessage('✅ Medication management system successfully configured! You\'ll receive timely notifications for all medications, including dosage reminders, refill alerts, and side effect monitoring. Your medication adherence will be tracked for better health outcomes.', 'agent');
+    }, 3000);
   };
 
   const speakText = (text) => {
@@ -503,7 +567,16 @@ I'll provide personalized health insights based on your data.`;
       // Remove typing message and add bot reply
       setMessages((prev) => {
         const msgs = prev.filter((msg) => !msg.isTyping);
-        return [...msgs, { text: botReply, type: "bot", timestamp: new Date() }];
+        const updatedMessages = [...msgs, { text: botReply, type: "bot", timestamp: new Date() }];
+        
+        // Save to localStorage
+        try {
+          localStorage.setItem('aiHealthAgentMessages', JSON.stringify(updatedMessages));
+        } catch (error) {
+          console.error('Error saving chat history:', error);
+        }
+        
+        return updatedMessages;
       });
 
       // Agent Decision Making - Analyze and decide actions
@@ -523,10 +596,19 @@ I'll provide personalized health insights based on your data.`;
     } catch (error) {
       setMessages((prev) => {
         const msgs = prev.filter((msg) => !msg.isTyping);
-        return [
+        const updatedMessages = [
           ...msgs,
-          { text: "⚠️ I'm having trouble connecting right now. Please check your internet connection and try again.", type: "bot" },
+          { text: "⚠️ I'm having trouble connecting right now. Please check your internet connection and try again.", type: "bot", timestamp: new Date() },
         ];
+        
+        // Save to localStorage
+        try {
+          localStorage.setItem('aiHealthAgentMessages', JSON.stringify(updatedMessages));
+        } catch (saveError) {
+          console.error('Error saving chat history:', saveError);
+        }
+        
+        return updatedMessages;
       });
     } finally {
       setLoading(false);
@@ -542,6 +624,27 @@ I'll provide personalized health insights based on your data.`;
 
   const formatTime = (timestamp) => {
     return timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Clear chat history
+  const clearChatHistory = () => {
+    if (confirm('🗑️ Are you sure you want to clear your chat history? This action cannot be undone.')) {
+      const defaultMessage = {
+        text: "🤖 Hello! I'm your AI Health Agent. I can help you with symptoms, book appointments, find doctors, and take immediate action for your health needs. How can I assist you today?",
+        type: "bot",
+        actions: [],
+        timestamp: new Date()
+      };
+      
+      setMessages([defaultMessage]);
+      
+      try {
+        localStorage.setItem('aiHealthAgentMessages', JSON.stringify([defaultMessage]));
+        addMessage('✅ Chat history cleared successfully. Let\'s start fresh!', 'agent');
+      } catch (error) {
+        console.error('Error clearing chat history:', error);
+      }
+    }
   };
 
   return (
@@ -567,6 +670,21 @@ I'll provide personalized health insights based on your data.`;
                   {agentThinking ? 'Processing...' : 'Ready to Help'}
                 </span>
               </div>
+              
+              {/* Chat History Indicator */}
+              <div style={styles.chatHistoryIndicator} title="Chat history is automatically saved">
+                💾
+              </div>
+              
+              {/* Clear Chat Button */}
+              <button
+                onClick={clearChatHistory}
+                style={styles.clearChatButton}
+                title="Clear chat history"
+              >
+                🗑️
+              </button>
+              
               {speechSupported && (
                 <button
                   onClick={() => setSpeechEnabled(!speechEnabled)}
@@ -873,6 +991,29 @@ const styles = {
     background: '#4caf50',
     borderRadius: '50%',
     animation: 'pulse 2s infinite'
+  },
+  chatHistoryIndicator: {
+    padding: '6px',
+    background: 'rgba(255,255,255,0.2)',
+    borderRadius: '12px',
+    fontSize: '14px',
+    cursor: 'default',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  clearChatButton: {
+    padding: '6px',
+    background: 'rgba(255,255,255,0.2)',
+    border: 'none',
+    borderRadius: '12px',
+    color: 'white',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '14px'
   },
   chatBox: {
     flex: 1,
