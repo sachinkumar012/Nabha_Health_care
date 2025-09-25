@@ -3,12 +3,49 @@ import { Mic, MicOff, Send, Volume2, VolumeX, Calendar, X, MessageCircle } from 
 
 const API_KEY = "AIzaSyBEoyP49AjxnE6pTLhEivfNAylcGDaH_04"; // Replace with your key
 
+// Language configuration
+const LANGUAGES = {
+  en: {
+    code: 'en',
+    name: 'English',
+    flag: '🇺🇸',
+    speechLang: 'en-US',
+    placeholder: 'Type your message...',
+    initialMessage: 'Hello! I\'m here to help you book an appointment with our doctors. First, please select your preferred language for our conversation.',
+    languageSelected: 'Great! Now, what type of consultation do you need?',
+    listening: 'Listening...',
+    selectLanguage: 'Please select your language:'
+  },
+  hi: {
+    code: 'hi',
+    name: 'हिंदी',
+    flag: '🇮🇳',
+    speechLang: 'hi-IN',
+    placeholder: 'अपना संदेश लिखें...',
+    initialMessage: 'नमस्ते! मैं आपको हमारे डॉक्टरों के साथ अपॉइंटमेंट बुक करने में मदद करने यहाँ हूँ। पहले, कृपया हमारी बातचीत के लिए अपनी पसंदीदा भाषा चुनें।',
+    languageSelected: 'बहुत बढ़िया! अब आपको किस प्रकार की परामर्श की आवश्यकता है?',
+    listening: 'सुन रहा हूँ...',
+    selectLanguage: 'कृपया अपनी भाषा चुनें:'
+  },
+  pa: {
+    code: 'pa',
+    name: 'ਪੰਜਾਬੀ',
+    flag: '🇮🇳',
+    speechLang: 'pa-IN',
+    placeholder: 'ਆਪਣਾ ਸੰਦੇਸ਼ ਲਿਖੋ...',
+    initialMessage: 'ਸਤ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਤੁਹਾਨੂੰ ਸਾਡੇ ਡਾਕਟਰਾਂ ਨਾਲ ਮੁਲਾਕਾਤ ਦਾ ਸਮਾਂ ਬੁੱਕ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ ਇੱਥੇ ਹਾਂ। ਪਹਿਲਾਂ, ਕਿਰਪਾ ਕਰਕੇ ਸਾਡੀ ਗੱਲਬਾਤ ਲਈ ਆਪਣੀ ਪਸੰਦੀਦਾ ਭਾਸ਼ਾ ਚੁਣੋ।',
+    languageSelected: 'ਬਹੁਤ ਵਧੀਆ! ਹੁਣ ਤੁਹਾਨੂੰ ਕਿਸ ਕਿਸਮ ਦੀ ਸਲਾਹ ਦੀ ਲੋੜ ਹੈ?',
+    listening: 'ਸੁਣ ਰਿਹਾ ਹਾਂ...',
+    selectLanguage: 'ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਭਾਸ਼ਾ ਚੁਣੋ:'
+  }
+};
+
 const 
 AppointmentChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { text: "Hello! I'm here to help you book an appointment with our doctors. What type of consultation do you need?", type: "bot" }
-  ]);
+  const [currentLanguage, setCurrentLanguage] = useState('en');
+  const [languageSelected, setLanguageSelected] = useState(false);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -16,6 +53,17 @@ AppointmentChatBot = () => {
   const [recognition, setRecognition] = useState(null);
   const [speechSupported, setSpeechSupported] = useState(false);
   const chatBoxRef = useRef(null);
+
+  useEffect(() => {
+    // Initialize with language selection message
+    if (isOpen && !languageSelected && messages.length === 0) {
+      addMessage(LANGUAGES[currentLanguage].initialMessage, 'bot');
+      // Add language selection buttons
+      setTimeout(() => {
+        addMessage(LANGUAGES[currentLanguage].selectLanguage, 'bot');
+      }, 500);
+    }
+  }, [isOpen, languageSelected, messages.length]);
 
   useEffect(() => {
     // Check if browser supports speech recognition
@@ -26,7 +74,7 @@ AppointmentChatBot = () => {
       
       recognitionInstance.continuous = false;
       recognitionInstance.interimResults = false;
-      recognitionInstance.lang = 'en-US';
+      recognitionInstance.lang = LANGUAGES[currentLanguage].speechLang;
       
       recognitionInstance.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
@@ -45,7 +93,7 @@ AppointmentChatBot = () => {
       
       setRecognition(recognitionInstance);
     }
-  }, []);
+  }, [currentLanguage]);
 
   const addMessage = (text, type) => {
     setMessages((prev) => [...prev, { text, type, timestamp: new Date() }]);
@@ -54,6 +102,24 @@ AppointmentChatBot = () => {
         chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
       }
     }, 50);
+  };
+
+  const handleLanguageSelect = (langCode) => {
+    setCurrentLanguage(langCode);
+    setLanguageSelected(true);
+    
+    // Clear previous messages and add confirmation
+    setMessages([]);
+    addMessage(`${LANGUAGES[langCode].flag} ${LANGUAGES[langCode].name} selected!`, 'user');
+    
+    setTimeout(() => {
+      addMessage(LANGUAGES[langCode].languageSelected, 'bot');
+    }, 500);
+    
+    // Update speech recognition language
+    if (recognition) {
+      recognition.lang = LANGUAGES[langCode].speechLang;
+    }
   };
 
   const speakText = (text) => {
@@ -92,7 +158,7 @@ AppointmentChatBot = () => {
   };
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || !languageSelected) return;
     addMessage(input, "user");
     const userInput = input;
     setInput("");
@@ -113,6 +179,8 @@ AppointmentChatBot = () => {
               parts: [
                 {
                   text: `You are a helpful AI assistant for Nabha Healthcare, specializing in appointment booking and scheduling. Help users book appointments, provide information about available doctors, suggest appointment times, and guide them through the booking process.
+
+                  IMPORTANT: Respond in ${LANGUAGES[currentLanguage].name} language. Be culturally sensitive and use appropriate greetings and expressions for this language.
 
                   Available Doctors:
                   - Dr. Sachin Kumar – General Medicine – 15 years – Available: 9:00 AM - 6:00 PM
@@ -238,6 +306,35 @@ AppointmentChatBot = () => {
           .desktop-close-button {
             display: none !important;
           }
+          
+          /* Mobile Language Selection */
+          .language-selection-mobile {
+            padding: 20px 15px !important;
+            min-height: 350px !important;
+          }
+          
+          .language-welcome-title-mobile {
+            font-size: 18px !important;
+          }
+          
+          .language-icon-mobile {
+            width: 60px !important;
+            height: 60px !important;
+            font-size: 36px !important;
+          }
+          
+          .language-grid-mobile {
+            max-width: 100% !important;
+            gap: 10px !important;
+          }
+          
+          .language-card-mobile {
+            padding: 14px 16px !important;
+          }
+          
+          .language-name-large-mobile {
+            font-size: 15px !important;
+          }
         }
         
         /* Desktop - Hide mobile close button, show desktop close button */
@@ -264,6 +361,32 @@ AppointmentChatBot = () => {
         @keyframes bounce {
           0%, 80%, 100% { transform: translateY(0); }
           40% { transform: translateY(-10px); }
+        }
+        
+        /* Language Card Hover Effects */
+        .language-card:hover .language-arrow {
+          transform: translateX(3px);
+        }
+        
+        .language-card:hover {
+          border-color: #059669 !important;
+          box-shadow: 0 8px 25px rgba(5, 150, 105, 0.15) !important;
+          transform: translateY(-2px) !important;
+        }
+        
+        .language-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(5, 150, 105, 0.1), transparent);
+          transition: left 0.5s ease;
+        }
+        
+        .language-card:hover::before {
+          left: 100%;
         }
       `}</style>
 
@@ -322,6 +445,44 @@ AppointmentChatBot = () => {
                 </div>
               </div>
             </div>
+
+            {/* Language Selection - Show only when language not selected */}
+            {!languageSelected && (
+              <div style={styles.languageSelection} className="language-selection-mobile">
+                <div style={styles.languageWelcome}>
+                  <div style={styles.languageIcon} className="language-icon-mobile">🌐</div>
+                  <div style={styles.languageWelcomeText}>
+                    <h3 style={styles.languageWelcomeTitle} className="language-welcome-title-mobile">Welcome to Nabha Healthcare</h3>
+                    <p style={styles.languageWelcomeSubtitle}>Please select your preferred language</p>
+                  </div>
+                </div>
+                
+                <div style={styles.languageGrid} className="language-grid-mobile">
+                  {Object.entries(LANGUAGES).map(([langCode, lang]) => (
+                    <div
+                      key={langCode}
+                      onClick={() => handleLanguageSelect(langCode)}
+                      className="language-card language-card-mobile"
+                      style={styles.languageCard}
+                    >
+                      <div style={styles.languageFlagLarge}>{lang.flag}</div>
+                      <div style={styles.languageCardContent}>
+                        <div style={styles.languageNameLarge} className="language-name-large-mobile">{lang.name}</div>
+                        <div style={styles.languageSelectText}>Click to select</div>
+                      </div>
+                      <div className="language-arrow" style={styles.languageArrow}>→</div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div style={styles.languageFooter}>
+                  <p style={styles.languageFooterText}>
+                    <span style={styles.languageFooterIcon}>💬</span>
+                    Chat with our AI assistant in your preferred language
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Chat Messages */}
             <div ref={chatBoxRef} style={styles.chatBox}>
@@ -383,14 +544,14 @@ AppointmentChatBot = () => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyPress}
-                    placeholder="Type your appointment request..."
+                    placeholder={languageSelected ? LANGUAGES[currentLanguage].placeholder : "Please select a language first..."}
                     style={{
                       ...styles.textarea,
                       ...(loading ? styles.textareaDisabled : {})
                     }}
                     className="appointment-textarea"
                     rows="1"
-                    disabled={loading}
+                    disabled={loading || !languageSelected}
                   />
                   {speechSupported && (
                     <button
@@ -410,10 +571,10 @@ AppointmentChatBot = () => {
                 
                 <button
                   onClick={sendMessage}
-                  disabled={loading || !input.trim()}
+                  disabled={loading || !input.trim() || !languageSelected}
                   style={{
                     ...styles.sendButton,
-                    ...(loading || !input.trim() ? styles.sendButtonDisabled : {})
+                    ...(loading || !input.trim() || !languageSelected ? styles.sendButtonDisabled : {})
                   }}
                   className="appointment-send-button"
                 >
@@ -428,7 +589,7 @@ AppointmentChatBot = () => {
               {isListening && (
                 <div style={styles.listeningIndicator}>
                   <div style={styles.listeningDot}></div>
-                  <span style={styles.listeningText}>Listening...</span>
+                  <span style={styles.listeningText}>{LANGUAGES[currentLanguage].listening}</span>
                   <div style={styles.listeningDot}></div>
                 </div>
               )}
@@ -896,6 +1057,193 @@ const styles = {
 
   listeningText: {
     fontWeight: '500',
+  },
+
+  // Language Selection Styles
+  languageSelection: {
+    padding: '30px 25px',
+    background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+    minHeight: '400px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '25px',
+  },
+
+  languageWelcome: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '15px',
+    textAlign: 'center',
+  },
+
+  languageIcon: {
+    fontSize: '48px',
+    background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+    borderRadius: '50%',
+    width: '80px',
+    height: '80px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 8px 25px rgba(5, 150, 105, 0.3)',
+    animation: 'bounce 2s infinite',
+  },
+
+  languageWelcomeText: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+
+  languageWelcomeTitle: {
+    margin: 0,
+    fontSize: '20px',
+    fontWeight: '700',
+    color: '#1f2937',
+    background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
+  },
+
+  languageWelcomeSubtitle: {
+    margin: 0,
+    fontSize: '14px',
+    color: '#64748b',
+    fontWeight: '500',
+  },
+
+  languageGrid: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    width: '100%',
+    maxWidth: '280px',
+  },
+
+  languageCard: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '15px',
+    padding: '18px 20px',
+    backgroundColor: '#ffffff',
+    border: '2px solid #e2e8f0',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+
+  languageCardHover: {
+    transform: 'translateY(-2px)',
+    boxShadow: '0 8px 25px rgba(5, 150, 105, 0.15)',
+    borderColor: '#059669',
+  },
+
+  languageFlagLarge: {
+    fontSize: '32px',
+    minWidth: '40px',
+    textAlign: 'center',
+  },
+
+  languageCardContent: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+  },
+
+  languageNameLarge: {
+    fontSize: '16px',
+    fontWeight: '600',
+    color: '#1f2937',
+  },
+
+  languageSelectText: {
+    fontSize: '12px',
+    color: '#64748b',
+    fontWeight: '500',
+  },
+
+  languageArrow: {
+    fontSize: '18px',
+    color: '#059669',
+    fontWeight: '600',
+    transition: 'transform 0.3s ease',
+  },
+
+  languageFooter: {
+    textAlign: 'center',
+    marginTop: '10px',
+  },
+
+  languageFooterText: {
+    margin: 0,
+    fontSize: '12px',
+    color: '#64748b',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    justifyContent: 'center',
+  },
+
+  languageFooterIcon: {
+    fontSize: '16px',
+  },
+
+  // Old styles (keeping for backward compatibility)
+  languageTitle: {
+    fontSize: '14px',
+    fontWeight: '600',
+    color: '#1f2937',
+    textAlign: 'center',
+    marginBottom: '8px',
+  },
+
+  languageButtons: {
+    display: 'flex',
+    gap: '8px',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+  },
+
+  languageButton: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '8px 12px',
+    backgroundColor: '#ffffff',
+    border: '2px solid #e2e8f0',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    fontSize: '13px',
+    fontWeight: '500',
+    color: '#374151',
+    minWidth: '85px',
+    justifyContent: 'center',
+  },
+
+  languageButtonActive: {
+    backgroundColor: '#059669',
+    borderColor: '#059669',
+    color: 'white',
+    transform: 'translateY(-1px)',
+    boxShadow: '0 4px 8px rgba(5, 150, 105, 0.3)',
+  },
+
+  languageFlag: {
+    fontSize: '16px',
+  },
+
+  languageName: {
+    fontSize: '12px',
+    fontWeight: '600',
   },
 };
 

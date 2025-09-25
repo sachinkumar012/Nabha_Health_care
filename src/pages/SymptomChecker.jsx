@@ -4,6 +4,43 @@ import { useNavigate } from 'react-router-dom';
 
 const API_KEY = "AIzaSyBEoyP49AjxnE6pTLhEivfNAylcGDaH_04"; // Replace with your key
 
+// Language Configuration
+const LANGUAGES = {
+  en: {
+    code: 'en',
+    name: 'English',
+    flag: '🇺🇸',
+    welcomeMessage: "🤖 Hello! I'm your AI Health Agent. I can help you with symptoms, book appointments, find doctors, and take immediate action for your health needs. How can I assist you today?",
+    welcomeBack: "👋 Welcome back! Your chat history has been restored from the cloud. You can continue where you left off.",
+    placeholder: "Describe your symptoms or ask a health question...",
+    listening: "Listening... Speak now",
+    agentThinking: "AI Agent is analyzing and planning actions...",
+    speechRecognition: 'en-US'
+  },
+  hi: {
+    code: 'hi',
+    name: 'हिंदी',
+    flag: '🇮🇳',
+    welcomeMessage: "🤖 नमस्ते! मैं आपका AI स्वास्थ्य एजेंट हूँ। मैं लक्षणों की जांच, अपॉइंटमेंट बुकिंग, डॉक्टर ढूंढने और आपकी स्वास्थ्य जरूरतों के लिए तत्काल कार्रवाई में मदद कर सकता हूँ। आज मैं आपकी कैसे सहायता कर सकता हूँ?",
+    welcomeBack: "👋 वापस स्वागत है! आपका चैट इतिहास क्लाउड से पुनर्स्थापित हो गया है। आप जहां छोड़ा था वहीं से जारी रख सकते हैं।",
+    placeholder: "अपने लक्षण बताएं या स्वास्थ्य संबंधी प्रश्न पूछें...",
+    listening: "सुन रहा हूँ... अब बोलें",
+    agentThinking: "AI एजेंट विश्लेषण और कार्य योजना बना रहा है...",
+    speechRecognition: 'hi-IN'
+  },
+  pa: {
+    code: 'pa',
+    name: 'ਪੰਜਾਬੀ',
+    flag: '🇮🇳',
+    welcomeMessage: "🤖 ਸਤ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਤੁਹਾਡਾ AI ਸਿਹਤ ਏਜੰਟ ਹਾਂ। ਮੈਂ ਲੱਛਣਾਂ ਦੀ ਜਾਂਚ, ਅਪਾਇਂਟਮੈਂਟ ਬੁੱਕਿੰਗ, ਡਾਕਟਰ ਲੱਭਣ ਅਤੇ ਤੁਹਾਡੀਆਂ ਸਿਹਤ ਲੋੜਾਂ ਲਈ ਤੁਰੰਤ ਕਾਰਵਾਈ ਵਿੱਚ ਮਦਦ ਕਰ ਸਕਦਾ ਹਾਂ। ਅੱਜ ਮੈਂ ਤੁਹਾਡੀ ਕਿਵੇਂ ਸਹਾਇਤਾ ਕਰ ਸਕਦਾ ਹਾਂ?",
+    welcomeBack: "👋 ਵਾਪਸ ਜੀ ਆਇਆਂ ਨੂੰ! ਤੁਹਾਡਾ ਚੈਟ ਇਤਿਹਾਸ ਕਲਾਉਡ ਤੋਂ ਬਹਾਲ ਹੋ ਗਿਆ ਹੈ। ਤੁਸੀਂ ਜਿੱਥੇ ਛੱਡਿਆ ਸੀ ਉੱਥੋਂ ਜਾਰੀ ਰੱਖ ਸਕਦੇ ਹੋ।",
+    placeholder: "ਆਪਣੇ ਲੱਛਣ ਦੱਸੋ ਜਾਂ ਸਿਹਤ ਸੰਬੰਧੀ ਸਵਾਲ ਪੁੱਛੋ...",
+    listening: "ਸੁਣ ਰਿਹਾ ਹਾਂ... ਹੁਣ ਬੋਲੋ",
+    agentThinking: "AI ਏਜੰਟ ਵਿਸ਼ਲੇਸ਼ਣ ਅਤੇ ਕਾਰਜ ਯੋਜਨਾ ਬਣਾ ਰਿਹਾ ਹੈ...",
+    speechRecognition: 'pa-IN'
+  }
+};
+
 // Backend API Configuration for deployed environment
 const BACKEND_CONFIG = {
   // Set this to your backend URL when deployed
@@ -146,7 +183,7 @@ const AgenticSymptomChecker = () => {
   const navigate = useNavigate();
   
   // Load chat history from backend or localStorage
-  const loadChatHistory = async () => {
+  const loadChatHistory = async (selectedLanguage = 'en') => {
     try {
       const savedMessages = await ChatStorageService.loadChat();
       if (savedMessages && savedMessages.length > 0) {
@@ -159,7 +196,7 @@ const AgenticSymptomChecker = () => {
     // Return default welcome message if no saved history or error
     return [
       { 
-        text: "🤖 Hello! I'm your AI Health Agent. I can help you with symptoms, book appointments, find doctors, and take immediate action for your health needs. How can I assist you today?", 
+        text: LANGUAGES[selectedLanguage].welcomeMessage, 
         type: "bot",
         actions: [],
         timestamp: new Date()
@@ -176,6 +213,11 @@ const AgenticSymptomChecker = () => {
   const [speechSupported, setSpeechSupported] = useState(false);
   const [agentThinking, setAgentThinking] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
+  const [currentLanguage, setCurrentLanguage] = useState(() => {
+    // Load saved language from localStorage or default to English
+    const savedLanguage = localStorage.getItem('healthAgentLanguage');
+    return savedLanguage && LANGUAGES[savedLanguage] ? savedLanguage : 'en';
+  });
   const [patientData, setPatientData] = useState({
     symptoms: [],
     vitals: {},
@@ -188,20 +230,20 @@ const AgenticSymptomChecker = () => {
     // Load chat history on component mount
     const initializeChat = async () => {
       try {
-        const chatHistory = await loadChatHistory();
+        const chatHistory = await loadChatHistory(currentLanguage);
         setMessages(chatHistory);
         
         // Check if user has existing chat history and show welcome back message
         if (chatHistory.length > 1) {
           setTimeout(() => {
-            addMessage('👋 Welcome back! Your chat history has been restored from the cloud. You can continue where you left off.', 'agent');
+            addMessage(LANGUAGES[currentLanguage].welcomeBack, 'agent');
           }, 1000);
         }
       } catch (error) {
         console.error('Error initializing chat:', error);
         // Set default message if loading fails
         setMessages([{
-          text: "🤖 Hello! I'm your AI Health Agent. I can help you with symptoms, book appointments, find doctors, and take immediate action for your health needs. How can I assist you today?",
+          text: LANGUAGES[currentLanguage].welcomeMessage,
           type: "bot",
           actions: [],
           timestamp: new Date()
@@ -209,6 +251,17 @@ const AgenticSymptomChecker = () => {
       }
     };
 
+    // Initialize speech recognition
+    setupSpeechRecognition();
+    
+    // Get user location for nearby services
+    getUserLocation();
+    
+    // Initialize chat
+    initializeChat();
+  }, [currentLanguage]);
+
+  const setupSpeechRecognition = () => {
     // Check if browser supports speech recognition
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       setSpeechSupported(true);
@@ -217,7 +270,7 @@ const AgenticSymptomChecker = () => {
       
       recognitionInstance.continuous = false;
       recognitionInstance.interimResults = false;
-      recognitionInstance.lang = 'en-US';
+      recognitionInstance.lang = LANGUAGES[currentLanguage].speechRecognition;
       
       recognitionInstance.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
@@ -236,13 +289,19 @@ const AgenticSymptomChecker = () => {
       
       setRecognition(recognitionInstance);
     }
+  };
 
-    // Get user location for nearby services
-    getUserLocation();
+  const handleLanguageChange = async (newLanguage) => {
+    setCurrentLanguage(newLanguage);
     
-    // Initialize chat
-    initializeChat();
-  }, []);
+    // Save language preference to localStorage
+    localStorage.setItem('healthAgentLanguage', newLanguage);
+    
+    // Update existing messages with language change notification
+    setTimeout(() => {
+      addMessage(`🔄 Language changed to ${LANGUAGES[newLanguage].name}. You can now chat in ${LANGUAGES[newLanguage].name}.`, 'agent');
+    }, 500);
+  };
 
   const getUserLocation = () => {
     if (navigator.geolocation) {
@@ -623,7 +682,7 @@ I'll help you track your symptoms for better diagnosis:
     setInput("");
     setLoading(true);
 
-    const typingMessage = { text: "🤖 AI Agent is analyzing and planning actions...", type: "bot", isTyping: true };
+    const typingMessage = { text: LANGUAGES[currentLanguage].agentThinking, type: "bot", isTyping: true };
     setMessages((prev) => [...prev, typingMessage]);
 
     try {
@@ -638,6 +697,9 @@ I'll help you track your symptoms for better diagnosis:
               parts: [
                 {
                   text: `You are an advanced AI Health Agent with decision-making capabilities. You not only provide medical guidance but also take proactive actions to help patients. 
+
+                  🌐 LANGUAGE INSTRUCTIONS:
+                  The user is currently communicating in ${LANGUAGES[currentLanguage].name}. Please respond in ${LANGUAGES[currentLanguage].name} language only. Maintain cultural sensitivity and use appropriate medical terminology in ${LANGUAGES[currentLanguage].name}.
 
                   🤖 AGENT CAPABILITIES:
                   - Symptom analysis and diagnosis suggestions
@@ -664,7 +726,7 @@ I'll help you track your symptoms for better diagnosis:
                   Example: "🤖 RECOMMENDED ACTIONS: BOOK_APPOINTMENT - Based on your symptoms, I recommend scheduling with a cardiologist"
 
                   📌 RESPONSE FORMAT:
-                  [Medical Analysis]
+                  [Medical Analysis in ${LANGUAGES[currentLanguage].name}]
 
                   🎯 Immediate Actions:
                   • [Action 1]
@@ -683,7 +745,9 @@ I'll help you track your symptoms for better diagnosis:
                   - Dr. Kavita Joshi – ENT Specialist – 11 years  
                   - Dr. Manish Yadav – Psychiatrist – 13 years  
                   - Dr. Sunita Rani – Ophthalmologist – 9 years  
-                  - Dr. Vikram Malhotra – Pulmonologist – 17 years  `,
+                  - Dr. Vikram Malhotra – Pulmonologist – 17 years  
+
+                  IMPORTANT: Always respond in ${LANGUAGES[currentLanguage].name} language.`,
                 },
               ],
             },
@@ -757,7 +821,7 @@ I'll help you track your symptoms for better diagnosis:
   const clearChatHistory = async () => {
     if (confirm('🗑️ Are you sure you want to clear your chat history? This action cannot be undone.')) {
       const defaultMessage = {
-        text: "🤖 Hello! I'm your AI Health Agent. I can help you with symptoms, book appointments, find doctors, and take immediate action for your health needs. How can I assist you today?",
+        text: LANGUAGES[currentLanguage].welcomeMessage,
         type: "bot",
         actions: [],
         timestamp: new Date()
@@ -799,6 +863,23 @@ I'll help you track your symptoms for better diagnosis:
                 <span style={styles.agentStatusText}>
                   {agentThinking ? 'Processing...' : 'Ready to Help'}
                 </span>
+              </div>
+              
+              {/* Language Selector */}
+              <div style={styles.languageSelector}>
+                <select 
+                  value={currentLanguage} 
+                  onChange={(e) => handleLanguageChange(e.target.value)}
+                  style={styles.languageDropdown}
+                  className="language-dropdown"
+                  title="Select Language / भाषा चुनें / ਭਾਸ਼ਾ ਚੁਣੋ"
+                >
+                  {Object.entries(LANGUAGES).map(([code, lang]) => (
+                    <option key={code} value={code}>
+                      {lang.flag} {lang.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               
               {/* Chat History Indicator */}
@@ -936,7 +1017,7 @@ I'll help you track your symptoms for better diagnosis:
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyPress}
-                placeholder="Describe your symptoms or ask a health question..."
+                placeholder={LANGUAGES[currentLanguage].placeholder}
                 style={{
                   ...styles.textarea,
                   ...(loading ? styles.textareaDisabled : {})
@@ -981,7 +1062,7 @@ I'll help you track your symptoms for better diagnosis:
           {isListening && (
             <div style={styles.listeningIndicator}>
               <div style={styles.listeningDot}></div>
-              <span style={styles.listeningText}>Listening... Speak now</span>
+              <span style={styles.listeningText}>{LANGUAGES[currentLanguage].listening}</span>
               <div style={styles.listeningDot}></div>
             </div>
           )}
@@ -1015,6 +1096,26 @@ I'll help you track your symptoms for better diagnosis:
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
+        }
+
+        /* Language Dropdown Styles */
+        .language-dropdown option {
+          background-color: #1976d2;
+          color: white;
+          padding: 8px;
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+          .chat-header-title {
+            font-size: 16px !important;
+          }
+          
+          .language-dropdown {
+            font-size: 10px !important;
+            min-width: 80px !important;
+            padding: 4px 6px !important;
+          }
         }
       `}</style>
     </div>
@@ -1104,6 +1205,25 @@ const styles = {
   },
   headerButtonActive: {
     background: 'rgba(255,255,255,0.3)'
+  },
+  languageSelector: {
+    display: 'flex',
+    alignItems: 'center',
+    background: 'rgba(255,255,255,0.2)',
+    borderRadius: '12px',
+    padding: '2px',
+  },
+  languageDropdown: {
+    background: 'transparent',
+    border: 'none',
+    color: 'white',
+    fontSize: '12px',
+    fontWeight: '500',
+    padding: '6px 8px',
+    borderRadius: '10px',
+    cursor: 'pointer',
+    outline: 'none',
+    minWidth: '100px',
   },
   agentStatus: {
     display: 'flex',
