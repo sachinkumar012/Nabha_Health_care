@@ -3,7 +3,8 @@ import { Mic, MicOff, Send, Volume2, VolumeX, Calendar, X, MessageCircle } from 
 
 const API_KEY = "AIzaSyBEoyP49AjxnE6pTLhEivfNAylcGDaH_04"; // Replace with your key
 
-const AppointmentChatBot = () => {
+const 
+AppointmentChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     { text: "Hello! I'm here to help you book an appointment with our doctors. What type of consultation do you need?", type: "bot" }
@@ -181,6 +182,65 @@ const AppointmentChatBot = () => {
 
   return (
     <>
+      {/* CSS for Mobile Responsiveness */}
+      <style>{`
+        @media (max-width: 768px) {
+          .appointment-chat-window {
+            position: fixed !important;
+            bottom: 0 !important;
+            right: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 70vh !important;
+            max-height: 500px !important;
+            border-radius: 16px 16px 0 0 !important;
+          }
+          
+          .appointment-input-area {
+            padding: 12px !important;
+          }
+          
+          .appointment-input-wrapper {
+            gap: 6px !important;
+          }
+          
+          .appointment-textarea {
+            padding: 10px 36px 10px 12px !important;
+            font-size: 16px !important;
+            min-height: 42px !important;
+          }
+          
+          .appointment-mic-button {
+            right: 6px !important;
+            width: 28px !important;
+            height: 28px !important;
+            padding: 6px !important;
+          }
+          
+          .appointment-send-button {
+            width: 42px !important;
+            height: 42px !important;
+            min-width: 42px !important;
+            flex-shrink: 0 !important;
+          }
+        }
+        
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        
+        @keyframes bounce {
+          0%, 80%, 100% { transform: translateY(0); }
+          40% { transform: translateY(-10px); }
+        }
+      `}</style>
+
       {/* Chat Toggle Button */}
       <div className="chatbot-toggle" style={styles.chatToggle} onClick={toggleChat}>
         {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
@@ -189,7 +249,7 @@ const AppointmentChatBot = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="chatbot-window" style={styles.chatWindow}>
+        <div className="chatbot-window appointment-chat-window" style={styles.chatWindow}>
           <div style={styles.chatContainer}>
             {/* Header */}
             <div style={styles.header}>
@@ -276,8 +336,8 @@ const AppointmentChatBot = () => {
             </div>
 
             {/* Input Area */}
-            <div style={styles.inputArea}>
-              <div style={styles.inputWrapper}>
+            <div style={styles.inputArea} className="appointment-input-area">
+              <div style={styles.inputWrapper} className="appointment-input-wrapper">
                 <div style={styles.textareaContainer}>
                   <textarea
                     value={input}
@@ -288,6 +348,7 @@ const AppointmentChatBot = () => {
                       ...styles.textarea,
                       ...(loading ? styles.textareaDisabled : {})
                     }}
+                    className="appointment-textarea"
                     rows="1"
                     disabled={loading}
                   />
@@ -298,6 +359,7 @@ const AppointmentChatBot = () => {
                         ...styles.micButton,
                         ...(isListening ? styles.micButtonActive : {})
                       }}
+                      className="appointment-mic-button"
                       title={isListening ? "Stop listening" : "Start voice input"}
                       disabled={loading}
                     >
@@ -313,6 +375,7 @@ const AppointmentChatBot = () => {
                     ...styles.sendButton,
                     ...(loading || !input.trim() ? styles.sendButtonDisabled : {})
                   }}
+                  className="appointment-send-button"
                 >
                   {loading ? (
                     <div style={styles.spinner}></div>
@@ -642,17 +705,24 @@ const styles = {
     padding: '16px',
     backgroundColor: 'white',
     borderTop: '1px solid #e5e7eb',
+    '@media (max-width: 768px)': {
+      padding: '12px'
+    }
   },
 
   inputWrapper: {
     display: 'flex',
     gap: '8px',
     alignItems: 'flex-end',
+    '@media (max-width: 768px)': {
+      gap: '6px'
+    }
   },
 
   textareaContainer: {
     flex: 1,
     position: 'relative',
+    minWidth: 0, // Prevents flex item from overflowing
   },
 
   textarea: {
@@ -667,6 +737,12 @@ const styles = {
     resize: 'none',
     outline: 'none',
     transition: 'border-color 0.2s',
+    boxSizing: 'border-box',
+    '@media (max-width: 768px)': {
+      padding: '10px 36px 10px 12px',
+      fontSize: '16px', // Prevents zoom on iOS
+      minHeight: '42px'
+    }
   },
 
   textareaDisabled: {
@@ -686,6 +762,17 @@ const styles = {
     borderRadius: '50%',
     transition: 'background-color 0.2s',
     color: '#6b7280',
+    width: '32px',
+    height: '32px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    '@media (max-width: 768px)': {
+      right: '6px',
+      width: '28px',
+      height: '28px',
+      padding: '6px'
+    }
   },
 
   micButtonActive: {
@@ -705,6 +792,13 @@ const styles = {
     justifyContent: 'center',
     color: 'white',
     transition: 'background-color 0.2s',
+    flexShrink: 0,
+    minWidth: '40px',
+    '@media (max-width: 768px)': {
+      width: '42px',
+      height: '42px',
+      minWidth: '42px'
+    }
   },
 
   sendButtonDisabled: {

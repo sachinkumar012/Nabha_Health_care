@@ -780,9 +780,9 @@ I'll help you track your symptoms for better diagnosis:
 
   return (
     <div style={styles.container}>
-      <div style={styles.chatContainer}>
+      <div style={styles.chatContainer} className="chat-container">
         {/* Header */}
-        <div style={styles.header}>
+        <div style={styles.header} className="chat-header">
           <div style={styles.headerOverlay}></div>
           <div style={styles.headerContent}>
             <div style={styles.headerLeft}>
@@ -790,7 +790,7 @@ I'll help you track your symptoms for better diagnosis:
                 <Stethoscope size={24} />
               </div>
               <div>
-                <h1 style={styles.title}>🤖 AI Health Agent</h1>
+                <h1 style={styles.title} className="chat-header-title">🤖 AI Health Agent</h1>
               </div>
             </div>
             <div style={styles.headerRight}>
@@ -929,8 +929,8 @@ I'll help you track your symptoms for better diagnosis:
         </div>
 
         {/* Input Area */}
-        <div style={styles.inputArea}>
-          <div style={styles.inputWrapper}>
+        <div style={styles.inputArea} className="chat-input-area">
+          <div style={styles.inputWrapper} className="chat-input-wrapper">
             <div style={styles.textareaContainer}>
               <textarea
                 value={input}
@@ -941,6 +941,7 @@ I'll help you track your symptoms for better diagnosis:
                   ...styles.textarea,
                   ...(loading ? styles.textareaDisabled : {})
                 }}
+                className="chat-textarea"
                 rows="1"
                 disabled={loading}
               />
@@ -951,6 +952,7 @@ I'll help you track your symptoms for better diagnosis:
                     ...styles.micButton,
                     ...(isListening ? styles.micButtonActive : {})
                   }}
+                  className="chat-mic-button"
                   title={isListening ? "Stop listening" : "Start voice input"}
                   disabled={loading}
                 >
@@ -966,6 +968,7 @@ I'll help you track your symptoms for better diagnosis:
                 ...styles.sendButton,
                 ...(loading || !input.trim() ? styles.sendButtonDisabled : {})
               }}
+              className="chat-send-button"
             >
               {loading ? (
                 <div style={styles.spinner}></div>
