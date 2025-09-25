@@ -223,6 +223,32 @@ AppointmentChatBot = () => {
             min-width: 42px !important;
             flex-shrink: 0 !important;
           }
+          
+          /* Mobile Close Button - Show on mobile */
+          .mobile-close-button {
+            display: flex !important;
+          }
+          
+          .mobile-close-button:hover {
+            background-color: rgba(0, 0, 0, 0.9) !important;
+            transform: scale(1.05);
+          }
+          
+          /* Desktop Close Button - Hide on mobile */
+          .desktop-close-button {
+            display: none !important;
+          }
+        }
+        
+        /* Desktop - Hide mobile close button, show desktop close button */
+        @media (min-width: 769px) {
+          .mobile-close-button {
+            display: none !important;
+          }
+          
+          .desktop-close-button {
+            display: flex !important;
+          }
         }
         
         @keyframes spin {
@@ -250,6 +276,15 @@ AppointmentChatBot = () => {
       {/* Chat Window */}
       {isOpen && (
         <div className="chatbot-window appointment-chat-window" style={styles.chatWindow}>
+          {/* Mobile Close Button - Positioned absolute on top-left */}
+          <button 
+            onClick={toggleChat} 
+            style={styles.mobileCloseButton}
+            className="mobile-close-button"
+          >
+            <X size={16} />
+          </button>
+          
           <div style={styles.chatContainer}>
             {/* Header */}
             <div style={styles.header}>
@@ -276,7 +311,12 @@ AppointmentChatBot = () => {
                       {speechEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
                     </button>
                   )}
-                  <button onClick={toggleChat} style={styles.closeButton}>
+                  {/* Desktop Close Button */}
+                  <button 
+                    onClick={toggleChat} 
+                    style={styles.closeButton}
+                    className="desktop-close-button"
+                  >
                     <X size={18} />
                   </button>
                 </div>
@@ -570,6 +610,26 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+
+  mobileCloseButton: {
+    position: 'absolute',
+    top: '8px',
+    left: '8px',
+    zIndex: 10,
+    background: 'rgba(0, 0, 0, 0.7)',
+    border: 'none',
+    color: 'white',
+    cursor: 'pointer',
+    padding: '6px',
+    borderRadius: '50%',
+    transition: 'background-color 0.2s',
+    display: 'none', // Hidden by default, shown on mobile via CSS
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '32px',
+    height: '32px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
   },
 
   // Chat Messages
