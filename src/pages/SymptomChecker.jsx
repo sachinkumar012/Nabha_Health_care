@@ -4,6 +4,132 @@ import { useNavigate } from 'react-router-dom';
 
 const API_KEY = "AIzaSyBEoyP49AjxnE6pTLhEivfNAylcGDaH_04"; // Replace with your key
 
+// Backend API Configuration for deployed environment
+const BACKEND_CONFIG = {
+  // Set this to your backend URL when deployed
+  API_BASE_URL: process.env.NODE_ENV === 'production' 
+    ? 'https://your-backend-api.com/api'  // Replace with your actual backend URL
+    : 'http://localhost:3001/api',         // Local development backend
+  ENDPOINTS: {
+    SAVE_CHAT: '/chat/save',
+    LOAD_CHAT: '/chat/load',
+    CLEAR_CHAT: '/chat/clear'
+  }
+};
+
+// Chat Storage Service - handles both backend and localStorage
+const ChatStorageService = {
+  // Generate unique user session ID
+  getUserSessionId: () => {
+    let sessionId = localStorage.getItem('userSessionId');
+    if (!sessionId) {
+      sessionId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('userSessionId', sessionId);
+    }
+    return sessionId;
+  },
+
+  // Save chat to backend or localStorage
+  saveChat: async (messages) => {
+    const sessionId = ChatStorageService.getUserSessionId();
+    
+    // Try backend first (for production)
+    if (process.env.NODE_ENV === 'production') {
+      try {
+        await fetch(`${BACKEND_CONFIG.API_BASE_URL}${BACKEND_CONFIG.ENDPOINTS.SAVE_CHAT}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sessionId: sessionId,
+            messages: messages,
+            timestamp: new Date().toISOString()
+          })
+        });
+        return;
+      } catch (error) {
+        console.error('Backend save failed, falling back to localStorage:', error);
+      }
+    }
+
+    // Fallback to localStorage
+    try {
+      localStorage.setItem('aiHealthAgentMessages', JSON.stringify(messages));
+      localStorage.setItem('chatLastSaved', new Date().toISOString());
+    } catch (error) {
+      console.error('Error saving chat history:', error);
+    }
+  },
+
+  // Load chat from backend or localStorage
+  loadChat: async () => {
+    const sessionId = ChatStorageService.getUserSessionId();
+    
+    // Try backend first (for production)
+    if (process.env.NODE_ENV === 'production') {
+      try {
+        const response = await fetch(`${BACKEND_CONFIG.API_BASE_URL}${BACKEND_CONFIG.ENDPOINTS.LOAD_CHAT}?sessionId=${sessionId}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.messages && data.messages.length > 0) {
+            return data.messages.map(msg => ({
+              ...msg,
+              timestamp: msg.timestamp ? new Date(msg.timestamp) : new Date()
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('Backend load failed, falling back to localStorage:', error);
+      }
+    }
+
+    // Fallback to localStorage
+    try {
+      const savedMessages = localStorage.getItem('aiHealthAgentMessages');
+      if (savedMessages) {
+        const parsedMessages = JSON.parse(savedMessages);
+        return parsedMessages.map(msg => ({
+          ...msg,
+          timestamp: msg.timestamp ? new Date(msg.timestamp) : new Date()
+        }));
+      }
+    } catch (error) {
+      console.error('Error loading chat history:', error);
+    }
+
+    return null;
+  },
+
+  // Clear chat from backend or localStorage
+  clearChat: async () => {
+    const sessionId = ChatStorageService.getUserSessionId();
+    
+    // Try backend first (for production)
+    if (process.env.NODE_ENV === 'production') {
+      try {
+        await fetch(`${BACKEND_CONFIG.API_BASE_URL}${BACKEND_CONFIG.ENDPOINTS.CLEAR_CHAT}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ sessionId: sessionId })
+        });
+      } catch (error) {
+        console.error('Backend clear failed:', error);
+      }
+    }
+
+    // Always clear localStorage as well
+    try {
+      localStorage.removeItem('aiHealthAgentMessages');
+      localStorage.removeItem('chatLastSaved');
+    } catch (error) {
+      console.error('Error clearing localStorage:', error);
+    }
+  }
+};
+
 // Agent Tools and Actions
 const AGENT_TOOLS = {
   BOOK_APPOINTMENT: 'book_appointment',
@@ -19,17 +145,12 @@ const AGENT_TOOLS = {
 const AgenticSymptomChecker = () => {
   const navigate = useNavigate();
   
-  // Load chat history from localStorage or use default welcome message
-  const loadChatHistory = () => {
+  // Load chat history from backend or localStorage
+  const loadChatHistory = async () => {
     try {
-      const savedMessages = localStorage.getItem('aiHealthAgentMessages');
-      if (savedMessages) {
-        const parsedMessages = JSON.parse(savedMessages);
-        // Convert timestamp strings back to Date objects
-        return parsedMessages.map(msg => ({
-          ...msg,
-          timestamp: msg.timestamp ? new Date(msg.timestamp) : new Date()
-        }));
+      const savedMessages = await ChatStorageService.loadChat();
+      if (savedMessages && savedMessages.length > 0) {
+        return savedMessages;
       }
     } catch (error) {
       console.error('Error loading chat history:', error);
@@ -46,7 +167,7 @@ const AgenticSymptomChecker = () => {
     ];
   };
 
-  const [messages, setMessages] = useState(loadChatHistory());
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -64,6 +185,30 @@ const AgenticSymptomChecker = () => {
   const chatBoxRef = useRef(null);
 
   useEffect(() => {
+    // Load chat history on component mount
+    const initializeChat = async () => {
+      try {
+        const chatHistory = await loadChatHistory();
+        setMessages(chatHistory);
+        
+        // Check if user has existing chat history and show welcome back message
+        if (chatHistory.length > 1) {
+          setTimeout(() => {
+            addMessage('👋 Welcome back! Your chat history has been restored from the cloud. You can continue where you left off.', 'agent');
+          }, 1000);
+        }
+      } catch (error) {
+        console.error('Error initializing chat:', error);
+        // Set default message if loading fails
+        setMessages([{
+          text: "🤖 Hello! I'm your AI Health Agent. I can help you with symptoms, book appointments, find doctors, and take immediate action for your health needs. How can I assist you today?",
+          type: "bot",
+          actions: [],
+          timestamp: new Date()
+        }]);
+      }
+    };
+
     // Check if browser supports speech recognition
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       setSpeechSupported(true);
@@ -95,20 +240,8 @@ const AgenticSymptomChecker = () => {
     // Get user location for nearby services
     getUserLocation();
     
-    // Check if user has existing chat history and show welcome back message
-    const savedMessages = localStorage.getItem('aiHealthAgentMessages');
-    if (savedMessages) {
-      try {
-        const parsedMessages = JSON.parse(savedMessages);
-        if (parsedMessages.length > 1) { // More than just the welcome message
-          setTimeout(() => {
-            addMessage('👋 Welcome back! Your chat history has been restored. You can continue where you left off.', 'agent');
-          }, 1000);
-        }
-      } catch (error) {
-        console.error('Error checking chat history:', error);
-      }
-    }
+    // Initialize chat
+    initializeChat();
   }, []);
 
   const getUserLocation = () => {
@@ -131,12 +264,10 @@ const AgenticSymptomChecker = () => {
     const newMessage = { text, type, timestamp: new Date(), actions };
     setMessages((prev) => {
       const updatedMessages = [...prev, newMessage];
-      // Save to localStorage
-      try {
-        localStorage.setItem('aiHealthAgentMessages', JSON.stringify(updatedMessages));
-      } catch (error) {
+      // Save to backend or localStorage
+      ChatStorageService.saveChat(updatedMessages).catch(error => {
         console.error('Error saving chat history:', error);
-      }
+      });
       return updatedMessages;
     });
     
@@ -569,12 +700,10 @@ I'll help you track your symptoms for better diagnosis:
         const msgs = prev.filter((msg) => !msg.isTyping);
         const updatedMessages = [...msgs, { text: botReply, type: "bot", timestamp: new Date() }];
         
-        // Save to localStorage
-        try {
-          localStorage.setItem('aiHealthAgentMessages', JSON.stringify(updatedMessages));
-        } catch (error) {
+        // Save to backend or localStorage
+        ChatStorageService.saveChat(updatedMessages).catch(error => {
           console.error('Error saving chat history:', error);
-        }
+        });
         
         return updatedMessages;
       });
@@ -601,12 +730,10 @@ I'll help you track your symptoms for better diagnosis:
           { text: "⚠️ I'm having trouble connecting right now. Please check your internet connection and try again.", type: "bot", timestamp: new Date() },
         ];
         
-        // Save to localStorage
-        try {
-          localStorage.setItem('aiHealthAgentMessages', JSON.stringify(updatedMessages));
-        } catch (saveError) {
+        // Save to backend or localStorage
+        ChatStorageService.saveChat(updatedMessages).catch(saveError => {
           console.error('Error saving chat history:', saveError);
-        }
+        });
         
         return updatedMessages;
       });
@@ -627,7 +754,7 @@ I'll help you track your symptoms for better diagnosis:
   };
 
   // Clear chat history
-  const clearChatHistory = () => {
+  const clearChatHistory = async () => {
     if (confirm('🗑️ Are you sure you want to clear your chat history? This action cannot be undone.')) {
       const defaultMessage = {
         text: "🤖 Hello! I'm your AI Health Agent. I can help you with symptoms, book appointments, find doctors, and take immediate action for your health needs. How can I assist you today?",
@@ -639,10 +766,14 @@ I'll help you track your symptoms for better diagnosis:
       setMessages([defaultMessage]);
       
       try {
-        localStorage.setItem('aiHealthAgentMessages', JSON.stringify([defaultMessage]));
-        addMessage('✅ Chat history cleared successfully. Let\'s start fresh!', 'agent');
+        await ChatStorageService.clearChat();
+        await ChatStorageService.saveChat([defaultMessage]);
+        setTimeout(() => {
+          addMessage('✅ Chat history cleared successfully from all storage locations. Let\'s start fresh!', 'agent');
+        }, 500);
       } catch (error) {
         console.error('Error clearing chat history:', error);
+        addMessage('⚠️ There was an issue clearing your chat history. Please try again.', 'agent');
       }
     }
   };
@@ -672,8 +803,8 @@ I'll help you track your symptoms for better diagnosis:
               </div>
               
               {/* Chat History Indicator */}
-              <div style={styles.chatHistoryIndicator} title="Chat history is automatically saved">
-                💾
+              <div style={styles.chatHistoryIndicator} title="Chat history is automatically saved to cloud & local storage">
+                {process.env.NODE_ENV === 'production' ? '☁️' : '💾'}
               </div>
               
               {/* Clear Chat Button */}
