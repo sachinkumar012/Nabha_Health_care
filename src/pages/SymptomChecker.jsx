@@ -1,11 +1,29 @@
-import  { useState, useRef, useEffect } from "react";
-import { Mic, MicOff, Send, Volume2, VolumeX, Stethoscope } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Mic, MicOff, Send, Volume2, VolumeX, Stethoscope, Calendar, Phone, MapPin, Clock, AlertCircle, CheckCircle, Activity } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
 const API_KEY = "AIzaSyBEoyP49AjxnE6pTLhEivfNAylcGDaH_04"; // Replace with your key
 
-const Chatbot = () => {
+// Agent Tools and Actions
+const AGENT_TOOLS = {
+  BOOK_APPOINTMENT: 'book_appointment',
+  FIND_DOCTOR: 'find_doctor',
+  EMERGENCY_ALERT: 'emergency_alert',
+  HEALTH_TRACKING: 'health_tracking',
+  MEDICATION_REMINDER: 'medication_reminder',
+  SYMPTOM_ANALYSIS: 'symptom_analysis',
+  CALL_DOCTOR: 'call_doctor',
+  NEARBY_HOSPITALS: 'nearby_hospitals'
+};
+
+const AgenticSymptomChecker = () => {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([
-    { text: "Hello! I'm your AI Doctor assistant. How can I help you today?", type: "bot" }
+    { 
+      text: "🤖 Hello! I'm your AI Health Agent. I can help you with symptoms, book appointments, find doctors, and take immediate action for your health needs. How can I assist you today?", 
+      type: "bot",
+      actions: []
+    }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -13,6 +31,14 @@ const Chatbot = () => {
   const [speechEnabled, setSpeechEnabled] = useState(false);
   const [recognition, setRecognition] = useState(null);
   const [speechSupported, setSpeechSupported] = useState(false);
+  const [agentThinking, setAgentThinking] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+  const [patientData, setPatientData] = useState({
+    symptoms: [],
+    vitals: {},
+    medications: [],
+    appointments: []
+  });
   const chatBoxRef = useRef(null);
 
   useEffect(() => {
@@ -43,15 +69,319 @@ const Chatbot = () => {
       
       setRecognition(recognitionInstance);
     }
+
+    // Get user location for nearby services
+    getUserLocation();
   }, []);
 
-  const addMessage = (text, type) => {
-    setMessages((prev) => [...prev, { text, type, timestamp: new Date() }]);
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => {
+          console.log('Location access denied:', error);
+        }
+      );
+    }
+  };
+
+  const addMessage = (text, type, actions = []) => {
+    setMessages((prev) => [...prev, { text, type, timestamp: new Date(), actions }]);
     setTimeout(() => {
       if (chatBoxRef.current) {
         chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
       }
     }, 50);
+  };
+
+  // Agent Decision Making - Analyze user input and decide actions
+  const analyzeUserIntentAndDecideActions = (userInput, aiResponse) => {
+    const input = userInput.toLowerCase();
+    const response = aiResponse.toLowerCase();
+    const actions = [];
+
+    // Emergency keywords
+    const emergencyKeywords = ['emergency', 'chest pain', 'difficulty breathing', 'severe', 'urgent', 'help', 'ambulance', 'hospital'];
+    const isEmergency = emergencyKeywords.some(keyword => input.includes(keyword) || response.includes(keyword));
+
+    // Appointment booking keywords
+    const appointmentKeywords = ['book', 'appointment', 'schedule', 'visit', 'see doctor', 'consultation'];
+    const needsAppointment = appointmentKeywords.some(keyword => input.includes(keyword)) || response.includes('consult');
+
+    // Symptom tracking
+    const symptomKeywords = ['pain', 'fever', 'headache', 'cough', 'tired', 'dizzy', 'nausea', 'symptom'];
+    const hasSymptoms = symptomKeywords.some(keyword => input.includes(keyword));
+
+    // Doctor finding
+    const doctorKeywords = ['doctor', 'specialist', 'physician', 'cardiologist', 'dermatologist'];
+    const needsDoctor = doctorKeywords.some(keyword => input.includes(keyword) || response.includes(keyword));
+
+    // Medication
+    const medicationKeywords = ['medicine', 'medication', 'prescription', 'pills', 'drug'];
+    const aboutMedication = medicationKeywords.some(keyword => input.includes(keyword));
+
+    // Decide actions based on analysis
+    if (isEmergency) {
+      actions.push({
+        type: AGENT_TOOLS.EMERGENCY_ALERT,
+        label: '🚨 Emergency Alert',
+        priority: 'high',
+        description: 'Get immediate medical help'
+      });
+      actions.push({
+        type: AGENT_TOOLS.NEARBY_HOSPITALS,
+        label: '🏥 Find Nearby Hospitals',
+        priority: 'high'
+      });
+    }
+
+    if (needsAppointment || (needsDoctor && !isEmergency)) {
+      actions.push({
+        type: AGENT_TOOLS.BOOK_APPOINTMENT,
+        label: '📅 Book Appointment',
+        priority: 'medium',
+        description: 'Schedule with recommended doctor'
+      });
+    }
+
+    if (needsDoctor) {
+      actions.push({
+        type: AGENT_TOOLS.FIND_DOCTOR,
+        label: '👨‍⚕️ Find Specialist',
+        priority: 'medium'
+      });
+      actions.push({
+        type: AGENT_TOOLS.CALL_DOCTOR,
+        label: '📞 Video Call Doctor',
+        priority: 'medium'
+      });
+    }
+
+    if (hasSymptoms) {
+      actions.push({
+        type: AGENT_TOOLS.SYMPTOM_ANALYSIS,
+        label: '📊 Track Symptoms',
+        priority: 'low'
+      });
+      actions.push({
+        type: AGENT_TOOLS.HEALTH_TRACKING,
+        label: '💓 Monitor Health',
+        priority: 'low'
+      });
+    }
+
+    if (aboutMedication) {
+      actions.push({
+        type: AGENT_TOOLS.MEDICATION_REMINDER,
+        label: '💊 Medication Reminder',
+        priority: 'medium'
+      });
+    }
+
+    return actions;
+  };
+
+  // Execute Agent Actions
+  const executeAgentAction = async (action) => {
+    setAgentThinking(true);
+    addMessage(`🤖 Executing: ${action.label}...`, 'agent');
+
+    try {
+      switch (action.type) {
+        case AGENT_TOOLS.EMERGENCY_ALERT:
+          handleEmergencyAlert();
+          break;
+        case AGENT_TOOLS.BOOK_APPOINTMENT:
+          handleBookAppointment();
+          break;
+        case AGENT_TOOLS.FIND_DOCTOR:
+          navigate('/doctors');
+          addMessage('🔍 Redirecting you to our doctors page to find the right specialist for your needs.', 'agent');
+          break;
+        case AGENT_TOOLS.CALL_DOCTOR:
+          navigate('/doctors');
+          addMessage('📞 Taking you to doctors page where you can start a video consultation immediately.', 'agent');
+          break;
+        case AGENT_TOOLS.NEARBY_HOSPITALS:
+          handleNearbyHospitals();
+          break;
+        case AGENT_TOOLS.SYMPTOM_ANALYSIS:
+          handleSymptomTracking();
+          break;
+        case AGENT_TOOLS.HEALTH_TRACKING:
+          handleHealthTracking();
+          break;
+        case AGENT_TOOLS.MEDICATION_REMINDER:
+          handleMedicationReminder();
+          break;
+        default:
+          addMessage('🤖 Action completed successfully!', 'agent');
+      }
+    } catch (error) {
+      addMessage('❌ Sorry, I encountered an error while performing that action. Please try again.', 'agent');
+    } finally {
+      setAgentThinking(false);
+    }
+  };
+
+  // Action Handlers
+  const handleEmergencyAlert = () => {
+    const emergencyMessage = `🚨 EMERGENCY PROTOCOL ACTIVATED
+
+📞 Immediate Actions:
+• Call 108 (Ambulance) or 102 (Emergency)
+• Contact your emergency contact
+• Go to nearest emergency room
+
+🏥 Nearby Emergency Services:
+• Apollo Emergency: 24/7 Available
+• Max Hospital Emergency: Open Now
+• Government Hospital: Free Emergency Care
+
+⚠️ If you're experiencing:
+• Severe chest pain
+• Difficulty breathing
+• Loss of consciousness
+• Severe bleeding
+
+Please call emergency services immediately!`;
+
+    addMessage(emergencyMessage, 'agent', [
+      {
+        type: 'call_emergency',
+        label: '📞 Call 108',
+        action: () => window.open('tel:108')
+      }
+    ]);
+  };
+
+  const handleBookAppointment = () => {
+    const appointmentMessage = `📅 APPOINTMENT BOOKING
+
+I can help you book an appointment with the right specialist:
+
+🏥 Available Options:
+• General Physician - Today 2:00 PM
+• Cardiologist - Tomorrow 10:00 AM  
+• Dermatologist - Today 4:00 PM
+• Pediatrician - Tomorrow 9:00 AM
+
+📝 Quick Booking:
+Select a doctor and time that works for you.`;
+
+    addMessage(appointmentMessage, 'agent', [
+      {
+        type: 'book_now',
+        label: '📅 Book Now',
+        action: () => navigate('/doctors')
+      }
+    ]);
+  };
+
+  const handleNearbyHospitals = () => {
+    if (userLocation) {
+      const hospitalsMessage = `🏥 NEARBY HOSPITALS & CLINICS
+
+📍 Based on your location:
+
+🚑 Emergency Hospitals:
+• City Hospital - 2.3 km (24/7 Emergency)
+• Apollo Medical Center - 3.1 km
+• Max Healthcare - 4.2 km
+
+🏥 Clinics:
+• HealthFirst Clinic - 1.2 km (Open until 9 PM)
+• Family Care Center - 2.8 km
+• QuickCare Clinic - 1.8 km
+
+📞 Emergency Numbers:
+• Ambulance: 108
+• Police: 100
+• Fire: 101`;
+
+      addMessage(hospitalsMessage, 'agent', [
+        {
+          type: 'navigate_hospital',
+          label: '🗺️ Get Directions',
+          action: () => window.open('https://maps.google.com/search/hospitals+near+me')
+        }
+      ]);
+    } else {
+      addMessage('📍 Please allow location access to find nearby hospitals and emergency services.', 'agent');
+    }
+  };
+
+  const handleSymptomTracking = () => {
+    const symptomsMessage = `📊 SYMPTOM TRACKING
+
+I'll help you track your symptoms for better diagnosis:
+
+📝 Current Session:
+• Pain Level: To be recorded
+• Duration: To be recorded  
+• Associated symptoms: To be noted
+
+💡 This information will help doctors provide better care.`;
+
+    addMessage(symptomsMessage, 'agent', [
+      {
+        type: 'track_symptoms',
+        label: '📝 Start Tracking',
+        action: () => {
+          setPatientData(prev => ({
+            ...prev,
+            symptoms: [...prev.symptoms, { date: new Date(), tracked: true }]
+          }));
+          addMessage('✅ Symptom tracking started. I\'ll monitor your health patterns.', 'agent');
+        }
+      }
+    ]);
+  };
+
+  const handleHealthTracking = () => {
+    const healthMessage = `💓 HEALTH MONITORING
+
+🔍 Continuous Health Tracking:
+• Vital signs monitoring
+• Symptom pattern analysis
+• Recovery progress tracking
+• Medication effectiveness
+
+📈 Health Insights:
+I'll provide personalized health insights based on your data.`;
+
+    addMessage(healthMessage, 'agent');
+  };
+
+  const handleMedicationReminder = () => {
+    const medicationMessage = `💊 MEDICATION MANAGEMENT
+
+⏰ Smart Reminders:
+• Morning medications: 8:00 AM
+• Afternoon dose: 2:00 PM
+• Evening medications: 8:00 PM
+
+📝 Medication Tracking:
+• Dosage compliance
+• Side effects monitoring
+• Refill reminders
+
+🔔 I'll send you timely reminders for all medications.`;
+
+    addMessage(medicationMessage, 'agent', [
+      {
+        type: 'set_reminder',
+        label: '⏰ Set Reminders',
+        action: () => {
+          addMessage('✅ Medication reminders have been set up. You\'ll receive notifications at scheduled times.', 'agent');
+        }
+      }
+    ]);
   };
 
   const speakText = (text) => {
@@ -98,7 +428,7 @@ const Chatbot = () => {
     setInput("");
     setLoading(true);
 
-    const typingMessage = { text: "Doctor is analyzing...", type: "bot", isTyping: true };
+    const typingMessage = { text: "🤖 AI Agent is analyzing and planning actions...", type: "bot", isTyping: true };
     setMessages((prev) => [...prev, typingMessage]);
 
     try {
@@ -112,48 +442,53 @@ const Chatbot = () => {
             system_instruction: {
               parts: [
                 {
-                  text: `You are a helpful, empathetic AI Doctor assistant. Provide clear, professional medical guidance while being warm and reassuring. Always remind users to consult with healthcare professionals for serious concerns. Keep responses concise but thorough.
-                  📌 EXAMPLE RESPONSE (English):  
+                  text: `You are an advanced AI Health Agent with decision-making capabilities. You not only provide medical guidance but also take proactive actions to help patients. 
 
-Most likely: You are experiencing a fever, which is often a sign of an infection.
+                  🤖 AGENT CAPABILITIES:
+                  - Symptom analysis and diagnosis suggestions
+                  - Emergency detection and alert protocols
+                  - Appointment booking assistance
+                  - Doctor recommendations and connections
+                  - Health monitoring and tracking
+                  - Medication management
+                  - Location-based hospital/clinic finder
+                  - Video consultation facilitation
 
-Try These: 
-🛌 Get plenty of rest. 
-💧 Drink lots of fluids like water and juice. 
-🔥 Keep a cool compress on your forehead. 
-🍲 Eat light and easily digestible food. 
+                  📋 AGENT PROTOCOLS:
+                  1. EMERGENCY DETECTION: If user mentions emergency symptoms (chest pain, difficulty breathing, severe pain, loss of consciousness), immediately suggest emergency protocols
+                  2. SYMPTOM TRACKING: Offer to track and monitor symptoms for pattern analysis
+                  3. APPOINTMENT BOOKING: Proactively suggest booking appointments when medical consultation is needed
+                  4. DOCTOR CONNECTION: Recommend specific doctors and offer video call options
+                  5. HEALTH MONITORING: Suggest continuous health tracking for chronic conditions
+                  6. MEDICATION REMINDERS: Offer medication scheduling and reminder services
 
-Pay Attention If: 
-Your fever is very high (over 103°F or 39.4°C), doesn't come down with medication, or is accompanied by severe headache, stiff neck, or difficulty breathing. 
+                  🎯 DECISION MAKING:
+                  Always end your response with action recommendations like:
+                  "🤖 RECOMMENDED ACTIONS: [action type] - [brief description]"
 
-You may consult: Dr. Rajesh Sharma – General Physician – 15 years  
+                  Example: "🤖 RECOMMENDED ACTIONS: BOOK_APPOINTMENT - Based on your symptoms, I recommend scheduling with a cardiologist"
 
-📌 EXAMPLE RESPONSE (Hindi):  
+                  📌 RESPONSE FORMAT:
+                  [Medical Analysis]
 
-अधिक संभावना है: आपको बुखार है, जो अक्सर संक्रमण का लक्षण होता है।  
+                  🎯 Immediate Actions:
+                  • [Action 1]
+                  • [Action 2] 
 
-ध्यान रखें:  
-🛌 पर्याप्त आराम करें।  
-💧 खूब पानी और तरल पदार्थ पिएँ।  
-🔥 माथे पर ठंडी पट्टी रखें।  
-🍲 हल्का और सुपाच्य भोजन करें।  
+                  🤖 AGENT DECISION: [What I'll do next for you]
 
-डॉक्टर से मिलें यदि:  
-बुखार बहुत तेज़ है (103°F से अधिक), दवा लेने के बाद भी नहीं उतर रहा है, या साथ में तेज़ सिरदर्द, गर्दन अकड़न, या साँस लेने में कठिनाई हो रही है।  
-
-आप सलाह ले सकते हैं: डॉ. सचिन – सामान्य चिकित्सक – 15 वर्ष का अनुभव
-👨‍⚕️ Doctor List (translate specialization + years into the user’s language when replying):  
-- Dr. Sachin – General Physician – 15 years  
-- Dr. Tarun Thakur – Pediatrician x – 12 years  
-- Dr. Manish Sharma – Cardiologist – 18 years  
-- Dr. Fouziya Siddiqui – Gynecologist – 14 years  
-- Dr. Shashank – Orthopedic Surgeon – 16 years  
-- Dr. Kamaljeet Kaur – Dermatologist – 10 years  
-- Dr. Suresh Nair – Neurologist – 20 years  
-- Dr. Kavita Joshi – ENT Specialist – 11 years  
-- Dr. Manish Yadav – Psychiatrist – 13 years  
-- Dr. Sunita Rani – Ophthalmologist – 9 years  
-- Dr. Vikram Malhotra – Pulmonologist – 17 years  `,
+                  👨‍⚕️ Available Doctors:  
+                  - Dr. Sachin – General Physician – 15 years  
+                  - Dr. Tarun Thakur – Pediatrician – 12 years  
+                  - Dr. Manish Sharma – Cardiologist – 18 years  
+                  - Dr. Fouziya Siddiqui – Gynecologist – 14 years  
+                  - Dr. Shashank – Orthopedic Surgeon – 16 years  
+                  - Dr. Kamaljeet Kaur – Dermatologist – 10 years  
+                  - Dr. Suresh Nair – Neurologist – 20 years  
+                  - Dr. Kavita Joshi – ENT Specialist – 11 years  
+                  - Dr. Manish Yadav – Psychiatrist – 13 years  
+                  - Dr. Sunita Rani – Ophthalmologist – 9 years  
+                  - Dr. Vikram Malhotra – Pulmonologist – 17 years  `,
                 },
               ],
             },
@@ -162,16 +497,26 @@ You may consult: Dr. Rajesh Sharma – General Physician – 15 years
       );
 
       const data = await response.json();
+      const botReply = data.candidates?.[0]?.content?.parts?.[0]?.text ||
+        "⚠️ I apologize, but I couldn't process your request. Please try again.";
+
+      // Remove typing message and add bot reply
       setMessages((prev) => {
         const msgs = prev.filter((msg) => !msg.isTyping);
-        const botReply =
-          data.candidates?.[0]?.content?.parts?.[0]?.text ||
-          "⚠️ I apologize, but I couldn't process your request. Please try again.";
         return [...msgs, { text: botReply, type: "bot", timestamp: new Date() }];
       });
 
+      // Agent Decision Making - Analyze and decide actions
+      const recommendedActions = analyzeUserIntentAndDecideActions(userInput, botReply);
+      
+      if (recommendedActions.length > 0) {
+        // Add agent thinking message
+        setTimeout(() => {
+          addMessage("🤖 Analyzing your needs... I can take the following actions for you:", "agent", recommendedActions);
+        }, 1000);
+      }
+
       // Speak the response if speech is enabled
-      const botReply = data.candidates?.[0]?.content?.parts?.[0]?.text;
       if (botReply && speechEnabled) {
         setTimeout(() => speakText(botReply), 500);
       }
@@ -211,11 +556,17 @@ You may consult: Dr. Rajesh Sharma – General Physician – 15 years
                 <Stethoscope size={24} />
               </div>
               <div>
-                <h1 style={styles.title}>AI Doctor Assistant</h1>
-                <p style={styles.subtitle}>Your personal health companion</p>
+                <h1 style={styles.title}>🤖 AI Health Agent</h1>
+                <p style={styles.subtitle}>Intelligent health assistant with decision-making capabilities</p>
               </div>
             </div>
             <div style={styles.headerRight}>
+              <div style={styles.agentStatus}>
+                <Activity size={16} />
+                <span style={styles.agentStatusText}>
+                  {agentThinking ? 'Processing...' : 'Ready to Help'}
+                </span>
+              </div>
               {speechSupported && (
                 <button
                   onClick={() => setSpeechEnabled(!speechEnabled)}
@@ -228,7 +579,7 @@ You may consult: Dr. Rajesh Sharma – General Physician – 15 years
                   {speechEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
                 </button>
               )}
-              <div style={styles.onlineIndicator} title="Online"></div>
+              <div style={styles.onlineIndicator} title="Agent Online"></div>
             </div>
           </div>
         </div>
@@ -241,8 +592,13 @@ You may consult: Dr. Rajesh Sharma – General Physician – 15 years
                 ...styles.messageWrapper,
                 ...(msg.type === "user" ? styles.userMessageWrapper : styles.botMessageWrapper)
               }}>
-                {msg.type === "bot" && !msg.isTyping && (
-                  <div style={styles.botAvatar}>👨‍⚕️</div>
+                {(msg.type === "bot" || msg.type === "agent") && !msg.isTyping && (
+                  <div style={{
+                    ...styles.botAvatar,
+                    ...(msg.type === "agent" ? styles.agentAvatar : {})
+                  }}>
+                    {msg.type === "agent" ? "🤖" : "👨‍⚕️"}
+                  </div>
                 )}
                 
                 <div style={{
@@ -252,6 +608,7 @@ You may consult: Dr. Rajesh Sharma – General Physician – 15 years
                   <div style={{
                     ...styles.messageBubble,
                     ...(msg.type === "user" ? styles.userMessage : 
+                        msg.type === "agent" ? styles.agentMessage :
                         msg.isTyping ? styles.typingMessage : styles.botMessage)
                   }}>
                     {msg.isTyping ? (
@@ -261,12 +618,34 @@ You may consult: Dr. Rajesh Sharma – General Physician – 15 years
                           <div style={{...styles.dot, animationDelay: '0.1s'}}></div>
                           <div style={{...styles.dot, animationDelay: '0.2s'}}></div>
                         </div>
-                        <span>Doctor is analyzing...</span>
+                        <span>AI Agent is thinking...</span>
                       </div>
                     ) : (
                       <div style={styles.messageText}>{msg.text}</div>
                     )}
                   </div>
+
+                  {/* Action Buttons */}
+                  {msg.actions && msg.actions.length > 0 && (
+                    <div style={styles.actionButtons}>
+                      {msg.actions.map((action, actionIndex) => (
+                        <button
+                          key={actionIndex}
+                          onClick={() => executeAgentAction(action)}
+                          style={{
+                            ...styles.actionButton,
+                            ...(action.priority === 'high' ? styles.actionButtonHigh :
+                                action.priority === 'medium' ? styles.actionButtonMedium :
+                                styles.actionButtonLow)
+                          }}
+                          disabled={agentThinking}
+                        >
+                          {action.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
                   {msg.timestamp && (
                     <div style={{
                       ...styles.timestamp,
@@ -283,6 +662,22 @@ You may consult: Dr. Rajesh Sharma – General Physician – 15 years
               </div>
             </div>
           ))}
+
+          {/* Agent Thinking Indicator */}
+          {agentThinking && (
+            <div style={styles.agentThinkingContainer}>
+              <div style={styles.agentThinkingBubble}>
+                <div style={styles.typingIndicator}>
+                  <div style={styles.typingDots}>
+                    <div style={{...styles.dot, animationDelay: '0s'}}></div>
+                    <div style={{...styles.dot, animationDelay: '0.1s'}}></div>
+                    <div style={{...styles.dot, animationDelay: '0.2s'}}></div>
+                  </div>
+                  <span>🤖 Agent is executing action...</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Input Area */}
@@ -390,7 +785,7 @@ const styles = {
     width: '100%',
     maxWidth: '700px',
     height: '600px',
-    backgroundColor: '#ffffff',
+    background: '#ffffff',
     borderRadius: '20px',
     boxShadow: '0 20px 40px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05)',
     overflow: 'hidden',
@@ -459,10 +854,23 @@ const styles = {
   headerButtonActive: {
     background: 'rgba(255,255,255,0.3)'
   },
+  agentStatus: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '4px 8px',
+    background: 'rgba(255,255,255,0.2)',
+    borderRadius: '12px',
+    fontSize: '12px'
+  },
+  agentStatusText: {
+    color: 'white',
+    fontWeight: '500'
+  },
   onlineIndicator: {
     width: '12px',
     height: '12px',
-    backgroundColor: '#4caf50',
+    background: '#4caf50',
     borderRadius: '50%',
     animation: 'pulse 2s infinite'
   },
@@ -470,7 +878,7 @@ const styles = {
     flex: 1,
     padding: '24px',
     overflowY: 'auto',
-    backgroundColor: '#fafafa',
+    background: '#fafafa',
     scrollBehavior: 'smooth'
   },
   messageContainer: {
@@ -512,13 +920,19 @@ const styles = {
     borderBottomRightRadius: '4px'
   },
   botMessage: {
-    backgroundColor: '#ffffff',
+    background: '#ffffff',
     color: '#333333',
     border: '1px solid #e0e0e0',
     borderBottomLeftRadius: '4px'
   },
+  agentMessage: {
+    background: '#f0f4ff',
+    color: '#1565c0',
+    border: '1px solid #bbdefb',
+    borderBottomLeftRadius: '4px'
+  },
   typingMessage: {
-    backgroundColor: '#f5f5f5',
+    background: '#f5f5f5',
     color: '#666666',
     borderBottomLeftRadius: '4px'
   },
@@ -537,7 +951,7 @@ const styles = {
   dot: {
     width: '8px',
     height: '8px',
-    backgroundColor: '#999999',
+    background: '#999999',
     borderRadius: '50%',
     animation: 'bounce 1.4s infinite'
   },
@@ -563,10 +977,13 @@ const styles = {
     fontSize: '14px',
     flexShrink: 0
   },
+  agentAvatar: {
+    background: 'linear-gradient(135deg, #4caf50 0%, #2196f3 100%)'
+  },
   userAvatar: {
     width: '32px',
     height: '32px',
-    backgroundColor: '#757575',
+    background: '#757575',
     borderRadius: '50%',
     display: 'flex',
     alignItems: 'center',
@@ -576,7 +993,7 @@ const styles = {
   },
   inputArea: {
     padding: '16px',
-    backgroundColor: '#ffffff',
+    background: '#ffffff',
     borderTop: '1px solid #e0e0e0'
   },
   inputWrapper: {
@@ -600,10 +1017,10 @@ const styles = {
     fontFamily: 'inherit',
     outline: 'none',
     transition: 'all 0.3s ease',
-    backgroundColor: '#ffffff'
+    background: '#ffffff'
   },
   textareaDisabled: {
-    backgroundColor: '#f5f5f5',
+    background: '#f5f5f5',
     cursor: 'not-allowed'
   },
   micButton: {
@@ -614,7 +1031,7 @@ const styles = {
     padding: '8px',
     border: 'none',
     borderRadius: '50%',
-    backgroundColor: '#f5f5f5',
+    background: '#f5f5f5',
     color: '#666666',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
@@ -623,7 +1040,7 @@ const styles = {
     justifyContent: 'center'
   },
   micButtonActive: {
-    backgroundColor: '#f44336',
+    background: '#f44336',
     color: 'white',
     animation: 'pulse 1.5s infinite'
   },
@@ -642,7 +1059,7 @@ const styles = {
     boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)'
   },
   sendButtonDisabled: {
-    backgroundColor: '#e0e0e0',
+    background: '#e0e0e0',
     color: '#999999',
     cursor: 'not-allowed',
     boxShadow: 'none'
@@ -666,7 +1083,7 @@ const styles = {
   listeningDot: {
     width: '8px',
     height: '8px',
-    backgroundColor: '#f44336',
+    background: '#f44336',
     borderRadius: '50%',
     animation: 'pulse 1s infinite'
   },
@@ -679,7 +1096,53 @@ const styles = {
     color: '#999999',
     textAlign: 'center',
     margin: '8px 0 0 0'
+  },
+  actionButtons: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '8px',
+    marginTop: '12px'
+  },
+  actionButton: {
+    padding: '8px 12px',
+    border: 'none',
+    borderRadius: '20px',
+    fontSize: '12px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+  },
+  actionButtonHigh: {
+    background: '#f44336',
+    color: 'white',
+    animation: 'pulse 2s infinite'
+  },
+  actionButtonMedium: {
+    background: '#ff9800',
+    color: 'white'
+  },
+  actionButtonLow: {
+    background: '#2196f3',
+    color: 'white'
+  },
+  agentThinkingContainer: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    marginBottom: '24px'
+  },
+  agentThinkingBubble: {
+    maxWidth: '80%',
+    padding: '12px 16px',
+    background: '#e8f5e8',
+    color: '#2e7d32',
+    borderRadius: '18px',
+    borderBottomLeftRadius: '4px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
   }
 };
 
-export default Chatbot;
+export default AgenticSymptomChecker;

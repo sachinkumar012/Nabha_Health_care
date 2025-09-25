@@ -1,4 +1,9 @@
 /* Import Tailwind CSS */
+/* 
+  The following @tailwind directives require processing by Tailwind CSS.
+  If you are not using Tailwind's build process, remove these lines.
+  Otherwise, ensure your build tool (like PostCSS with Tailwind) is set up.
+*/
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
