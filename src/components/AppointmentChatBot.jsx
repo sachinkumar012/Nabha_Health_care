@@ -3,6 +3,41 @@ import { Mic, MicOff, Send, Volume2, VolumeX, Calendar, X, MessageCircle } from 
 
 const API_KEY = "AIzaSyBEoyP49AjxnE6pTLhEivfNAylcGDaH_04"; // Replace with your key
 
+// SMS API Configuration - Multiple Services Support
+const SMS_CONFIG = {
+  // Option 1: Fast2SMS (Indian service - Free tier available)
+  FAST2SMS: {
+    API_URL: 'https://www.fast2sms.com/dev/bulkV2',
+    API_KEY: '0r1KFkTJiNeqUB4CDmEXQIAMhRV8OL7xlyd5wSsGp6Ybnfj3gPrtfEg1X9POeYDuznRxp7WdBIHy4obj', // Get from https://www.fast2sms.com/
+    SENDER_ID: 'FSTSMS',
+  },
+  
+  // Option 2: TextLocal (Free tier available)
+  TEXTLOCAL: {
+    API_URL: 'https://api.textlocal.in/send/',
+    API_KEY: 'YOUR_TEXTLOCAL_API_KEY', // Get from https://www.textlocal.in/
+    SENDER: 'NABHA',
+  },
+  
+  // Option 3: MSG91 (Indian SMS service)
+  MSG91: {
+    API_URL: 'https://control.msg91.com/api/v5/flow/',
+    API_KEY: 'YOUR_MSG91_API_KEY',
+    TEMPLATE_ID: 'YOUR_TEMPLATE_ID',
+    SENDER_ID: 'NABHA',
+  },
+  
+  // Option 4: Twilio (International - Paid but reliable)
+  TWILIO: {
+    ACCOUNT_SID: 'YOUR_TWILIO_ACCOUNT_SID',
+    AUTH_TOKEN: 'YOUR_TWILIO_AUTH_TOKEN',
+    PHONE: 'YOUR_TWILIO_PHONE_NUMBER'
+  },
+  
+  // Demo mode for testing
+  DEMO_MODE: true // Set to false when you have real API keys
+};
+
 // Language configuration
 const LANGUAGES = {
   en: {
@@ -40,6 +75,95 @@ const LANGUAGES = {
   }
 };
 
+// Agentic AI Configuration
+const DOCTORS_DATABASE = {
+  'sachin-kumar': {
+    id: 'sachin-kumar',
+    name: 'Dr. Sachin Kumar',
+    specialty: 'General Medicine',
+    experience: 15,
+    availability: { start: '09:00', end: '18:00' },
+    rating: 4.8,
+    languages: ['English', 'Hindi', 'Punjabi'],
+    conditions: ['fever', 'cold', 'general checkup', 'diabetes', 'hypertension'],
+    slots: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00']
+  },
+  'tarun-thakur': {
+    id: 'tarun-thakur',
+    name: 'Dr. Tarun Thakur',
+    specialty: 'Pediatrics',
+    experience: 12,
+    availability: { start: '06:00', end: '16:00' },
+    rating: 4.9,
+    languages: ['English', 'Hindi'],
+    conditions: ['child fever', 'vaccination', 'growth issues', 'pediatric care'],
+    slots: ['06:00', '07:00', '08:00', '09:00', '10:00', '14:00', '15:00']
+  },
+  'manish-sharma': {
+    id: 'manish-sharma',
+    name: 'Dr. Manish Sharma',
+    specialty: 'Cardiology',
+    experience: 18,
+    availability: { start: '09:00', end: '17:00' },
+    rating: 4.9,
+    languages: ['English', 'Hindi'],
+    conditions: ['heart problems', 'chest pain', 'blood pressure', 'cardiac checkup'],
+    slots: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00']
+  },
+  'fouziya-siddiqui': {
+    id: 'fouziya-siddiqui',
+    name: 'Dr. Fouziya Siddiqui',
+    specialty: 'Gynecology',
+    experience: 20,
+    availability: { start: '11:00', end: '19:00' },
+    rating: 4.8,
+    languages: ['English', 'Hindi', 'Urdu'],
+    conditions: ['womens health', 'pregnancy', 'gynecological issues'],
+    slots: ['11:00', '12:00', '14:00', '15:00', '16:00', '17:00', '18:00']
+  },
+  'shashank': {
+    id: 'shashank',
+    name: 'Dr. Shashank',
+    specialty: 'Orthopaedics',
+    experience: 18,
+    availability: { start: '09:00', end: '17:00' },
+    rating: 4.7,
+    languages: ['English', 'Hindi'],
+    conditions: ['bone problems', 'joint pain', 'fracture', 'back pain', 'sports injury'],
+    slots: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00']
+  },
+  'kamaljeet-kaur': {
+    id: 'kamaljeet-kaur',
+    name: 'Dr. Kamaljeet Kaur',
+    specialty: 'Dermatology',
+    experience: 18,
+    availability: { start: '09:00', end: '17:00' },
+    rating: 4.8,
+    languages: ['English', 'Hindi', 'Punjabi'],
+    conditions: ['skin problems', 'acne', 'rash', 'hair loss', 'dermatological issues'],
+    slots: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00']
+  }
+};
+
+const CONVERSATION_STATES = {
+  LANGUAGE_SELECTION: 'language_selection',
+  INITIAL_INQUIRY: 'initial_inquiry',
+  SYMPTOM_ASSESSMENT: 'symptom_assessment',
+  DOCTOR_RECOMMENDATION: 'doctor_recommendation',
+  SLOT_SELECTION: 'slot_selection',
+  PATIENT_DETAILS: 'patient_details',
+  CONFIRMATION: 'confirmation',
+  COMPLETED: 'completed'
+};
+
+const AGENT_ACTIONS = {
+  RECOMMEND_DOCTOR: 'recommend_doctor',
+  SUGGEST_SLOTS: 'suggest_slots',
+  REQUEST_DETAILS: 'request_details',
+  CONFIRM_BOOKING: 'confirm_booking',
+  PROVIDE_ALTERNATIVES: 'provide_alternatives'
+};
+
 const 
 AppointmentChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -54,16 +178,49 @@ AppointmentChatBot = () => {
   const [speechSupported, setSpeechSupported] = useState(false);
   const chatBoxRef = useRef(null);
 
+  // Agentic AI State Management
+  const [conversationState, setConversationState] = useState(CONVERSATION_STATES.LANGUAGE_SELECTION);
+  const [patientData, setPatientData] = useState({
+    symptoms: [],
+    preferredDoctor: null,
+    selectedSlot: null,
+    name: '',
+    phone: '',
+    preferredDate: '',
+    medicalHistory: []
+  });
+  const [recommendedDoctors, setRecommendedDoctors] = useState([]);
+  const [conversationContext, setConversationContext] = useState({
+    userIntents: [],
+    extractedInfo: {},
+    suggestedActions: []
+  });
+
   useEffect(() => {
-    // Initialize with language selection message
-    if (isOpen && !languageSelected && messages.length === 0) {
-      addMessage(LANGUAGES[currentLanguage].initialMessage, 'bot');
-      // Add language selection buttons
+    // Initialize with welcome message when chat opens
+    if (isOpen && messages.length === 0) {
+      addMessage("Hello! Welcome to Nabha Healthcare! 🏥", 'bot');
       setTimeout(() => {
-        addMessage(LANGUAGES[currentLanguage].selectLanguage, 'bot');
-      }, 500);
+        addMessage("I'm your AI assistant here to help you book appointments with our doctors.", 'bot');
+      }, 1000);
+      setTimeout(() => {
+        addMessage("First, please select your preferred language for our conversation:", 'bot');
+        // Add language selection as a special message
+        addLanguageOptionsMessage();
+      }, 2000);
     }
-  }, [isOpen, languageSelected, messages.length]);
+  }, [isOpen, messages.length]);
+
+  const addLanguageOptionsMessage = () => {
+    setTimeout(() => {
+      setMessages((prev) => [...prev, { 
+        text: '', 
+        type: 'bot', 
+        timestamp: new Date(),
+        isLanguageSelection: true 
+      }]);
+    }, 500);
+  };
 
   useEffect(() => {
     // Check if browser supports speech recognition
@@ -107,19 +264,496 @@ AppointmentChatBot = () => {
   const handleLanguageSelect = (langCode) => {
     setCurrentLanguage(langCode);
     setLanguageSelected(true);
+    setConversationState(CONVERSATION_STATES.INITIAL_INQUIRY);
     
-    // Clear previous messages and add confirmation
-    setMessages([]);
-    addMessage(`${LANGUAGES[langCode].flag} ${LANGUAGES[langCode].name} selected!`, 'user');
+    // Add user selection message
+    addMessage(`${LANGUAGES[langCode].flag} ${LANGUAGES[langCode].name}`, 'user');
+    
+    // Remove language selection message and add confirmation
+    setMessages((prev) => prev.filter(msg => !msg.isLanguageSelection));
     
     setTimeout(() => {
-      addMessage(LANGUAGES[langCode].languageSelected, 'bot');
+      addMessage(`Great! I'll communicate with you in ${LANGUAGES[langCode].name}. 😊`, 'bot');
+      setTimeout(() => {
+        addMessage("Now, what brings you here today? You can tell me about your symptoms or the type of consultation you need.", 'bot');
+        // Proactive agent suggestion
+        setTimeout(() => {
+          addAgenticSuggestion();
+        }, 1500);
+      }, 1000);
     }, 500);
     
     // Update speech recognition language
     if (recognition) {
       recognition.lang = LANGUAGES[langCode].speechLang;
     }
+  };
+
+  // Agentic AI Functions
+  const analyzeUserIntent = (userMessage) => {
+    const message = userMessage.toLowerCase();
+    const intents = [];
+    
+    // Symptom detection
+    const symptoms = ['headache', 'fever', 'cough', 'pain', 'cold', 'flu', 'stomach', 'chest', 'back', 'joint', 'skin', 'rash', 'dizzy', 'nausea'];
+    const detectedSymptoms = symptoms.filter(symptom => message.includes(symptom));
+    if (detectedSymptoms.length > 0) {
+      intents.push({ type: 'SYMPTOM_REPORTED', data: detectedSymptoms });
+    }
+
+    // Doctor preference detection
+    const doctorNames = Object.values(DOCTORS_DATABASE).map(doc => doc.name.toLowerCase());
+    const mentionedDoctor = doctorNames.find(name => message.includes(name.split(' ')[1])); // Check last name
+    if (mentionedDoctor) {
+      intents.push({ type: 'DOCTOR_PREFERENCE', data: mentionedDoctor });
+    }
+
+    // Time preference detection
+    const timePatterns = /(\d{1,2}):?(\d{2})?\s*(am|pm)?|morning|afternoon|evening|today|tomorrow/gi;
+    if (timePatterns.test(message)) {
+      intents.push({ type: 'TIME_PREFERENCE', data: message.match(timePatterns) });
+    }
+
+    // Urgency detection
+    if (message.includes('urgent') || message.includes('emergency') || message.includes('asap')) {
+      intents.push({ type: 'URGENT_REQUEST', data: true });
+    }
+
+    return intents;
+  };
+
+  const recommendDoctors = (symptoms, urgency = false) => {
+    let recommendations = [];
+    
+    // Smart doctor matching based on symptoms
+    Object.values(DOCTORS_DATABASE).forEach(doctor => {
+      let score = 0;
+      
+      // Check if doctor handles reported symptoms
+      symptoms.forEach(symptom => {
+        if (doctor.conditions.some(condition => condition.includes(symptom))) {
+          score += 3;
+        }
+      });
+      
+      // Bonus for experience and rating
+      score += doctor.experience * 0.1;
+      score += doctor.rating * 0.5;
+      
+      // Language preference bonus
+      if (doctor.languages.includes(LANGUAGES[currentLanguage].name)) {
+        score += 1;
+      }
+
+      if (score > 0) {
+        recommendations.push({ ...doctor, matchScore: score });
+      }
+    });
+
+    // Sort by match score and return top 3
+    recommendations.sort((a, b) => b.matchScore - a.matchScore);
+    return recommendations.slice(0, 3);
+  };
+
+  const generateAgenticResponse = (userMessage, intents) => {
+    const context = conversationContext;
+    let agenticActions = [];
+    let response = '';
+
+    // Determine next actions based on conversation state and intents
+    switch (conversationState) {
+      case CONVERSATION_STATES.INITIAL_INQUIRY:
+        if (intents.some(i => i.type === 'SYMPTOM_REPORTED')) {
+          setConversationState(CONVERSATION_STATES.SYMPTOM_ASSESSMENT);
+          const symptoms = intents.find(i => i.type === 'SYMPTOM_REPORTED').data;
+          const recommended = recommendDoctors(symptoms);
+          setRecommendedDoctors(recommended);
+          agenticActions.push(AGENT_ACTIONS.RECOMMEND_DOCTOR);
+        }
+        break;
+        
+      case CONVERSATION_STATES.SYMPTOM_ASSESSMENT:
+        agenticActions.push(AGENT_ACTIONS.RECOMMEND_DOCTOR);
+        setConversationState(CONVERSATION_STATES.DOCTOR_RECOMMENDATION);
+        break;
+        
+      case CONVERSATION_STATES.DOCTOR_RECOMMENDATION:
+        if (intents.some(i => i.type === 'DOCTOR_PREFERENCE' || i.type === 'TIME_PREFERENCE')) {
+          agenticActions.push(AGENT_ACTIONS.SUGGEST_SLOTS);
+          setConversationState(CONVERSATION_STATES.SLOT_SELECTION);
+        }
+        break;
+        
+      case CONVERSATION_STATES.SLOT_SELECTION:
+        agenticActions.push(AGENT_ACTIONS.REQUEST_DETAILS);
+        setConversationState(CONVERSATION_STATES.PATIENT_DETAILS);
+        break;
+        
+      case CONVERSATION_STATES.PATIENT_DETAILS:
+        agenticActions.push(AGENT_ACTIONS.CONFIRM_BOOKING);
+        setConversationState(CONVERSATION_STATES.CONFIRMATION);
+        break;
+    }
+
+    return { agenticActions, suggestedResponse: response };
+  };
+
+  const executeAgenticAction = async (action, context) => {
+    switch (action) {
+      case AGENT_ACTIONS.RECOMMEND_DOCTOR:
+        if (recommendedDoctors.length > 0) {
+          const doctorList = recommendedDoctors.map((doc, index) => 
+            `${index + 1}. **${doc.name}** (${doc.specialty}) - ${doc.experience} years experience ⭐${doc.rating}`
+          ).join('\n');
+          
+          setTimeout(() => {
+            addMessage(`Based on your symptoms, I recommend these doctors:\n\n${doctorList}\n\nWhich doctor would you prefer to consult with?`, 'bot');
+          }, 1000);
+        }
+        break;
+        
+      case AGENT_ACTIONS.SUGGEST_SLOTS:
+        const doctor = recommendedDoctors[0]; // Assume first recommended
+        if (doctor) {
+          const slots = doctor.slots.slice(0, 5).join(', ');
+          setTimeout(() => {
+            addMessage(`Great choice! **${doctor.name}** has these available slots:\n\n⏰ ${slots}\n\nWhich time works best for you?`, 'bot');
+          }, 1000);
+        }
+        break;
+        
+      case AGENT_ACTIONS.REQUEST_DETAILS:
+        setTimeout(() => {
+          addMessage(`Perfect! Now I need a few details to book your appointment:\n\n📋 **Please provide:**\n• Your full name\n• Phone number\n• Preferred date\n\nYou can share all details in one message.`, 'bot');
+        }, 1000);
+        break;
+        
+      case AGENT_ACTIONS.CONFIRM_BOOKING:
+        // Extract appointment details from conversation
+        const appointmentDetails = extractPatientDetails(messages.map(m => m.text));
+        
+        // Set default values if missing
+        appointmentDetails.doctorName = appointmentDetails.doctorName || 'Dr. Sachin Kumar';
+        appointmentDetails.appointmentTime = appointmentDetails.appointmentTime || '10:00 AM';
+        appointmentDetails.appointmentDate = appointmentDetails.appointmentDate || 'Today';
+        appointmentDetails.hospitalName = 'Nabha Healthcare';
+        appointmentDetails.patientName = appointmentDetails.patientName || 'Patient';
+
+        setTimeout(() => {
+          addMessage(`🎉 **Appointment Confirmed!**\n\n📅 **Details:**\n• Doctor: ${appointmentDetails.doctorName}\n• Time: ${appointmentDetails.appointmentTime}\n• Date: ${appointmentDetails.appointmentDate}\n• Patient: ${appointmentDetails.patientName}\n\n📱 Sending confirmation SMS...`, 'bot');
+          
+          // Send SMS after showing confirmation
+          if (appointmentDetails.phoneNumber) {
+            sendAppointmentSMS(appointmentDetails);
+          } else {
+            // Request phone number if missing
+            setTimeout(() => {
+              addMessage(`📱 **Phone number needed for SMS confirmation**\n\nPlease share your mobile number to receive appointment details via SMS.`, 'bot');
+            }, 2000);
+          }
+        }, 1000);
+        break;
+    }
+  };
+
+  const sendAppointmentSMS = async (appointmentDetails) => {
+    try {
+      // Show sending status
+      setTimeout(() => {
+        addMessage(`📤 Sending SMS confirmation to ${appointmentDetails.phoneNumber}...`, 'bot');
+      }, 1500);
+
+      // Send the SMS
+      const smsResult = await sendSMSConfirmation(appointmentDetails.phoneNumber, appointmentDetails);
+      
+      setTimeout(() => {
+        if (smsResult.success) {
+          addMessage(`✅ **SMS Sent Successfully!**\n\n📱 Confirmation message sent to: ${appointmentDetails.phoneNumber}\n🆔 Message ID: ${smsResult.messageId}\n\n**What's Next:**\n• Check your phone for appointment details\n• Save our contact: +91-XXXXXXXXXX\n• Arrive 15 minutes early\n\n� **WhatsApp Support:** +91-XXXXXXXXXX\n\nThank you for choosing Nabha Healthcare! 🏥`, 'bot');
+        } else {
+          addMessage(`❌ **SMS Failed to Send**\n\nDon't worry! Here are your appointment details:\n\n📋 **Appointment Summary:**\n👤 Patient: ${appointmentDetails.patientName}\n👨‍⚕️ Doctor: ${appointmentDetails.doctorName}\n📅 Date: ${appointmentDetails.appointmentDate}\n🕐 Time: ${appointmentDetails.appointmentTime}\n🏥 Venue: Nabha Healthcare\n\n� **Contact Us:**\nPhone: +91-XXXXXXXXXX\nWhatsApp: +91-XXXXXXXXXX\n\nPlease save these details or take a screenshot!`, 'bot');
+        }
+      }, 3000);
+      
+    } catch (error) {
+      setTimeout(() => {
+        addMessage(`⚠️ **SMS Service Temporarily Unavailable**\n\nYour appointment is confirmed! Please note these details:\n\n📋 **Appointment Details:**\n👤 ${appointmentDetails.patientName}\n👨‍⚕️ ${appointmentDetails.doctorName}\n📅 ${appointmentDetails.appointmentDate}\n🕐 ${appointmentDetails.appointmentTime}\n\n📞 **Contact:** +91-XXXXXXXXXX for confirmation`, 'bot');
+      }, 2000);
+    }
+  };
+
+  const addAgenticSuggestion = () => {
+    const suggestions = [
+      "💡 I can help you with:\n• Book appointments with specialists\n• Check doctor availability\n• Get medical advice\n\nWhat brings you here today?",
+      "🔍 Tell me your symptoms and I'll recommend the best doctor for you!",
+      "⚡ Need urgent consultation? I can find the earliest available slot for you."
+    ];
+    
+    const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+    setTimeout(() => {
+      addMessage(randomSuggestion, 'bot');
+    }, 500);
+  };
+
+  // SMS Functionality
+  const sendSMSConfirmation = async (phoneNumber, appointmentDetails) => {
+    try {
+      // Clean and validate phone number
+      const cleanedPhone = phoneNumber.replace(/\D/g, ''); // Remove non-digits
+      
+      if (cleanedPhone.length < 10) {
+        throw new Error('Invalid phone number');
+      }
+
+      // Format phone number (assuming Indian numbers)
+      const formattedPhone = cleanedPhone.startsWith('91') 
+        ? cleanedPhone 
+        : `91${cleanedPhone.slice(-10)}`;
+
+      // Create SMS message
+      const smsMessage = generateSMSMessage(appointmentDetails);
+      
+      // Try different SMS services in order of preference
+      let smsResult;
+      
+      if (SMS_CONFIG.DEMO_MODE) {
+        smsResult = await sendDemoSMS(formattedPhone, smsMessage, appointmentDetails);
+      } else {
+        // Try Fast2SMS first (free tier available)
+        try {
+          smsResult = await sendViaFast2SMS(formattedPhone, smsMessage, appointmentDetails);
+        } catch (error) {
+          console.log('Fast2SMS failed, trying TextLocal...');
+          try {
+            smsResult = await sendViaTextLocal(formattedPhone, smsMessage, appointmentDetails);
+          } catch (error2) {
+            console.log('TextLocal failed, trying MSG91...');
+            smsResult = await sendViaMSG91(formattedPhone, smsMessage, appointmentDetails);
+          }
+        }
+      }
+      
+      return {
+        success: true,
+        messageId: smsResult.messageId,
+        phone: formattedPhone,
+        provider: smsResult.provider
+      };
+      
+    } catch (error) {
+      console.error('SMS sending failed:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  };
+
+  const sendViaFast2SMS = async (phoneNumber, message, appointmentDetails) => {
+    const response = await fetch(SMS_CONFIG.FAST2SMS.API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'authorization': SMS_CONFIG.FAST2SMS.API_KEY
+      },
+      body: JSON.stringify({
+        route: 'q',
+        message: message,
+        language: 'english',
+        flash: 0,
+        numbers: phoneNumber.replace('91', '') // Remove country code for Fast2SMS
+      })
+    });
+
+    const result = await response.json();
+    
+    if (result.return && result.return === true) {
+      return {
+        success: true,
+        messageId: result.request_id || 'FAST2SMS_' + Date.now(),
+        provider: 'Fast2SMS'
+      };
+    } else {
+      throw new Error(result.message || 'Fast2SMS sending failed');
+    }
+  };
+
+  const sendViaTextLocal = async (phoneNumber, message, appointmentDetails) => {
+    const params = new URLSearchParams({
+      apikey: SMS_CONFIG.TEXTLOCAL.API_KEY,
+      numbers: phoneNumber.replace('91', ''), // Remove country code
+      message: message,
+      sender: SMS_CONFIG.TEXTLOCAL.SENDER
+    });
+
+    const response = await fetch(SMS_CONFIG.TEXTLOCAL.API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params
+    });
+
+    const result = await response.json();
+    
+    if (result.status === 'success') {
+      return {
+        success: true,
+        messageId: result.messageid || 'TEXTLOCAL_' + Date.now(),
+        provider: 'TextLocal'
+      };
+    } else {
+      throw new Error(result.errors?.[0]?.message || 'TextLocal sending failed');
+    }
+  };
+
+  const sendViaMSG91 = async (phoneNumber, message, appointmentDetails) => {
+    try {
+      const response = await fetch(SMS_CONFIG.MSG91.API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'authkey': SMS_CONFIG.MSG91.API_KEY
+        },
+        body: JSON.stringify({
+          template_id: SMS_CONFIG.MSG91.TEMPLATE_ID,
+          sender: SMS_CONFIG.MSG91.SENDER_ID,
+          mobiles: phoneNumber,
+          // Template variables for personalized SMS
+          var1: appointmentDetails.patientName || 'Patient',
+          var2: appointmentDetails.doctorName || 'Doctor',
+          var3: appointmentDetails.appointmentDate || 'Today',
+          var4: appointmentDetails.appointmentTime || '10:00 AM',
+          var5: appointmentDetails.hospitalName || 'Nabha Healthcare'
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.type === 'success') {
+        return {
+          success: true,
+          messageId: result.message_id || 'MSG91_' + Date.now(),
+          provider: 'MSG91'
+        };
+      } else {
+        throw new Error(result.message || 'MSG91 sending failed');
+      }
+    } catch (error) {
+      throw new Error('MSG91 service unavailable');
+    }
+  };
+
+  const sendDemoSMS = async (phoneNumber, message, appointmentDetails) => {
+    // Enhanced demo SMS with better simulation
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log('🚀 === SMS DEMO MODE ===');
+        console.log(`📱 To: ${phoneNumber}`);
+        console.log(`📄 Message:`);
+        console.log(message);
+        console.log(`👤 Patient: ${appointmentDetails.patientName}`);
+        console.log(`👨‍⚕️ Doctor: ${appointmentDetails.doctorName}`);
+        console.log(`📅 Date: ${appointmentDetails.appointmentDate}`);
+        console.log(`🕐 Time: ${appointmentDetails.appointmentTime}`);
+        console.log('========================');
+        
+        // Show in UI that it's demo mode
+        setTimeout(() => {
+          addMessage(`📱 **DEMO MODE ACTIVE**\n\nSMS would be sent to: ${phoneNumber}\n\n⚠️ **To receive real SMS messages:**\n1. Sign up for a free SMS service:\n   • Fast2SMS (India): https://www.fast2sms.com/\n   • TextLocal (Global): https://www.textlocal.in/\n\n2. Update SMS_CONFIG with your API key\n3. Set DEMO_MODE to false\n\n📋 **Your Appointment Details:**\n👤 ${appointmentDetails.patientName}\n👨‍⚕️ ${appointmentDetails.doctorName}\n📅 ${appointmentDetails.appointmentDate}\n🕐 ${appointmentDetails.appointmentTime}`, 'bot');
+        }, 2000);
+        
+        resolve({
+          success: true,
+          messageId: 'DEMO_' + Math.random().toString(36).substr(2, 9),
+          provider: 'Demo Mode'
+        });
+      }, 1000);
+    });
+  };
+
+  const sendFallbackSMS = async (phoneNumber, message, appointmentDetails) => {
+    // Simulate SMS sending for demo purposes
+    // In production, implement alternative SMS service like Twilio
+    
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log(`📱 SMS sent to ${phoneNumber}:`);
+        console.log(message);
+        
+        resolve({
+          success: true,
+          messageId: 'DEMO_' + Math.random().toString(36).substr(2, 9),
+          provider: 'demo'
+        });
+      }, 1000);
+    });
+  };
+
+  const generateSMSMessage = (appointmentDetails) => {
+    const { patientName, doctorName, appointmentDate, appointmentTime, hospitalName } = appointmentDetails;
+    
+    return `🏥 APPOINTMENT CONFIRMED
+    
+Hi ${patientName}!
+
+Your appointment has been booked:
+👨‍⚕️ Doctor: ${doctorName}
+📅 Date: ${appointmentDate}
+🕐 Time: ${appointmentTime}
+🏥 Venue: ${hospitalName}
+
+For any changes, call: +91-XXXXXXXXXX
+Or WhatsApp: +91-XXXXXXXXXX
+
+Thank you for choosing Nabha Healthcare!`;
+  };
+
+  const extractPatientDetails = (conversationHistory) => {
+    // Extract patient details from conversation
+    const details = {
+      patientName: '',
+      phoneNumber: '',
+      appointmentDate: '',
+      appointmentTime: '',
+      doctorName: '',
+      symptoms: []
+    };
+
+    // Simple extraction logic - can be enhanced with NLP
+    const messages = conversationHistory.join(' ').toLowerCase();
+    
+    // Extract phone number
+    const phoneMatch = messages.match(/\b(\+?91[-.\s]?)?[6-9]\d{9}\b/);
+    if (phoneMatch) {
+      details.phoneNumber = phoneMatch[0];
+    }
+
+    // Extract name (look for "my name is" or "i am")
+    const nameMatch = messages.match(/(?:my name is|i am|i'm)\s+([a-zA-Z\s]{2,30})/i);
+    if (nameMatch) {
+      details.patientName = nameMatch[1].trim();
+    }
+
+    // Extract date preferences
+    if (messages.includes('today')) {
+      details.appointmentDate = new Date().toLocaleDateString();
+    } else if (messages.includes('tomorrow')) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      details.appointmentDate = tomorrow.toLocaleDateString();
+    }
+
+    // Use patient data state if available
+    if (patientData.name) details.patientName = patientData.name;
+    if (patientData.phone) details.phoneNumber = patientData.phone;
+    if (patientData.preferredDate) details.appointmentDate = patientData.preferredDate;
+    if (patientData.selectedSlot) details.appointmentTime = patientData.selectedSlot;
+    if (patientData.preferredDoctor) {
+      const doctor = Object.values(DOCTORS_DATABASE).find(d => d.id === patientData.preferredDoctor);
+      details.doctorName = doctor ? doctor.name : '';
+    }
+
+    return details;
   };
 
   const speakText = (text) => {
@@ -164,42 +798,237 @@ AppointmentChatBot = () => {
     setInput("");
     setLoading(true);
 
-    const typingMessage = { text: "Assistant is processing...", type: "bot", isTyping: true };
+    // Check for doctor selection by number in DOCTOR_RECOMMENDATION state
+    if (conversationState === CONVERSATION_STATES.DOCTOR_RECOMMENDATION) {
+      const numberMatch = userInput.match(/^[1-3]$/);
+      if (numberMatch) {
+        const selectedIndex = parseInt(userInput) - 1;
+        if (recommendedDoctors[selectedIndex]) {
+          const selectedDoctor = recommendedDoctors[selectedIndex];
+          
+          // Update patient data with selected doctor
+          setPatientData(prev => ({
+            ...prev,
+            preferredDoctor: selectedDoctor.id
+          }));
+          
+          // Show doctor selection confirmation and available slots
+          const confirmationMessage = `Okay! You've selected **${selectedDoctor.name}**. 😊 ${selectedDoctor.name} specializes in ${selectedDoctor.specialty} and has a rating of ${selectedDoctor.rating} stars. 
+
+Here are the available slots for ${selectedDoctor.name}:
+${selectedDoctor.slots.map(slot => `- ${slot}`).join('\n')}
+
+Please select your preferred time. ⏰`;
+          
+          addMessage(confirmationMessage, "bot");
+          setConversationState(CONVERSATION_STATES.SLOT_SELECTION);
+          setLoading(false);
+          return;
+        }
+      }
+    }
+
+    // Check for time slot selection in SLOT_SELECTION state
+    if (conversationState === CONVERSATION_STATES.SLOT_SELECTION) {
+      const selectedDoctor = Object.values(DOCTORS_DATABASE).find(d => d.id === patientData.preferredDoctor);
+      if (selectedDoctor && selectedDoctor.slots.includes(userInput.trim())) {
+        setPatientData(prev => ({
+          ...prev,
+          selectedSlot: userInput.trim()
+        }));
+        
+        const slotConfirmation = `Perfect! I've scheduled your appointment with **${selectedDoctor.name}** for **${userInput.trim()}**. 
+
+To complete your booking, please provide:
+👤 Your full name
+📞 Your phone number (for SMS confirmation)
+
+You can share these details now.`;
+        
+        addMessage(slotConfirmation, "bot");
+        setConversationState(CONVERSATION_STATES.PATIENT_DETAILS);
+        setLoading(false);
+        return;
+      }
+    }
+
+    // Check for patient details in PATIENT_DETAILS state
+    if (conversationState === CONVERSATION_STATES.PATIENT_DETAILS) {
+      const nameMatch = userInput.match(/\b([A-Z][a-z]+ [A-Z][a-z]+)\b/i);
+      const phoneMatch = userInput.match(/\b(\+?91[-.\s]?)?[6-9]\d{9}\b/);
+      
+      if (nameMatch) {
+        setPatientData(prev => ({
+          ...prev,
+          name: nameMatch[0]
+        }));
+      }
+      
+      if (phoneMatch) {
+        setPatientData(prev => ({
+          ...prev,
+          phone: phoneMatch[0]
+        }));
+      }
+      
+      // If we have both name and phone, confirm the appointment
+      const updatedData = { ...patientData };
+      if (nameMatch) updatedData.name = nameMatch[0];
+      if (phoneMatch) updatedData.phone = phoneMatch[0];
+      
+      if (updatedData.name && updatedData.phone && updatedData.preferredDoctor && updatedData.selectedSlot) {
+        const selectedDoctor = Object.values(DOCTORS_DATABASE).find(d => d.id === updatedData.preferredDoctor);
+        
+        const confirmationMessage = `✅ **Appointment Confirmed!**
+
+📋 **Appointment Details:**
+👤 **Patient:** ${updatedData.name}
+👨‍⚕️ **Doctor:** ${selectedDoctor?.name}
+🕐 **Time:** ${updatedData.selectedSlot}
+📅 **Date:** ${new Date().toLocaleDateString()}
+🏥 **Location:** Nabha Healthcare
+📞 **Contact:** ${updatedData.phone}
+
+📱 You'll receive an SMS confirmation shortly at ${updatedData.phone}.
+
+Thank you for choosing Nabha Healthcare! 🏥✨`;
+        
+        addMessage(confirmationMessage, "bot");
+        setConversationState(CONVERSATION_STATES.CONFIRMATION);
+        
+        // Send SMS immediately
+        setTimeout(() => {
+          const appointmentDetails = {
+            patientName: updatedData.name,
+            doctorName: selectedDoctor?.name,
+            appointmentTime: updatedData.selectedSlot,
+            appointmentDate: new Date().toLocaleDateString(),
+            phoneNumber: updatedData.phone,
+            hospitalName: 'Nabha Healthcare'
+          };
+          sendAppointmentSMS(appointmentDetails);
+        }, 1000);
+        
+        setLoading(false);
+        return;
+      } else {
+        // Still need more information
+        const missingInfo = [];
+        if (!updatedData.name) missingInfo.push("👤 Full name");
+        if (!updatedData.phone) missingInfo.push("📞 Phone number");
+        
+        if (missingInfo.length > 0) {
+          addMessage(`I still need the following information to complete your booking:\n${missingInfo.join('\n')}\n\nPlease provide the missing details.`, "bot");
+          setLoading(false);
+          return;
+        }
+      }
+    }
+
+    // Check if user provided phone number for SMS
+    const phoneMatch = userInput.match(/\b(\+?91[-.\s]?)?[6-9]\d{9}\b/);
+    if (phoneMatch && conversationState === CONVERSATION_STATES.CONFIRMATION) {
+      // User provided phone number after appointment confirmation
+      const phoneNumber = phoneMatch[0];
+      const appointmentDetails = extractPatientDetails([...messages.map(m => m.text), userInput]);
+      appointmentDetails.phoneNumber = phoneNumber;
+      
+      // Use the selected doctor from patientData, not hardcoded
+      if (patientData.preferredDoctor) {
+        const selectedDoctor = Object.values(DOCTORS_DATABASE).find(d => d.id === patientData.preferredDoctor);
+        appointmentDetails.doctorName = selectedDoctor ? selectedDoctor.name : 'Doctor';
+      } else {
+        appointmentDetails.doctorName = appointmentDetails.doctorName || 'Doctor';
+      }
+      
+      appointmentDetails.appointmentTime = appointmentDetails.appointmentTime || '10:00 AM';
+      appointmentDetails.appointmentDate = appointmentDetails.appointmentDate || new Date().toLocaleDateString();
+      appointmentDetails.hospitalName = 'Nabha Healthcare';
+      
+      // Send SMS immediately
+      setTimeout(() => {
+        sendAppointmentSMS(appointmentDetails);
+      }, 1000);
+      
+      setLoading(false);
+      return;
+    }
+
+    // Agentic AI Processing
+    const userIntents = analyzeUserIntent(userInput);
+    const agenticResult = generateAgenticResponse(userInput, userIntents);
+    
+    // Update conversation context
+    setConversationContext(prev => ({
+      ...prev,
+      userIntents: [...prev.userIntents, ...userIntents],
+      suggestedActions: agenticResult.agenticActions
+    }));
+
+    const typingMessage = { text: "Assistant is analyzing...", type: "bot", isTyping: true };
     setMessages((prev) => [...prev, typingMessage]);
 
     try {
+      // Enhanced system instruction with agentic context
+      const conversationHistory = messages.slice(-6).map(msg => 
+        `${msg.type === 'user' ? 'Patient' : 'Assistant'}: ${msg.text}`
+      ).join('\n');
+      
+      const agenticContext = `
+      Current Conversation State: ${conversationState}
+      Detected Intents: ${userIntents.map(i => i.type).join(', ')}
+      Recommended Doctors: ${recommendedDoctors.map(d => d.name).join(', ')}
+      Patient Data: ${JSON.stringify(patientData)}
+      
+      Recent Conversation:
+      ${conversationHistory}
+      `;
+
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: userInput }] }],
+            contents: [{ parts: [{ text: `Context: ${agenticContext}\n\nUser Message: ${userInput}` }] }],
             system_instruction: {
               parts: [
                 {
-                  text: `You are a helpful AI assistant for Nabha Healthcare, specializing in appointment booking and scheduling. Help users book appointments, provide information about available doctors, suggest appointment times, and guide them through the booking process.
+                  text: `You are an advanced agentic AI assistant for Nabha Healthcare, specializing in intelligent appointment booking and medical consultation guidance. You have autonomous decision-making capabilities and can take proactive actions.
 
                   IMPORTANT: Respond in ${LANGUAGES[currentLanguage].name} language. Be culturally sensitive and use appropriate greetings and expressions for this language.
 
-                  Available Doctors:
-                  - Dr. Sachin Kumar – General Medicine – 15 years – Available: 9:00 AM - 6:00 PM
-                  - Dr. Tarun Thakur – Pediatrics – 12 years – Available: 6:00 AM - 4:00 PM  
-                  - Dr. Manish Sharma – Cardiology – 18 years – Available: 9:00 AM - 5:00 PM
-                  - Dr. Fouziya Siddiqui – Gynecology – 20 years – Available: 11:00 AM - 7:00 PM
-                  - Dr. Shashank – Orthopaedics – 18 years – Available: 9:00 AM - 5:00 PM
-                  - Dr. Kamaljeet Kaur – Dermatology – 18 years – Available: 9:00 AM - 5:00 PM
+                  AGENTIC CAPABILITIES:
+                  - Autonomously analyze symptoms and recommend appropriate doctors
+                  - Proactively suggest optimal appointment times based on urgency and availability
+                  - Extract patient information from natural conversation
+                  - Make intelligent decisions about next steps in the booking process
+                  - Provide personalized medical guidance within scope
+                  - Send real-time SMS confirmations to patients after booking
 
-                  Guidelines:
-                  1. Ask about their preferred doctor or medical concern
-                  2. Suggest suitable doctors based on their needs
-                  3. Provide available time slots
-                  4. Ask for patient details (name, phone, date preference)
-                  5. Confirm appointment details
-                  6. Provide WhatsApp contact for final confirmation
+                  AVAILABLE DOCTORS & EXPERTISE:
+                  ${Object.values(DOCTORS_DATABASE).map(doc => 
+                    `- ${doc.name} (${doc.specialty}) - ${doc.experience}yr exp, Rating: ${doc.rating}/5
+                      Specializes in: ${doc.conditions.join(', ')}
+                      Available: ${doc.availability.start}-${doc.availability.end}
+                      Slots: ${doc.slots.join(', ')}`
+                  ).join('\n')}
 
-                  Always be helpful, professional, and guide them step by step through the booking process.
-                  Use emojis and formatting to make responses clear and friendly.`,
+                  AGENTIC BEHAVIOR GUIDELINES:
+                  1. **Proactive Analysis**: Automatically identify symptoms, urgency, and suitable specialists
+                  2. **Smart Recommendations**: Suggest the best-matched doctors based on symptoms and ratings
+                  3. **Autonomous Scheduling**: Intelligently propose optimal time slots
+                  4. **Context Awareness**: Remember all conversation details and build on previous interactions
+                  5. **Decision Making**: Make informed choices about next steps without always asking
+                  6. **Empathetic Intelligence**: Show understanding and provide reassurance
+                  7. **Efficient Processing**: Move conversations forward efficiently while being thorough
+                  8. **SMS Integration**: Automatically send appointment confirmations via SMS after booking
+
+                  CURRENT CONTEXT: ${agenticContext}
+
+                  Your response should be intelligent, contextual, and take autonomous action when appropriate. Use the conversation state to determine if you should recommend doctors, suggest times, request details, or confirm bookings without being explicitly asked.
+
+                  Use emojis, formatting, and maintain a professional yet friendly tone.`,
                 },
               ],
             },
@@ -217,6 +1046,14 @@ AppointmentChatBot = () => {
       });
 
       const botReply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      
+      // Execute agentic actions
+      if (agenticResult.agenticActions.length > 0) {
+        agenticResult.agenticActions.forEach(action => {
+          executeAgenticAction(action, conversationContext);
+        });
+      }
+
       if (botReply && speechEnabled) {
         setTimeout(() => speakText(botReply), 500);
       }
@@ -393,6 +1230,15 @@ AppointmentChatBot = () => {
         .language-card:hover::before {
           left: 100%;
         }
+        
+        /* Inline Language Button Hover Effects */
+        .language-button-inline:hover {
+          background-color: #059669 !important;
+          color: white !important;
+          border-color: #059669 !important;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3) !important;
+        }
       `}</style>
 
       {/* Chat Toggle Button */}
@@ -451,44 +1297,6 @@ AppointmentChatBot = () => {
               </div>
             </div>
 
-            {/* Language Selection - Show only when language not selected */}
-            {!languageSelected && (
-              <div style={styles.languageSelection} className="language-selection-mobile">
-                <div style={styles.languageWelcome}>
-                  <div style={styles.languageIcon} className="language-icon-mobile">🌐</div>
-                  <div style={styles.languageWelcomeText}>
-                    <h3 style={styles.languageWelcomeTitle} className="language-welcome-title-mobile">Welcome to Nabha Healthcare</h3>
-                    <p style={styles.languageWelcomeSubtitle}>Please select your preferred language</p>
-                  </div>
-                </div>
-                
-                <div style={styles.languageGrid} className="language-grid-mobile">
-                  {Object.entries(LANGUAGES).map(([langCode, lang]) => (
-                    <div
-                      key={langCode}
-                      onClick={() => handleLanguageSelect(langCode)}
-                      className="language-card language-card-mobile"
-                      style={styles.languageCard}
-                    >
-                      <div style={styles.languageFlagLarge}>{lang.flag}</div>
-                      <div style={styles.languageCardContent}>
-                        <div style={styles.languageNameLarge} className="language-name-large-mobile">{lang.name}</div>
-                        <div style={styles.languageSelectText}>Click to select</div>
-                      </div>
-                      <div className="language-arrow" style={styles.languageArrow}>→</div>
-                    </div>
-                  ))}
-                </div>
-                
-                <div style={styles.languageFooter}>
-                  <p style={styles.languageFooterText}>
-                    <span style={styles.languageFooterIcon}>💬</span>
-                    Chat with our AI assistant in your preferred language
-                  </p>
-                </div>
-              </div>
-            )}
-
             {/* Chat Messages */}
             <div ref={chatBoxRef} style={styles.chatBox}>
               {messages.map((msg, index) => (
@@ -497,7 +1305,7 @@ AppointmentChatBot = () => {
                     ...styles.messageWrapper,
                     ...(msg.type === "user" ? styles.userMessageWrapper : styles.botMessageWrapper)
                   }}>
-                    {msg.type === "bot" && !msg.isTyping && (
+                    {msg.type === "bot" && !msg.isTyping && !msg.isLanguageSelection && (
                       <div style={styles.botAvatar}>🤖</div>
                     )}
                     
@@ -519,11 +1327,28 @@ AppointmentChatBot = () => {
                             </div>
                             <span>Processing...</span>
                           </div>
+                        ) : msg.isLanguageSelection ? (
+                          <div style={styles.languageSelectionInChat}>
+                            <div style={styles.languageTitle}>Choose your language:</div>
+                            <div style={styles.languageButtonsInline}>
+                              {Object.entries(LANGUAGES).map(([langCode, lang]) => (
+                                <button
+                                  key={langCode}
+                                  onClick={() => handleLanguageSelect(langCode)}
+                                  style={styles.languageButtonInline}
+                                  className="language-button-inline"
+                                >
+                                  <span style={styles.languageFlag}>{lang.flag}</span>
+                                  <span>{lang.name}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
                         ) : (
                           <div style={styles.messageText}>{msg.text}</div>
                         )}
                       </div>
-                      {msg.timestamp && (
+                      {msg.timestamp && !msg.isLanguageSelection && (
                         <div style={{
                           ...styles.timestamp,
                           ...(msg.type === "user" ? styles.timestampRight : styles.timestampLeft)
@@ -1251,6 +2076,48 @@ const styles = {
   languageName: {
     fontSize: '12px',
     fontWeight: '600',
+  },
+
+  // Inline Language Selection Styles (in chat)
+  languageSelectionInChat: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    padding: '16px',
+    backgroundColor: '#f8fafc',
+    borderRadius: '12px',
+    border: '2px solid #e2e8f0',
+  },
+
+  languageTitle: {
+    fontSize: '14px',
+    fontWeight: '600',
+    color: '#1f2937',
+    textAlign: 'center',
+    marginBottom: '8px',
+  },
+
+  languageButtonsInline: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+
+  languageButtonInline: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '12px 16px',
+    backgroundColor: '#ffffff',
+    border: '2px solid #e2e8f0',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    fontSize: '14px',
+    fontWeight: '500',
+    color: '#374151',
+    justifyContent: 'center',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
   },
 };
 
