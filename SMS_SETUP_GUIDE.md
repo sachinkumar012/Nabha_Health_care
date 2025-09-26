@@ -8,11 +8,12 @@ Your appointment chatbot is currently running in **DEMO MODE** because no SMS AP
 
 1. **Sign up**: Visit https://www.fast2sms.com/
 2. **Free Credits**: Get ₹100 free credits (about 1000 SMS)
-3. **Get API Key**: 
+3. **Get API Key**:
    - Go to Developer API section
    - Copy your API key
 
 **Configuration:**
+
 ```javascript
 // In AppointmentChatBot.jsx, update SMS_CONFIG:
 FAST2SMS: {
@@ -26,11 +27,12 @@ FAST2SMS: {
 
 1. **Sign up**: Visit https://www.textlocal.in/
 2. **Free Trial**: Get free trial credits
-3. **Get API Key**: 
+3. **Get API Key**:
    - Dashboard → Settings → API Keys
    - Create new API key
 
 **Configuration:**
+
 ```javascript
 // In AppointmentChatBot.jsx, update SMS_CONFIG:
 TEXTLOCAL: {
@@ -47,6 +49,7 @@ TEXTLOCAL: {
 3. **Create Template**: Required for transactional SMS
 
 **Configuration:**
+
 ```javascript
 // In AppointmentChatBot.jsx, update SMS_CONFIG:
 MSG91: {
@@ -69,7 +72,7 @@ MSG91: {
 
 ```javascript
 const SMS_CONFIG = {
-  DEMO_MODE: false,  // Change this to false!
+  DEMO_MODE: false, // Change this to false!
   // ... rest of your config
 };
 ```
@@ -86,18 +89,21 @@ const SMS_CONFIG = {
 ## 🆘 Troubleshooting
 
 ### Still Getting Demo Messages?
+
 - ✅ Check that `DEMO_MODE: false`
 - ✅ Verify your API key is correct (no extra spaces)
 - ✅ Make sure you have sufficient credits in your SMS account
 - ✅ Check browser console for error messages
 
 ### SMS Not Received?
+
 - ✅ Verify phone number format (should be with country code: +91XXXXXXXXXX for India)
 - ✅ Check if the SMS service is working (test in their dashboard)
 - ✅ Ensure your account is verified with the SMS provider
 - ✅ Check spam/junk folder on your phone
 
 ### Error Messages?
+
 - ✅ Check the browser console (F12) for detailed error logs
 - ✅ Verify API endpoints are correct
 - ✅ Check if your SMS service requires additional parameters
@@ -118,7 +124,8 @@ const SMS_CONFIG = {
 
 **Need Help?** Check the browser console (F12) when testing - it will show detailed logs of the SMS sending process!
 
-## Current Status: 
+## Current Status:
+
 ✅ Multi-language support (English, Hindi, Punjabi)
 ✅ Agentic AI conversation flow  
 ✅ Mobile-responsive design
