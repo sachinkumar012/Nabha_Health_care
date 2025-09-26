@@ -262,47 +262,52 @@ AppointmentChatBot = () => {
             height: 70vh !important;
             max-height: 500px !important;
             border-radius: 16px 16px 0 0 !important;
+            padding-top: 60px !important; /* Add space for close button */
           }
-          
           .appointment-input-area {
             padding: 12px !important;
           }
-          
           .appointment-input-wrapper {
             gap: 6px !important;
           }
-          
           .appointment-textarea {
             padding: 10px 36px 10px 12px !important;
             font-size: 16px !important;
             min-height: 42px !important;
           }
-          
           .appointment-mic-button {
             right: 6px !important;
             width: 28px !important;
             height: 28px !important;
             padding: 6px !important;
           }
-          
           .appointment-send-button {
             width: 42px !important;
             height: 42px !important;
             min-width: 42px !important;
             flex-shrink: 0 !important;
           }
-          
           /* Mobile Close Button - Show on mobile */
           .mobile-close-button {
             display: flex !important;
+            position: absolute !important;
+            top: 12px !important;
+            right: 12px !important;
+            left: auto !important;
+            width: 44px !important;
+            height: 44px !important;
+            background: #059669 !important;
+            color: #fff !important;
+            box-shadow: 0 4px 16px rgba(5,150,105,0.15) !important;
+            z-index: 100 !important;
+            align-items: center;
+            justify-content: center;
           }
-          
           .mobile-close-button:hover {
-            background-color: rgba(0, 0, 0, 0.9) !important;
-            transform: scale(1.05);
+            background-color: #047857 !important;
+            transform: scale(1.08);
           }
           
-          /* Desktop Close Button - Hide on mobile */
           .desktop-close-button {
             display: none !important;
           }
@@ -683,6 +688,7 @@ const styles = {
       height: '70vh',
       maxHeight: '500px',
       borderRadius: '16px 16px 0 0',
+      paddingTop: '60px', /* Prevents overlap with close button */
     },
   },
 
@@ -775,22 +781,23 @@ const styles = {
 
   mobileCloseButton: {
     position: 'absolute',
-    top: '8px',
-    left: '8px',
-    zIndex: 10,
-    background: 'rgba(0, 0, 0, 0.7)',
+    top: '12px',
+    right: '12px',
+    zIndex: 100,
+    background: '#059669',
     border: 'none',
     color: 'white',
     cursor: 'pointer',
-    padding: '6px',
+    padding: '0',
     borderRadius: '50%',
-    transition: 'background-color 0.2s',
+    transition: 'background-color 0.2s, box-shadow 0.2s',
     display: 'none', // Hidden by default, shown on mobile via CSS
     alignItems: 'center',
     justifyContent: 'center',
-    width: '32px',
-    height: '32px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+    width: '44px',
+    height: '44px',
+    boxShadow: '0 4px 16px rgba(5,150,105,0.15)',
+    fontSize: '22px',
   },
 
   // Chat Messages
