@@ -4644,63 +4644,143 @@ const Pharmacy = () => {
         /* Extra small devices (phones in portrait) */
         @media (max-width: 480px) {
           .medicines-grid {
-            padding: 0.5rem;
-            gap: 0.75rem;
+            padding: 0.75rem;
+            gap: 1rem;
           }
 
           .medicine-card {
-            border-radius: 12px;
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
           }
 
           .medicine-image-container {
-            height: 160px;
+            height: 180px;
+            border-radius: 20px 20px 0 0;
           }
 
           .medicine-info {
-            padding: 12px;
+            padding: 16px;
           }
 
           .medicine-name {
-            font-size: 15px;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+          }
+
+          .manufacturer {
+            font-size: 13px;
+            color: #6b7280;
+          }
+
+          .strip-size {
+            font-size: 13px;
+            color: #374151;
+            font-weight: 500;
           }
 
           .current-price {
-            font-size: 18px;
+            font-size: 24px;
+            font-weight: 800;
           }
 
           .add-to-cart-primary {
-            padding: 12px 16px;
-            font-size: 14px;
+            padding: 16px 20px;
+            font-size: 16px;
+            border-radius: 16px;
+            font-weight: 700;
+            margin-top: 16px;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.3);
+            transition: all 0.3s ease;
+          }
+
+          .add-to-cart-primary:active:not(:disabled) {
+            transform: scale(0.97);
           }
 
           .cart-header-section {
             flex-direction: column;
-            gap: 12px;
+            gap: 16px;
             text-align: center;
+            margin: 1rem;
+            padding: 20px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+          }
+
+          .cart-message {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0f172a;
           }
 
           .view-cart-btn {
             width: 100%;
-            padding: 14px 20px;
+            padding: 16px 24px;
+            font-size: 16px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.3);
           }
 
           .offers-section {
-            padding: 10px;
+            padding: 16px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #fef7f0 0%, #fef3e2 100%);
           }
 
           .quick-links {
-            display: none; /* Hide on very small screens to save space */
+            margin-bottom: 16px;
+          }
+
+          .link-row span {
+            background: #f0f9ff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin: 2px;
+            display: inline-block;
+            font-size: 12px;
+            transition: all 0.2s ease;
+          }
+
+          .link-row span:active {
+            transform: scale(0.95);
+            background: #e0f2fe;
           }
 
           .safety-info {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
+          }
+
+          .safety-badge {
+            padding: 16px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            font-size: 14px;
           }
 
           .mobile-cart-fab {
-            width: 55px;
-            height: 55px;
-            bottom: 15px;
-            right: 15px;
+            width: 64px;
+            height: 64px;
+            bottom: 20px;
+            right: 20px;
+            box-shadow: 0 8px 30px rgba(5, 150, 105, 0.4);
+          }
+
+          .mobile-cart-fab:active {
+            transform: scale(0.9);
+          }
+
+          /* Smooth scroll behavior */
+          html {
+            scroll-behavior: smooth;
+          }
+
+          /* Better touch feedback */
+          * {
+            -webkit-tap-highlight-color: rgba(5, 150, 105, 0.2);
           }
         }
 
