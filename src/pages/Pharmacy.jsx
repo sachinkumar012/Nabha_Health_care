@@ -2654,143 +2654,138 @@ const Pharmacy = () => {
               </button>
             </div>
 
-            {/* Medicine List Layout */}
-            <div className="medicines-list-modern">
+            {/* Medicine Grid Layout */}
+            <div className="medicines-grid">
               {filteredMedicines.map((medicine) => (
-                <div key={medicine.id} className="medicine-product-page">
-                  <div className="product-layout">
-                    <div className="product-image-section">
-                      <div className="image-container">
-                        <img 
-                          src={medicine.image} 
-                          alt={medicine.name}
-                          className="product-image"
-                          onError={(e) => {
-                            e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgNjBDOTMuMyAxMDggODMuMyAxMTcgODMuMyAxMzBIMTE2LjdDMTE2LjcgMTE3IDEwNi43IDEwOCAxMDAgMzAiIGZpbGw9IiNEMUQ1REIiLz4KPC9zdmc+';
-                          }}
-                        />
-                        {medicine.discount > 0 && (
-                          <div className="discount-tag">
-                            {medicine.discount}% OFF
-                          </div>
-                        )}
+                <div key={medicine.id} className="medicine-card">
+                  <div className="medicine-image-container">
+                    <img 
+                      src={medicine.image} 
+                      alt={medicine.name}
+                      className="medicine-image"
+                      onError={(e) => {
+                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDMwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNTAgMTAwQzE0MS43IDE2MiAxMjUgMTc1IDEyNSAyMDBIMTc1QzE3NSAxNzUgMTU4LjMgMTYyIDE1MCA1MFoiIGZpbGw9IiNEMUQ1REIiLz4KPC9zdmc+';
+                      }}
+                    />
+                    {medicine.discount > 0 && (
+                      <div className="discount-badge">
+                        {medicine.discount}% OFF
                       </div>
-                      <div className="image-actions">
-                        <button className="share-btn" title="Share">
-                          <Share2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div className="product-details-section">
-                      <div className="product-info">
-                        <h1 className="product-title">{medicine.name}</h1>
-                        <div className="manufacturer-info">By {medicine.manufacturer}</div>
-                        <div className="pack-size">{medicine.stripSize}</div>
-
-                        <div className="pricing">
-                          <div className="price-row">
-                            <span className="final-price">₹{medicine.price.toFixed(2)}</span>
-                            {medicine.originalPrice && (
-                              <span className="mrp">₹{medicine.originalPrice.toFixed(2)}</span>
-                            )}
-                            {medicine.discount > 0 && (
-                              <span className="save-percent">{medicine.discount}% OFF</span>
-                            )}
-                          </div>
-                          <div className="unit-price">
-                            ₹{medicine.pricePerTablet}/tablet (Inclusive of all taxes)
-                          </div>
-                        </div>
-
-                        <div className="delivery-section">
-                          <Clock size={14} />
-                          <span>Delivery by Today, before 11:00 pm</span>
-                        </div>
-
-                        <div className="offer-text">
-                          *Offer applicable on order above ₹1000
-                        </div>
-
-                        <div className="action-section">
-                          <button
-                            className="add-to-cart-button"
-                            onClick={() => addToCart(medicine)}
-                            disabled={!medicine.availability || medicine.inStock === 0}
-                          >
-                            Add To Cart
-                          </button>
-                          
-                          {!medicine.availability && (
-                            <div className="stock-status unavailable">Out of Stock</div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="cart-info-section">
-                      <div className="proceed-message">
-                        Please add item(s) to proceed
-                      </div>
-                      <button 
-                        className="view-cart-button"
-                        onClick={() => setIsCartOpen(true)}
-                        disabled={cart.length === 0}
-                      >
-                        View Cart
-                        {cart.length > 0 && ` (${cart.length})`}
+                    )}
+                    <div className="medicine-actions">
+                      <button className="action-btn" title="Add to wishlist">
+                        <Heart size={16} />
+                      </button>
+                      <button className="action-btn" title="Share">
+                        <Share2 size={16} />
                       </button>
                     </div>
                   </div>
-
-                  <div className="product-links">
-                    <div className="links-grid">
-                      <span className="link-item">• Uses</span>
-                      <span className="link-item">• Contraindications</span>
-                      <span className="link-item">• Side effects</span>
-                      <span className="link-item">• Precautions and Warnings</span>
-                      <span className="link-item">• Directions for Use</span>
-                      <span className="link-item">• Storage and disposal</span>
-                      <span className="link-item">• Quick Tips</span>
-                      <span className="link-item">• Dosage</span>
-                      <span className="link-item">• Mode of Action</span>
-                      <span className="link-item">• Interactions</span>
-                      <span className="link-item">• Other Products</span>
+                  
+                  <div className="medicine-info">
+                    <div className="medicine-header">
+                      <h3 className="medicine-name">{medicine.name}</h3>
+                      <div className="manufacturer">By {medicine.manufacturer}</div>
+                      <div className="strip-size">{medicine.stripSize}</div>
                     </div>
-                  </div>
 
-                  <div className="offers-for-you">
-                    <div className="offers-title">
-                      <span>Offers Just for you</span>
-                      <a href="#" className="view-all-link">View All</a>
-                    </div>
-                    <div className="offer-list">
-                      <div className="offer-card">
-                        <div className="offer-tag save">SAVE 27%</div>
-                        <span>Sale Live: Get 27%* OFF</span>
+                    <div className="price-section">
+                      <div className="price-container">
+                        <span className="current-price">₹{medicine.price.toFixed(2)}</span>
+                        {medicine.originalPrice && (
+                          <>
+                            <span className="original-price">₹{medicine.originalPrice.toFixed(2)}</span>
+                            <span className="discount-percent">{medicine.discount}% OFF</span>
+                          </>
+                        )}
                       </div>
-                      <div className="offer-card">
-                        <div className="offer-tag discount">23%</div>
-                        <span>Get 23%* OFF</span>
+                      <div className="price-per-unit">
+                        ₹{medicine.pricePerTablet}/tablet (Inclusive of all taxes)
                       </div>
                     </div>
-                  </div>
 
-                  <div className="product-safety">
-                    <div className="safety-message">
-                      <Package size={16} />
+                    <div className="delivery-info">
+                      <Clock size={14} />
+                      <span>Delivery by Today, before 11:00 pm</span>
+                    </div>
+
+                    <div className="offer-info">
+                      *Offer applicable on order above ₹1000
+                    </div>
+
+                    <div className="medicine-actions-bottom">
+                      <button
+                        className="add-to-cart-primary"
+                        onClick={() => addToCart(medicine)}
+                        disabled={!medicine.availability || medicine.inStock === 0}
+                        title={!currentCustomer ? 'Login required to add to cart' : 'Add to cart'}
+                      >
+                        Add To Cart
+                      </button>
+                      
+                      {!medicine.availability && (
+                        <div className="out-of-stock">Out of Stock</div>
+                      )}
+                    </div>
+
+                    <div className="quick-links">
+                      <div className="link-row">
+                        <span>• Uses</span>
+                        <span>• Contraindications</span>
+                        <span>• Side effects</span>
+                      </div>
+                      <div className="link-row">
+                        <span>• Precautions and Warnings</span>
+                      </div>
+                      <div className="link-row">
+                        <span>• Directions for Use</span>
+                        <span>• Storage and disposal</span>
+                      </div>
+                      <div className="link-row">
+                        <span>• Quick Tips</span>
+                        <span>• Dosage</span>
+                        <span>• Mode of Action</span>
+                      </div>
+                      <div className="link-row">
+                        <span>• Interactions</span>
+                        <span>• Other Products</span>
+                      </div>
+                    </div>
+
+                    <div className="offers-section">
+                      <div className="offers-header">
+                        <span>Offers Just for you</span>
+                        <a href="#" className="view-all">View All</a>
+                      </div>
+                      <div className="offer-items">
+                        <div className="offer-item">
+                          <div className="offer-badge save">SAVE 27%</div>
+                          <span>Sale Live: Get 27%* OFF</span>
+                        </div>
+                        <div className="offer-item">
+                          <div className="offer-badge discount">23%</div>
+                          <span>Get 23%* OFF</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="return-policy">
+                      <Package size={14} />
                       <span>{medicine.returnPolicy}</span>
-                      <a href="#" className="read-more-link">Read More</a>
+                      <a href="#" className="read-more">Read More</a>
                     </div>
-                    <div className="packed-safely">
-                      <Package size={16} />
-                      <span>All the Products are packed and stored Safely</span>
-                    </div>
-                  </div>
 
-                  <div className="product-description">
-                    <h3>Description</h3>
-                    <p>{medicine.description}</p>
+                    <div className="safety-info">
+                      <div className="safety-badge">
+                        <Package size={16} />
+                        All the Products are packed and stored Safely
+                      </div>
+                    </div>
+
+                    <div className="medicine-description">
+                      <h4>Description</h4>
+                      <p>{medicine.description}</p>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -2801,6 +2796,17 @@ const Pharmacy = () => {
                 <p>No medicines found matching your search criteria.</p>
               </div>
             )}
+
+            {/* Mobile Floating Action Button for Cart */}
+            <button 
+              className="mobile-cart-fab"
+              onClick={() => setIsCartOpen(true)}
+            >
+              <ShoppingCart size={24} color="white" />
+              {cart.length > 0 && (
+                <span className="cart-count">{cart.length}</span>
+              )}
+            </button>
           </div>
         )}
 
@@ -3858,57 +3864,54 @@ const Pharmacy = () => {
 
       {/* Modern Pharmacy Styles */}
       <style>{`
-        .medicines-list-modern {
-          display: flex;
-          flex-direction: column;
+        .medicines-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
           gap: 2rem;
-          padding: 1rem 0;
+          padding: 2rem 0;
         }
 
-        .medicine-product-page {
+        .medicine-card {
           background: white;
-          border-radius: 8px;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
           border: 1px solid #e5e7eb;
           overflow: hidden;
-          margin-bottom: 2rem;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .product-layout {
-          display: grid;
-          grid-template-columns: 200px 1fr 300px;
-          gap: 2rem;
-          padding: 2rem;
-          align-items: start;
+        .medicine-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
         }
 
-        .product-image-section {
+        .medicine-image-container {
           position: relative;
-        }
-
-        .image-container {
-          width: 200px;
-          height: 200px;
-          background: #f8f9fa;
-          border-radius: 8px;
+          width: 100%;
+          height: 250px;
+          background: #f9fafb;
           display: flex;
           align-items: center;
           justify-content: center;
-          position: relative;
           overflow: hidden;
         }
 
-        .product-image {
+        .medicine-image {
           width: 100%;
           height: 100%;
-          object-fit: contain;
-          padding: 1rem;
+          object-fit: cover;
+          transition: transform 0.3s ease;
         }
 
-        .discount-tag {
+        .medicine-card:hover .medicine-image {
+          transform: scale(1.05);
+        }
+
+        .discount-badge {
           position: absolute;
-          top: 8px;
-          left: 8px;
-          background: #dc2626;
+          top: 12px;
+          left: 12px;
+          background: #ef4444;
           color: white;
           padding: 4px 8px;
           border-radius: 4px;
@@ -3916,276 +3919,250 @@ const Pharmacy = () => {
           font-weight: 600;
         }
 
-        .image-actions {
-          margin-top: 1rem;
+        .medicine-actions {
+          position: absolute;
+          top: 12px;
+          right: 12px;
           display: flex;
-          justify-content: center;
+          gap: 8px;
+          opacity: 0;
+          transition: opacity 0.2s ease;
         }
 
-        .share-btn {
+        .medicine-card:hover .medicine-actions {
+          opacity: 1;
+        }
+
+        .action-btn {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          border: none;
           background: white;
-          border: 1px solid #d1d5db;
-          border-radius: 6px;
-          padding: 8px;
-          cursor: pointer;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
           display: flex;
           align-items: center;
           justify-content: center;
+          cursor: pointer;
+          transition: transform 0.2s ease;
         }
 
-        .product-details-section {
-          flex: 1;
+        .action-btn:hover {
+          transform: scale(1.1);
         }
 
-        .product-info {
-          max-width: 100%;
+        .medicine-info {
+          padding: 20px;
         }
 
-        .product-title {
-          font-size: 24px;
+        .medicine-header {
+          margin-bottom: 16px;
+        }
+
+        .medicine-name {
+          font-size: 18px;
           font-weight: 600;
           color: #111827;
-          margin: 0 0 8px 0;
-          line-height: 1.3;
+          margin: 0 0 4px 0;
+          line-height: 1.4;
         }
 
-        .manufacturer-info {
+        .manufacturer {
           color: #6b7280;
-          font-size: 16px;
+          font-size: 14px;
           margin-bottom: 4px;
         }
 
-        .pack-size {
+        .strip-size {
           color: #374151;
-          font-size: 16px;
+          font-size: 14px;
           font-weight: 500;
-          margin-bottom: 1.5rem;
         }
 
-        .pricing {
-          margin-bottom: 1.5rem;
+        .price-section {
+          margin-bottom: 16px;
         }
 
-        .price-row {
+        .price-container {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 8px;
           margin-bottom: 4px;
         }
 
-        .final-price {
-          font-size: 32px;
+        .current-price {
+          font-size: 24px;
           font-weight: 700;
           color: #111827;
         }
 
-        .mrp {
-          font-size: 18px;
+        .original-price {
+          font-size: 16px;
           color: #9ca3af;
           text-decoration: line-through;
         }
 
-        .save-percent {
-          background: #dc2626;
+        .discount-percent {
+          background: #ef4444;
           color: white;
-          padding: 4px 8px;
+          padding: 2px 6px;
           border-radius: 4px;
-          font-size: 14px;
+          font-size: 12px;
           font-weight: 600;
         }
 
-        .unit-price {
+        .price-per-unit {
           color: #6b7280;
-          font-size: 14px;
+          font-size: 12px;
         }
 
-        .delivery-section {
+        .delivery-info {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 6px;
           color: #059669;
-          font-size: 16px;
-          margin-bottom: 1rem;
-        }
-
-        .offer-text {
-          color: #6b7280;
           font-size: 14px;
-          margin-bottom: 1.5rem;
+          margin-bottom: 8px;
         }
 
-        .action-section {
-          margin-bottom: 1rem;
+        .offer-info {
+          color: #6b7280;
+          font-size: 12px;
+          margin-bottom: 16px;
         }
 
-        .add-to-cart-button {
+        .medicine-actions-bottom {
+          margin-bottom: 20px;
+        }
+
+        .add-to-cart-primary {
+          width: 100%;
           background: #059669;
           color: white;
           border: none;
-          padding: 14px 32px;
-          border-radius: 8px;
-          font-size: 18px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: background-color 0.2s ease;
-          width: 200px;
-        }
-
-        .add-to-cart-button:hover:not(:disabled) {
-          background: #047857;
-        }
-
-        .add-to-cart-button:disabled {
-          background: #d1d5db;
-          cursor: not-allowed;
-        }
-
-        .stock-status.unavailable {
-          background: #fef2f2;
-          color: #dc2626;
-          padding: 8px 16px;
-          border-radius: 6px;
-          font-weight: 500;
-          margin-top: 8px;
-          display: inline-block;
-        }
-
-        .cart-info-section {
-          background: #f9fafb;
-          border-radius: 8px;
-          padding: 2rem;
-          text-align: center;
-          border: 1px solid #e5e7eb;
-        }
-
-        .proceed-message {
-          font-size: 18px;
-          font-weight: 600;
-          color: #374151;
-          margin-bottom: 1rem;
-        }
-
-        .view-cart-button {
-          background: #6b7280;
-          color: white;
-          border: none;
-          padding: 12px 24px;
+          padding: 12px 16px;
           border-radius: 8px;
           font-size: 16px;
           font-weight: 600;
           cursor: pointer;
           transition: background-color 0.2s ease;
-          width: 100%;
         }
 
-        .view-cart-button:hover:not(:disabled) {
-          background: #4b5563;
+        .add-to-cart-primary:hover:not(:disabled) {
+          background: #047857;
         }
 
-        .view-cart-button:disabled {
+        .add-to-cart-primary:disabled {
           background: #d1d5db;
           cursor: not-allowed;
         }
 
-        .product-links {
-          padding: 1.5rem 2rem;
-          border-top: 1px solid #e5e7eb;
-          background: #f9fafb;
+        .out-of-stock {
+          background: #fef2f2;
+          color: #dc2626;
+          text-align: center;
+          padding: 8px;
+          border-radius: 6px;
+          font-weight: 500;
+          margin-top: 8px;
         }
 
-        .links-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 0.5rem 2rem;
+        .quick-links {
+          margin-bottom: 20px;
         }
 
-        .link-item {
+        .link-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 16px;
+          margin-bottom: 8px;
+        }
+
+        .link-row span {
           color: #059669;
           font-size: 14px;
           cursor: pointer;
           transition: color 0.2s ease;
-          line-height: 1.6;
         }
 
-        .link-item:hover {
+        .link-row span:hover {
           color: #047857;
           text-decoration: underline;
         }
 
-        .offers-for-you {
-          padding: 1.5rem 2rem;
-          border-top: 1px solid #e5e7eb;
+        .offers-section {
           background: #fef7f0;
+          padding: 16px;
+          border-radius: 8px;
+          margin-bottom: 16px;
         }
 
-        .offers-title {
+        .offers-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 1rem;
+          margin-bottom: 12px;
         }
 
-        .offers-title span {
+        .offers-header span {
           font-weight: 600;
           color: #111827;
-          font-size: 16px;
         }
 
-        .view-all-link {
+        .view-all {
           color: #059669;
           text-decoration: none;
           font-size: 14px;
         }
 
-        .offer-list {
+        .offer-items {
           display: flex;
-          gap: 1rem;
+          flex-direction: column;
+          gap: 8px;
         }
 
-        .offer-card {
+        .offer-item {
           display: flex;
           align-items: center;
           gap: 8px;
-          flex: 1;
         }
 
-        .offer-tag {
-          padding: 6px 12px;
+        .offer-badge {
+          padding: 4px 8px;
           border-radius: 4px;
           font-size: 12px;
           font-weight: 600;
           color: white;
         }
 
-        .offer-tag.save {
+        .offer-badge.save {
           background: #059669;
         }
 
-        .offer-tag.discount {
+        .offer-badge.discount {
           background: #0891b2;
         }
 
-        .product-safety {
-          padding: 1.5rem 2rem;
-          border-top: 1px solid #e5e7eb;
-        }
-
-        .safety-message {
+        .return-policy {
           display: flex;
           align-items: center;
           gap: 8px;
-          margin-bottom: 1rem;
+          margin-bottom: 16px;
           font-size: 14px;
           color: #374151;
         }
 
-        .read-more-link {
+        .read-more {
           color: #059669;
           text-decoration: none;
           margin-left: auto;
         }
 
-        .packed-safely {
+        .safety-info {
+          margin-bottom: 16px;
+        }
+
+        .safety-badge {
           display: flex;
           align-items: center;
           gap: 8px;
@@ -4196,22 +4173,17 @@ const Pharmacy = () => {
           font-size: 14px;
         }
 
-        .product-description {
-          padding: 1.5rem 2rem;
-          border-top: 1px solid #e5e7eb;
-        }
-
-        .product-description h3 {
+        .medicine-description h4 {
           color: #111827;
-          font-size: 18px;
+          font-size: 16px;
           font-weight: 600;
           margin: 0 0 8px 0;
         }
 
-        .product-description p {
+        .medicine-description p {
           color: #6b7280;
           font-size: 14px;
-          line-height: 1.6;
+          line-height: 1.5;
           margin: 0;
         }
 
@@ -4296,59 +4268,450 @@ const Pharmacy = () => {
           background: #dbeafe;
         }
 
-        /* Responsive design */
-        @media (max-width: 968px) {
-          .product-layout {
+        /* Mobile Floating Action Button */
+        .mobile-cart-fab {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          width: 60px;
+          height: 60px;
+          background: linear-gradient(135deg, #059669 0%, #047857 100%);
+          border-radius: 50%;
+          display: none;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+          z-index: 1000;
+          border: none;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .mobile-cart-fab:hover {
+          transform: scale(1.1);
+          box-shadow: 0 10px 30px rgba(5, 150, 105, 0.5);
+        }
+
+        .mobile-cart-fab .cart-count {
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          background: #ef4444;
+          color: white;
+          border-radius: 50%;
+          width: 24px;
+          height: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        /* Responsive design for mobile */
+        @media (max-width: 768px) {
+          .pharmacy-container {
+            padding: 0;
+          }
+
+          .medicines-grid {
             grid-template-columns: 1fr;
-            gap: 1.5rem;
+            gap: 1rem;
+            padding: 1rem;
           }
           
-          .cart-info-section {
-            order: -1;
+          .medicine-card {
+            margin: 0;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background: white;
           }
-          
-          .image-container {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto;
+
+          .medicine-card:active {
+            transform: scale(0.98);
           }
-          
-          .product-title {
-            font-size: 20px;
+
+          .medicine-image-container {
+            height: 180px;
+            border-radius: 16px 16px 0 0;
+            position: relative;
+            overflow: hidden;
           }
-          
-          .final-price {
-            font-size: 28px;
+
+          .discount-badge {
+            top: 12px;
+            left: 12px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+            animation: pulse 2s infinite;
           }
-          
-          .add-to-cart-button {
+
+          @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+          }
+
+          .medicine-info {
+            padding: 16px;
+          }
+
+          .medicine-name {
+            font-size: 16px;
+            line-height: 1.3;
+          }
+
+          .manufacturer {
+            font-size: 12px;
+          }
+
+          .strip-size {
+            font-size: 12px;
+          }
+
+          .current-price {
+            font-size: 22px;
+            font-weight: 800;
+            color: #059669;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+          }
+
+          .original-price {
+            font-size: 16px;
+            color: #9ca3af;
+            text-decoration: line-through;
+          }
+
+          .discount-percent {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+          }
+
+          .price-per-unit {
+            font-size: 11px;
+          }
+
+          .delivery-info {
+            font-size: 12px;
+          }
+
+          .offer-info {
+            font-size: 11px;
+          }
+
+          .add-to-cart-primary {
+            padding: 14px 16px;
+            font-size: 15px;
+            border-radius: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+            transition: all 0.3s ease;
+            border: none;
+            color: white;
             width: 100%;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+          }
+
+          .add-to-cart-primary:active:not(:disabled) {
+            transform: scale(0.95);
+          }
+
+          .add-to-cart-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
+          }
+
+          .quick-links {
+            margin-bottom: 16px;
+          }
+
+          .link-row {
+            flex-direction: column;
+            gap: 6px;
+          }
+
+          .link-row span {
+            font-size: 12px;
+            padding: 4px 0;
+          }
+
+          .offers-section {
+            padding: 12px;
+            border-radius: 12px;
+          }
+
+          .offers-header span {
+            font-size: 14px;
+          }
+
+          .offer-item {
+            font-size: 12px;
+          }
+
+          .return-policy {
+            font-size: 12px;
+          }
+
+          .safety-badge {
+            padding: 10px;
+            font-size: 12px;
+            border-radius: 12px;
+          }
+
+          .medicine-description h4 {
+            font-size: 14px;
+          }
+
+          .medicine-description p {
+            font-size: 12px;
+          }
+
+          /* Mobile-specific header styles */
+          .search-container {
+            margin: 1rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background: white;
+            position: relative;
+            overflow: hidden;
+          }
+
+          .search-input {
+            font-size: 16px;
+            padding: 18px 60px 18px 20px;
+            border-radius: 16px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+          }
+
+          .search-input:focus {
+            border-color: #059669;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+          }
+
+          .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+          }
+
+          .breadcrumb {
+            margin: 1rem;
+            font-size: 12px;
+          }
+
+          .cart-header-section {
+            margin: 1rem;
+            padding: 16px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+
+          .cart-message {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+          }
+
+          .view-cart-btn {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+            transition: all 0.3s ease;
+          }
+
+          .view-cart-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
+          }
+
+          .view-cart-btn:disabled {
+            background: #d1d5db;
+            box-shadow: none;
+            transform: none;
+          }
+
+          .language-support {
+            margin: 1rem;
+            text-align: center;
+          }
+
+          .hindi-text {
+            padding: 12px 24px;
+            font-size: 14px;
+            border-radius: 25px;
+            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.2);
+          }
+
+          /* Mobile cart sidebar */
+          .cart-sidebar {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 0 !important;
+          }
+
+          /* Mobile floating action button for cart */
+          .mobile-cart-fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+            z-index: 1000;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          }
+
+          .mobile-cart-fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(5, 150, 105, 0.5);
+          }
+
+          .mobile-cart-fab .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+          }
+
+          /* Better spacing for mobile */
+          .stats-grid {
+            margin: 1rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+          }
+
+          .stat-card {
+            padding: 16px;
+            border-radius: 12px;
+          }
+
+          .stat-number {
+            font-size: 24px;
+          }
+
+          .stat-label {
+            font-size: 12px;
           }
         }
 
-        @media (max-width: 768px) {
-          .medicine-product-page {
-            margin: 0 1rem 2rem 1rem;
+        /* Extra small devices (phones in portrait) */
+        @media (max-width: 480px) {
+          .medicines-grid {
+            padding: 0.5rem;
+            gap: 0.75rem;
           }
-          
-          .product-layout {
-            padding: 1rem;
+
+          .medicine-card {
+            border-radius: 12px;
           }
-          
-          .links-grid {
-            grid-template-columns: 1fr;
-            gap: 0.5rem;
+
+          .medicine-image-container {
+            height: 160px;
           }
-          
-          .offer-list {
+
+          .medicine-info {
+            padding: 12px;
+          }
+
+          .medicine-name {
+            font-size: 15px;
+          }
+
+          .current-price {
+            font-size: 18px;
+          }
+
+          .add-to-cart-primary {
+            padding: 12px 16px;
+            font-size: 14px;
+          }
+
+          .cart-header-section {
             flex-direction: column;
+            gap: 12px;
+            text-align: center;
           }
-          
-          .product-safety,
-          .offers-for-you,
-          .product-links,
-          .product-description {
-            padding: 1rem;
+
+          .view-cart-btn {
+            width: 100%;
+            padding: 14px 20px;
+          }
+
+          .offers-section {
+            padding: 10px;
+          }
+
+          .quick-links {
+            display: none; /* Hide on very small screens to save space */
+          }
+
+          .safety-info {
+            margin-bottom: 12px;
+          }
+
+          .mobile-cart-fab {
+            width: 55px;
+            height: 55px;
+            bottom: 15px;
+            right: 15px;
+          }
+        }
+
+        /* Landscape mode adjustments */
+        @media (max-width: 768px) and (orientation: landscape) {
+          .medicine-image-container {
+            height: 140px;
+          }
+
+          .medicines-grid {
+            grid-template-columns: repeat(2, 1fr);
           }
         }
       `}</style>
