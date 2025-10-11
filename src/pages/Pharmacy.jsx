@@ -354,6 +354,11 @@ const Pharmacy = () => {
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
   const [customerAuthMode, setCustomerAuthMode] = useState('login'); // 'login' or 'signup'
   
+  // Medicine information modal states
+  const [showMedicineInfo, setShowMedicineInfo] = useState(false);
+  const [selectedMedicineInfo, setSelectedMedicineInfo] = useState(null);
+  const [selectedInfoType, setSelectedInfoType] = useState('');
+  
   // Form states
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
   const [signupForm, setSignupForm] = useState({ 
@@ -543,6 +548,126 @@ const Pharmacy = () => {
     setEditingMedicine(medicine);
     setMedicineForm({ ...medicine });
     setShowAddMedicine(true);
+  };
+
+  // Medicine information modal functions
+  const showMedicineInfoModal = (medicine, infoType) => {
+    setSelectedMedicineInfo(medicine);
+    setSelectedInfoType(infoType);
+    setShowMedicineInfo(true);
+  };
+
+  const closeMedicineInfoModal = () => {
+    setShowMedicineInfo(false);
+    setSelectedMedicineInfo(null);
+    setSelectedInfoType('');
+  };
+
+  const getMedicineInfoContent = (medicine, infoType) => {
+    const infoData = {
+      'Uses': {
+        title: 'Uses',
+        content: medicine.uses || ['Pain relief', 'Fever reduction', 'Inflammation control'],
+        icon: '💊'
+      },
+      'Contraindications': {
+        title: 'Contraindications',
+        content: [
+          'Do not use if allergic to any ingredients',
+          'Avoid during pregnancy without medical supervision',
+          'Not recommended for children under 12 years',
+          'Avoid if you have severe liver or kidney disease'
+        ],
+        icon: '⚠️'
+      },
+      'Side effects': {
+        title: 'Side Effects',
+        content: medicine.sideEffects || ['Nausea', 'Dizziness', 'Headache', 'Stomach upset'],
+        icon: '⚕️'
+      },
+      'Precautions and Warnings': {
+        title: 'Precautions and Warnings',
+        content: medicine.precautions || [
+          'Take with food to reduce stomach irritation',
+          'Do not exceed recommended dosage',
+          'Consult doctor if symptoms persist',
+          'Keep out of reach of children'
+        ],
+        icon: '🔔'
+      },
+      'Directions for Use': {
+        title: 'Directions for Use',
+        content: [
+          medicine.directions || 'Take as directed by physician',
+          'Swallow whole with water',
+          'Do not crush or chew unless specified',
+          'Take at the same time daily for best results'
+        ],
+        icon: '📋'
+      },
+      'Storage and disposal': {
+        title: 'Storage and Disposal',
+        content: [
+          medicine.storage || 'Store in cool, dry place',
+          'Keep away from direct sunlight',
+          'Store below 25°C',
+          'Dispose of expired medicines safely at pharmacy'
+        ],
+        icon: '📦'
+      },
+      'Quick Tips': {
+        title: 'Quick Tips',
+        content: [
+          'Take medicine at regular intervals',
+          'Complete the full course even if you feel better',
+          'Do not share medicines with others',
+          'Keep a medicine diary to track effects'
+        ],
+        icon: '💡'
+      },
+      'Dosage': {
+        title: 'Dosage',
+        content: [
+          medicine.dosage || 'As prescribed by doctor',
+          'Adult dose: 1-2 tablets as needed',
+          'Do not exceed 8 tablets in 24 hours',
+          'Consult doctor for pediatric dosing'
+        ],
+        icon: '⚖️'
+      },
+      'Mode of Action': {
+        title: 'Mode of Action',
+        content: [
+          medicine.modeOfAction || 'Works by blocking pain signals',
+          'Reduces inflammation in the body',
+          'Blocks enzyme production that causes pain',
+          'Effects typically last 4-6 hours'
+        ],
+        icon: '🔬'
+      },
+      'Interactions': {
+        title: 'Drug Interactions',
+        content: [
+          'May interact with blood thinners',
+          'Avoid with other pain medications',
+          'Tell your doctor about all medicines you take',
+          'May affect certain blood pressure medications'
+        ],
+        icon: '🔄'
+      },
+      'Other Products': {
+        title: 'Other Products',
+        content: [
+          'Available in different strengths',
+          'Liquid formulation available',
+          'Extended-release version available',
+          'Combination products with other medicines'
+        ],
+        icon: '🏷️'
+      }
+    };
+
+    return infoData[infoType] || { title: infoType, content: ['Information not available'], icon: '📄' };
   };
 
   const handleUpdateMedicine = (e) => {
@@ -2730,25 +2855,25 @@ const Pharmacy = () => {
 
                     <div className="quick-links">
                       <div className="link-row">
-                        <span>• Uses</span>
-                        <span>• Contraindications</span>
-                        <span>• Side effects</span>
+                        <span onClick={() => showMedicineInfoModal(medicine, 'Uses')} title="Click to view detailed uses">• Uses</span>
+                        <span onClick={() => showMedicineInfoModal(medicine, 'Contraindications')} title="Click to view contraindications">• Contraindications</span>
+                        <span onClick={() => showMedicineInfoModal(medicine, 'Side effects')} title="Click to view side effects">• Side effects</span>
                       </div>
                       <div className="link-row">
-                        <span>• Precautions and Warnings</span>
+                        <span onClick={() => showMedicineInfoModal(medicine, 'Precautions and Warnings')} title="Click to view precautions">• Precautions and Warnings</span>
                       </div>
                       <div className="link-row">
-                        <span>• Directions for Use</span>
-                        <span>• Storage and disposal</span>
+                        <span onClick={() => showMedicineInfoModal(medicine, 'Directions for Use')} title="Click to view usage directions">• Directions for Use</span>
+                        <span onClick={() => showMedicineInfoModal(medicine, 'Storage and disposal')} title="Click to view storage information">• Storage and disposal</span>
                       </div>
                       <div className="link-row">
-                        <span>• Quick Tips</span>
-                        <span>• Dosage</span>
-                        <span>• Mode of Action</span>
+                        <span onClick={() => showMedicineInfoModal(medicine, 'Quick Tips')} title="Click to view quick tips">• Quick Tips</span>
+                        <span onClick={() => showMedicineInfoModal(medicine, 'Dosage')} title="Click to view dosage information">• Dosage</span>
+                        <span onClick={() => showMedicineInfoModal(medicine, 'Mode of Action')} title="Click to view how it works">• Mode of Action</span>
                       </div>
                       <div className="link-row">
-                        <span>• Interactions</span>
-                        <span>• Other Products</span>
+                        <span onClick={() => showMedicineInfoModal(medicine, 'Interactions')} title="Click to view drug interactions">• Interactions</span>
+                        <span onClick={() => showMedicineInfoModal(medicine, 'Other Products')} title="Click to view related products">• Other Products</span>
                       </div>
                     </div>
 
@@ -3862,6 +3987,91 @@ const Pharmacy = () => {
         )}
       </div>
 
+      {/* Medicine Information Modal */}
+      {showMedicineInfo && selectedMedicineInfo && (
+        <div className="medicine-info-overlay" onClick={closeMedicineInfoModal}>
+          <div className="medicine-info-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="medicine-info-header">
+              <div className="medicine-info-title">
+                <span className="info-icon">
+                  {getMedicineInfoContent(selectedMedicineInfo, selectedInfoType).icon}
+                </span>
+                <div>
+                  <h3>{getMedicineInfoContent(selectedMedicineInfo, selectedInfoType).title}</h3>
+                  <p className="medicine-name">{selectedMedicineInfo.name}</p>
+                </div>
+              </div>
+              <button className="close-info-modal" onClick={closeMedicineInfoModal}>
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="medicine-info-content">
+              <div className="info-section">
+                <ul className="info-list">
+                  {getMedicineInfoContent(selectedMedicineInfo, selectedInfoType).content.map((item, index) => (
+                    <li key={index} className="info-item">
+                      <span className="info-bullet">•</span>
+                      <span className="info-text">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {selectedInfoType === 'Uses' && (
+                <div className="additional-info">
+                  <div className="info-card">
+                    <h4>💊 Medicine Details</h4>
+                    <p><strong>Type:</strong> {selectedMedicineInfo.type}</p>
+                    <p><strong>Manufacturer:</strong> {selectedMedicineInfo.manufacturer}</p>
+                    <p><strong>Strip Size:</strong> {selectedMedicineInfo.stripSize}</p>
+                  </div>
+                </div>
+              )}
+
+              {selectedInfoType === 'Dosage' && (
+                <div className="additional-info">
+                  <div className="dosage-chart">
+                    <h4>📊 Dosage Information</h4>
+                    <div className="dosage-row">
+                      <span>Adults:</span>
+                      <span>{selectedMedicineInfo.dosage || '1-2 tablets as needed'}</span>
+                    </div>
+                    <div className="dosage-row">
+                      <span>Children:</span>
+                      <span>Consult physician</span>
+                    </div>
+                    <div className="dosage-row">
+                      <span>Maximum daily:</span>
+                      <span>As prescribed</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {selectedInfoType === 'Side effects' && (
+                <div className="additional-info">
+                  <div className="warning-box">
+                    <h4>⚠️ Important</h4>
+                    <p>If you experience any severe side effects, discontinue use and consult your healthcare provider immediately.</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="medicine-info-footer">
+              <p className="disclaimer">
+                <strong>Disclaimer:</strong> This information is for educational purposes only. 
+                Always consult your healthcare provider before starting any medication.
+              </p>
+              <button className="understand-btn" onClick={closeMedicineInfoModal}>
+                I Understand
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modern Pharmacy Styles */}
       <style>{`
         .medicines-grid {
@@ -4082,12 +4292,29 @@ const Pharmacy = () => {
           color: #059669;
           font-size: 14px;
           cursor: pointer;
-          transition: color 0.2s ease;
+          transition: all 0.2s ease;
+          padding: 6px 12px;
+          border-radius: 8px;
+          background: #f0f9ff;
+          border: 1px solid #e0f2fe;
+          display: inline-block;
+          margin: 2px;
+          position: relative;
+          overflow: hidden;
         }
 
         .link-row span:hover {
           color: #047857;
-          text-decoration: underline;
+          background: #e0f2fe;
+          border-color: #bae6fd;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+        }
+
+        .link-row span:active {
+          transform: translateY(0);
+          background: #0891b2;
+          color: white;
         }
 
         .offers-section {
@@ -4306,6 +4533,264 @@ const Pharmacy = () => {
           justify-content: center;
           font-size: 12px;
           font-weight: 700;
+        }
+
+        /* Medicine Information Modal Styles */
+        .medicine-info-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.7);
+          backdrop-filter: blur(4px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+          padding: 20px;
+          animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .medicine-info-modal {
+          background: white;
+          border-radius: 20px;
+          max-width: 600px;
+          width: 100%;
+          max-height: 80vh;
+          overflow: hidden;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          animation: slideUp 0.3s ease;
+          display: flex;
+          flex-direction: column;
+        }
+
+        @keyframes slideUp {
+          from { 
+            opacity: 0;
+            transform: translateY(50px) scale(0.95);
+          }
+          to { 
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        .medicine-info-header {
+          background: linear-gradient(135deg, #059669 0%, #047857 100%);
+          color: white;
+          padding: 24px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .medicine-info-title {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+
+        .info-icon {
+          font-size: 32px;
+          background: rgba(255, 255, 255, 0.2);
+          padding: 8px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 48px;
+          height: 48px;
+        }
+
+        .medicine-info-title h3 {
+          margin: 0;
+          font-size: 24px;
+          font-weight: 700;
+        }
+
+        .medicine-info-title .medicine-name {
+          margin: 4px 0 0 0;
+          font-size: 14px;
+          opacity: 0.9;
+          font-weight: 500;
+        }
+
+        .close-info-modal {
+          background: rgba(255, 255, 255, 0.2);
+          border: none;
+          border-radius: 12px;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          color: white;
+        }
+
+        .close-info-modal:hover {
+          background: rgba(255, 255, 255, 0.3);
+          transform: scale(1.05);
+        }
+
+        .medicine-info-content {
+          padding: 24px;
+          overflow-y: auto;
+          flex: 1;
+        }
+
+        .info-section {
+          margin-bottom: 24px;
+        }
+
+        .info-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+
+        .info-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          padding: 12px 0;
+          border-bottom: 1px solid #f3f4f6;
+        }
+
+        .info-item:last-child {
+          border-bottom: none;
+        }
+
+        .info-bullet {
+          color: #059669;
+          font-weight: 700;
+          font-size: 16px;
+          margin-top: 2px;
+        }
+
+        .info-text {
+          color: #374151;
+          line-height: 1.6;
+          font-size: 15px;
+        }
+
+        .additional-info {
+          margin-top: 24px;
+        }
+
+        .info-card {
+          background: #f0f9ff;
+          border: 1px solid #e0f2fe;
+          border-radius: 12px;
+          padding: 20px;
+        }
+
+        .info-card h4 {
+          margin: 0 0 16px 0;
+          color: #0c4a6e;
+          font-size: 16px;
+          font-weight: 600;
+        }
+
+        .info-card p {
+          margin: 8px 0;
+          color: #374151;
+          font-size: 14px;
+        }
+
+        .dosage-chart {
+          background: #fefbf3;
+          border: 1px solid #fbbf24;
+          border-radius: 12px;
+          padding: 20px;
+        }
+
+        .dosage-chart h4 {
+          margin: 0 0 16px 0;
+          color: #92400e;
+          font-size: 16px;
+          font-weight: 600;
+        }
+
+        .dosage-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 8px 0;
+          border-bottom: 1px solid #fde68a;
+        }
+
+        .dosage-row:last-child {
+          border-bottom: none;
+        }
+
+        .dosage-row span:first-child {
+          font-weight: 500;
+          color: #78350f;
+        }
+
+        .dosage-row span:last-child {
+          font-weight: 600;
+          color: #92400e;
+        }
+
+        .warning-box {
+          background: #fef2f2;
+          border: 1px solid #fca5a5;
+          border-radius: 12px;
+          padding: 20px;
+        }
+
+        .warning-box h4 {
+          margin: 0 0 12px 0;
+          color: #dc2626;
+          font-size: 16px;
+          font-weight: 600;
+        }
+
+        .warning-box p {
+          margin: 0;
+          color: #374151;
+          font-size: 14px;
+          line-height: 1.6;
+        }
+
+        .medicine-info-footer {
+          background: #f9fafb;
+          padding: 20px 24px;
+          border-top: 1px solid #e5e7eb;
+        }
+
+        .disclaimer {
+          margin: 0 0 16px 0;
+          font-size: 12px;
+          color: #6b7280;
+          line-height: 1.5;
+        }
+
+        .understand-btn {
+          background: linear-gradient(135deg, #059669 0%, #047857 100%);
+          color: white;
+          border: none;
+          border-radius: 12px;
+          padding: 12px 24px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          width: 100%;
+        }
+
+        .understand-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
         }
 
         /* Responsive design for mobile */
@@ -4620,6 +5105,52 @@ const Pharmacy = () => {
             font-weight: 700;
           }
 
+          /* Mobile Medicine Info Modal */
+          .medicine-info-overlay {
+            padding: 10px;
+          }
+
+          .medicine-info-modal {
+            max-height: 95vh;
+            border-radius: 16px;
+          }
+
+          .medicine-info-header {
+            padding: 20px;
+            border-radius: 16px 16px 0 0;
+          }
+
+          .medicine-info-title h3 {
+            font-size: 20px;
+          }
+
+          .info-icon {
+            font-size: 28px;
+            min-width: 44px;
+            height: 44px;
+          }
+
+          .medicine-info-content {
+            padding: 20px;
+          }
+
+          .info-item {
+            padding: 10px 0;
+          }
+
+          .info-text {
+            font-size: 14px;
+          }
+
+          .medicine-info-footer {
+            padding: 16px 20px;
+          }
+
+          .understand-btn {
+            padding: 14px 20px;
+            font-size: 15px;
+          }
+
           /* Better spacing for mobile */
           .stats-grid {
             margin: 1rem;
@@ -4771,6 +5302,75 @@ const Pharmacy = () => {
 
           .mobile-cart-fab:active {
             transform: scale(0.9);
+          }
+
+          /* Extra Small Device Modal Styles */
+          .medicine-info-overlay {
+            padding: 5px;
+          }
+
+          .medicine-info-modal {
+            max-height: 98vh;
+            border-radius: 12px;
+          }
+
+          .medicine-info-header {
+            padding: 16px;
+            flex-direction: column;
+            gap: 12px;
+            text-align: center;
+          }
+
+          .medicine-info-title {
+            flex-direction: column;
+            gap: 8px;
+          }
+
+          .medicine-info-title h3 {
+            font-size: 18px;
+          }
+
+          .medicine-info-content {
+            padding: 16px;
+          }
+
+          .info-item {
+            padding: 8px 0;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+          }
+
+          .info-bullet {
+            display: none;
+          }
+
+          .info-text {
+            font-size: 13px;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 8px;
+            width: 100%;
+            border-left: 3px solid #059669;
+          }
+
+          .info-card, .dosage-chart, .warning-box {
+            padding: 16px;
+            border-radius: 12px;
+          }
+
+          .medicine-info-footer {
+            padding: 16px;
+          }
+
+          .disclaimer {
+            font-size: 11px;
+          }
+
+          .understand-btn {
+            padding: 16px 20px;
+            font-size: 16px;
+            border-radius: 12px;
           }
 
           /* Smooth scroll behavior */
