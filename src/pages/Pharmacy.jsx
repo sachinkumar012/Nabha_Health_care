@@ -1,6 +1,6 @@
 import  { useState, useEffect } from 'react';
-import { Search, Plus, Edit3, User, Lock, Mail, Phone, Clock, MapPin, Package, ShoppingCart, Minus, X, CreditCard, Truck, CheckCircle } from 'lucide-react';
-import NabhaHealthIcon from '../components/UI/NabhaHealthIcon';
+import { Search, Plus, Edit3, User, Lock, Mail, Phone, Clock, MapPin, Package, ShoppingCart, Minus, X, CreditCard, Truck, CheckCircle, Star, Share2, Heart, Percent, IndianRupee } from 'lucide-react';
+import HealthIcon from '../components/UI/HealthIcon';
 import PaymentService from '../services/PaymentService';
 
 const Pharmacy = () => {
@@ -8,147 +8,165 @@ const Pharmacy = () => {
   const [medicines, setMedicines] = useState([
     {
       id: 1,
-      name: 'Paracetamol 500mg',
+      name: 'Ecosprin 75 Tablet',
       type: 'Tablet',
       availability: true,
       location: 'Main Street Pharmacy',
-      price: 25.00,
-      description: 'Pain relief and fever reducer',
+      price: 4.02,
+      originalPrice: 5.15,
+      discount: 22,
+      description: 'Aspirin Gastro-Resistant Tablets IP 75 MG',
       inStock: 150,
-      manufacturer: 'Generic Pharma',
-      prescriptionRequired: false
+      manufacturer: 'USV PVT LTD',
+      prescriptionRequired: false,
+      stripSize: '14 Tablet(s) in Strip',
+      pricePerTablet: 0.29,
+      image: '/api/placeholder/300/300',
+      uses: ['Heart attack prevention', 'Stroke prevention', 'Angina'],
+      sideEffects: ['Nausea', 'Stomach upset', 'Heartburn'],
+      precautions: ['Take with food', 'Avoid alcohol', 'Consult doctor if bleeding'],
+      directions: 'Take as directed by physician',
+      storage: 'Store in cool, dry place',
+      dosage: '75mg once daily',
+      modeOfAction: 'Antiplatelet agent',
+      returnPolicy: '30 days return policy',
+      rating: 4.5,
+      reviews: 1247
     },
     {
       id: 2,
-      name: 'Amoxicillin 250mg',
-      type: 'Capsule',
+      name: 'Paracetamol 500mg',
+      type: 'Tablet',
       availability: true,
       location: 'City Center Pharmacy',
-      price: 180.00,
-      description: 'Antibiotic for bacterial infections',
-      inStock: 75,
-      manufacturer: 'MedLife',
-      prescriptionRequired: true
+      price: 25.00,
+      originalPrice: 30.00,
+      discount: 17,
+      description: 'Pain relief and fever reducer',
+      inStock: 200,
+      manufacturer: 'Cipla Ltd',
+      prescriptionRequired: false,
+      stripSize: '10 Tablet(s) in Strip',
+      pricePerTablet: 2.50,
+      image: '/api/placeholder/300/300',
+      uses: ['Fever', 'Headache', 'Body pain'],
+      sideEffects: ['Rare allergic reactions'],
+      precautions: ['Do not exceed recommended dose'],
+      directions: 'Take 1-2 tablets every 4-6 hours',
+      storage: 'Store below 25°C',
+      dosage: '500mg as needed',
+      modeOfAction: 'Analgesic and antipyretic',
+      returnPolicy: '30 days return policy',
+      rating: 4.3,
+      reviews: 892
     },
     {
       id: 3,
-      name: 'Ibuprofen 400mg',
-      type: 'Tablet',
-      availability: false,
-      location: 'Downtown Pharmacy',
-      price: 45.00,
-      description: 'Anti-inflammatory pain reliever',
-      inStock: 0,
-      manufacturer: 'HealthCorp',
-      prescriptionRequired: false
+      name: 'Amoxicillin 250mg',
+      type: 'Capsule',
+      availability: true,
+      location: 'Health Plus Pharmacy',
+      price: 180.00,
+      originalPrice: 220.00,
+      discount: 18,
+      description: 'Antibiotic for bacterial infections',
+      inStock: 75,
+      manufacturer: 'Sun Pharma',
+      prescriptionRequired: true,
+      stripSize: '10 Capsule(s) in Strip',
+      pricePerTablet: 18.00,
+      image: '/api/placeholder/300/300',
+      uses: ['Bacterial infections', 'Respiratory tract infections'],
+      sideEffects: ['Nausea', 'Diarrhea', 'Allergic reactions'],
+      precautions: ['Complete full course', 'Take with food'],
+      directions: 'Take as prescribed by doctor',
+      storage: 'Store in cool, dry place',
+      dosage: '250mg three times daily',
+      modeOfAction: 'Beta-lactam antibiotic',
+      returnPolicy: 'No returns for prescription medicines',
+      rating: 4.2,
+      reviews: 567
     },
     {
       id: 4,
-      name: 'Cough Syrup',
-      type: 'Syrup',
-      availability: true,
-      location: 'City Center Pharmacy',
-      price: 85.00,
-      description: 'Relief from cough and cold symptoms',
-      inStock: 45,
-      manufacturer: 'ColdCare',
-      prescriptionRequired: false
-    },
-    {
-      id: 5,
-      name: 'Aspirin 75mg',
-      type: 'Tablet',
-      availability: true,
-      location: 'Main Street Pharmacy',
-      price: 35.00,
-      description: 'Blood thinner and pain relief',
-      inStock: 200,
-      manufacturer: 'CardioMed',
-      prescriptionRequired: false
-    },
-    {
-      id: 6,
       name: 'Omeprazole 20mg',
       type: 'Capsule',
       availability: true,
-      location: 'Health Plus Pharmacy',
+      location: 'Quick Care Pharmacy',
       price: 120.00,
+      originalPrice: 150.00,
+      discount: 20,
       description: 'Acid reflux and heartburn relief',
       inStock: 80,
-      manufacturer: 'GastroHealth',
-      prescriptionRequired: false
+      manufacturer: 'Dr. Reddy\'s',
+      prescriptionRequired: false,
+      stripSize: '10 Capsule(s) in Strip',
+      pricePerTablet: 12.00,
+      image: '/api/placeholder/300/300',
+      uses: ['Acidity', 'GERD', 'Peptic ulcers'],
+      sideEffects: ['Headache', 'Nausea', 'Diarrhea'],
+      precautions: ['Take before meals', 'Long-term use requires monitoring'],
+      directions: 'Take 30 minutes before breakfast',
+      storage: 'Store below 25°C',
+      dosage: '20mg once daily',
+      modeOfAction: 'Proton pump inhibitor',
+      returnPolicy: '30 days return policy',
+      rating: 4.4,
+      reviews: 1034
     },
     {
-      id: 7,
-      name: 'Metformin 500mg',
-      type: 'Tablet',
-      availability: false,
-      location: 'Downtown Pharmacy',
-      price: 95.00,
-      description: 'Diabetes management medication',
-      inStock: 0,
-      manufacturer: 'DiabetCare',
-      prescriptionRequired: true
-    },
-    {
-      id: 8,
+      id: 5,
       name: 'Cetirizine 10mg',
       type: 'Tablet',
       availability: true,
-      location: 'Quick Care Pharmacy',
+      location: 'Downtown Pharmacy',
       price: 55.00,
+      originalPrice: 65.00,
+      discount: 15,
       description: 'Allergy relief antihistamine',
       inStock: 120,
-      manufacturer: 'AllergyFree',
-      prescriptionRequired: false
+      manufacturer: 'Lupin Ltd',
+      prescriptionRequired: false,
+      stripSize: '10 Tablet(s) in Strip',
+      pricePerTablet: 5.50,
+      image: '/api/placeholder/300/300',
+      uses: ['Allergic rhinitis', 'Urticaria', 'Skin allergies'],
+      sideEffects: ['Drowsiness', 'Dry mouth', 'Fatigue'],
+      precautions: ['Avoid alcohol', 'May cause drowsiness'],
+      directions: 'Take once daily preferably in evening',
+      storage: 'Store in cool, dry place',
+      dosage: '10mg once daily',
+      modeOfAction: 'H1 antihistamine',
+      returnPolicy: '30 days return policy',
+      rating: 4.1,
+      reviews: 723
     },
     {
-      id: 9,
-      name: 'Vitamin D3',
+      id: 6,
+      name: 'Vitamin D3 60K IU',
       type: 'Capsule',
       availability: true,
-      location: 'Health Plus Pharmacy',
+      location: 'Wellness Pharmacy',
       price: 150.00,
+      originalPrice: 180.00,
+      discount: 17,
       description: 'Bone health and immune support',
       inStock: 90,
-      manufacturer: 'VitaHealth',
-      prescriptionRequired: false
-    },
-    {
-      id: 10,
-      name: 'Insulin Injection',
-      type: 'Injection',
-      availability: false,
-      location: 'Main Street Pharmacy',
-      price: 450.00,
-      description: 'Diabetes insulin therapy',
-      inStock: 0,
-      manufacturer: 'InsulinCorp',
-      prescriptionRequired: true
-    },
-    {
-      id: 11,
-      name: 'Losartan 50mg',
-      type: 'Tablet',
-      availability: true,
-      location: 'City Center Pharmacy',
-      price: 110.00,
-      description: 'Blood pressure management',
-      inStock: 65,
-      manufacturer: 'CardioMed',
-      prescriptionRequired: true
-    },
-    {
-      id: 12,
-      name: 'Azithromycin 500mg',
-      type: 'Tablet',
-      availability: true,
-      location: 'Quick Care Pharmacy',
-      price: 220.00,
-      description: 'Broad-spectrum antibiotic',
-      inStock: 40,
-      manufacturer: 'AntibioCorp',
-      prescriptionRequired: true
+      manufacturer: 'Abbott',
+      prescriptionRequired: false,
+      stripSize: '4 Capsule(s) in Strip',
+      pricePerTablet: 37.50,
+      image: '/api/placeholder/300/300',
+      uses: ['Vitamin D deficiency', 'Bone health', 'Immune support'],
+      sideEffects: ['Rare: hypercalcemia with overdose'],
+      precautions: ['Take with fatty meal for better absorption'],
+      directions: 'Take once weekly or as directed',
+      storage: 'Store below 25°C, protect from light',
+      dosage: '60,000 IU weekly',
+      modeOfAction: 'Vitamin D supplement',
+      returnPolicy: '30 days return policy',
+      rating: 4.6,
+      reviews: 1156
     },
     {
       id: 13,
@@ -2373,7 +2391,7 @@ const Pharmacy = () => {
             marginBottom: '1rem',
             flexWrap: 'wrap'
           }}>
-            <NabhaHealthIcon size={64} variant="default" />
+            <HealthIcon size={64} />
             <div>
               <h1 style={{
                 margin: 0,
@@ -2414,7 +2432,7 @@ const Pharmacy = () => {
                 color: '#10b981',
                 fontWeight: '600'
               }}>
-                <NabhaHealthIcon size={20} variant="default" />
+                <HealthIcon size={20} />
                 <span>Trusted Care</span>
               </div>
             </div>
@@ -2595,6 +2613,15 @@ const Pharmacy = () => {
               </div>
             </div>
 
+            {/* Breadcrumb Navigation */}
+            <div className="breadcrumb">
+              <a href="#" onClick={(e) => {e.preventDefault(); setCurrentView('guest');}}>Home</a>
+              <span>›</span>
+              <a href="#" onClick={(e) => {e.preventDefault(); setCurrentView('user-search');}}>Medicines</a>
+              <span>›</span>
+              <span>Search Results</span>
+            </div>
+
             <div className="search-container">
               <Search className="search-icon" size={20} />
               <input
@@ -2606,53 +2633,159 @@ const Pharmacy = () => {
               />
             </div>
 
-            <div className="medicines-list">
-              <div className="medicines-header">
-                <div>Medicine</div>
-                <div>Type</div>
-                <div>Price</div>
-                <div>Availability</div>
-                <div>Pharmacy Location</div>
-                <div>Actions</div>
+            {/* Cart Header Section */}
+            <div className="cart-header-section">
+              <div className="cart-message">
+                {cart.length === 0 ? 'Please add item(s) to proceed' : `${cart.length} item(s) in cart`}
               </div>
+              <button 
+                className="view-cart-btn"
+                onClick={() => setIsCartOpen(true)}
+                disabled={cart.length === 0}
+              >
+                View Cart {cart.length > 0 && `(${cart.length})`}
+              </button>
+            </div>
+
+            {/* Language Support */}
+            <div className="language-support">
+              <button className="hindi-text">
+                हिंदी में पढ़ें
+              </button>
+            </div>
+
+            {/* Medicine Grid Layout */}
+            <div className="medicines-grid">
               {filteredMedicines.map((medicine) => (
-                <div key={medicine.id} className="medicine-item">
-                  <div className="medicine-name-cell">
-                    <h3 className="medicine-name-primary">{medicine.name}</h3>
-                    <p className="medicine-name-secondary">{medicine.description}</p>
-                    <p className="stock-info">Stock: {medicine.inStock} units</p>
-                    {medicine.prescriptionRequired && (
-                      <span className="prescription-badge">
-                        Prescription Required
-                      </span>
+                <div key={medicine.id} className="medicine-card">
+                  <div className="medicine-image-container">
+                    <img 
+                      src={medicine.image} 
+                      alt={medicine.name}
+                      className="medicine-image"
+                      onError={(e) => {
+                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDMwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNTAgMTAwQzE0MS43IDE2MiAxMjUgMTc1IDEyNSAyMDBIMTc1QzE3NSAxNzUgMTU4LjMgMTYyIDE1MCA1MFoiIGZpbGw9IiNEMUQ1REIiLz4KPC9zdmc+';
+                      }}
+                    />
+                    {medicine.discount > 0 && (
+                      <div className="discount-badge">
+                        {medicine.discount}% OFF
+                      </div>
                     )}
+                    <div className="medicine-actions">
+                      <button className="action-btn" title="Add to wishlist">
+                        <Heart size={16} />
+                      </button>
+                      <button className="action-btn" title="Share">
+                        <Share2 size={16} />
+                      </button>
+                    </div>
                   </div>
-                  <div className="medicine-type-cell">
-                    <span className="medicine-type-badge">{medicine.type}</span>
-                  </div>
-                  <div className="medicine-price-cell">
-                    <div className="medicine-price">₹{medicine.price}</div>
-                    <div className="stock-info">{medicine.manufacturer}</div>
-                  </div>
-                  <div className="availability-cell">
-                    <span className={`availability-badge ${medicine.availability ? 'available' : 'unavailable'}`}>
-                      {medicine.availability ? '✅ Available' : '❌ Out of Stock'}
-                    </span>
-                  </div>
-                  <div className="pharmacy-cell">
-                    <MapPin size={16} />
-                    {medicine.location}
-                  </div>
-                  <div className="actions-cell">
-                    <button
-                      className="add-to-cart-btn"
-                      onClick={() => addToCart(medicine)}
-                      disabled={!medicine.availability || medicine.inStock === 0}
-                      title={!currentCustomer ? 'Login required to add to cart' : 'Add to cart'}
-                    >
-                      <ShoppingCart size={16} />
-                      {!currentCustomer ? 'Buy' : 'Add to Cart'}
-                    </button>
+                  
+                  <div className="medicine-info">
+                    <div className="medicine-header">
+                      <h3 className="medicine-name">{medicine.name}</h3>
+                      <div className="manufacturer">By {medicine.manufacturer}</div>
+                      <div className="strip-size">{medicine.stripSize}</div>
+                    </div>
+
+                    <div className="price-section">
+                      <div className="price-container">
+                        <span className="current-price">₹{medicine.price.toFixed(2)}</span>
+                        {medicine.originalPrice && (
+                          <>
+                            <span className="original-price">₹{medicine.originalPrice.toFixed(2)}</span>
+                            <span className="discount-percent">{medicine.discount}% OFF</span>
+                          </>
+                        )}
+                      </div>
+                      <div className="price-per-unit">
+                        ₹{medicine.pricePerTablet}/tablet (Inclusive of all taxes)
+                      </div>
+                    </div>
+
+                    <div className="delivery-info">
+                      <Clock size={14} />
+                      <span>Delivery by Today, before 11:00 pm</span>
+                    </div>
+
+                    <div className="offer-info">
+                      *Offer applicable on order above ₹1000
+                    </div>
+
+                    <div className="medicine-actions-bottom">
+                      <button
+                        className="add-to-cart-primary"
+                        onClick={() => addToCart(medicine)}
+                        disabled={!medicine.availability || medicine.inStock === 0}
+                        title={!currentCustomer ? 'Login required to add to cart' : 'Add to cart'}
+                      >
+                        Add To Cart
+                      </button>
+                      
+                      {!medicine.availability && (
+                        <div className="out-of-stock">Out of Stock</div>
+                      )}
+                    </div>
+
+                    <div className="quick-links">
+                      <div className="link-row">
+                        <span>• Uses</span>
+                        <span>• Contraindications</span>
+                        <span>• Side effects</span>
+                      </div>
+                      <div className="link-row">
+                        <span>• Precautions and Warnings</span>
+                      </div>
+                      <div className="link-row">
+                        <span>• Directions for Use</span>
+                        <span>• Storage and disposal</span>
+                      </div>
+                      <div className="link-row">
+                        <span>• Quick Tips</span>
+                        <span>• Dosage</span>
+                        <span>• Mode of Action</span>
+                      </div>
+                      <div className="link-row">
+                        <span>• Interactions</span>
+                        <span>• Other Products</span>
+                      </div>
+                    </div>
+
+                    <div className="offers-section">
+                      <div className="offers-header">
+                        <span>Offers Just for you</span>
+                        <a href="#" className="view-all">View All</a>
+                      </div>
+                      <div className="offer-items">
+                        <div className="offer-item">
+                          <div className="offer-badge save">SAVE 27%</div>
+                          <span>Sale Live: Get 27%* OFF</span>
+                        </div>
+                        <div className="offer-item">
+                          <div className="offer-badge discount">23%</div>
+                          <span>Get 23%* OFF</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="return-policy">
+                      <Package size={14} />
+                      <span>{medicine.returnPolicy}</span>
+                      <a href="#" className="read-more">Read More</a>
+                    </div>
+
+                    <div className="safety-info">
+                      <div className="safety-badge">
+                        <Package size={16} />
+                        All the Products are packed and stored Safely
+                      </div>
+                    </div>
+
+                    <div className="medicine-description">
+                      <h4>Description</h4>
+                      <p>{medicine.description}</p>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -2671,7 +2804,7 @@ const Pharmacy = () => {
           <div className="dashboard">
             <div className="dashboard-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <NabhaHealthIcon size={40} variant="default" />
+                <HealthIcon size={40} />
                 <h2 className="dashboard-title">Pharmacist Dashboard - Manage Medicines</h2>
               </div>
               <button
@@ -2768,7 +2901,7 @@ const Pharmacy = () => {
 
               <div className="auth-header">
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                  <NabhaHealthIcon size={48} variant="default" />
+                  <HealthIcon size={48} />
                   <div>
                     <h2 className="auth-title" style={{ margin: 0 }}>Pharmacist Portal</h2>
                     <p className="auth-subtitle" style={{ margin: '0.25rem 0 0 0' }}>Access your pharmacy management dashboard</p>
@@ -3717,6 +3850,439 @@ const Pharmacy = () => {
           />
         )}
       </div>
+
+      {/* Modern Pharmacy Styles */}
+      <style>{`
+        .medicines-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+          gap: 2rem;
+          padding: 2rem 0;
+        }
+
+        .medicine-card {
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          border: 1px solid #e5e7eb;
+          overflow: hidden;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .medicine-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .medicine-image-container {
+          position: relative;
+          width: 100%;
+          height: 250px;
+          background: #f9fafb;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+
+        .medicine-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.3s ease;
+        }
+
+        .medicine-card:hover .medicine-image {
+          transform: scale(1.05);
+        }
+
+        .discount-badge {
+          position: absolute;
+          top: 12px;
+          left: 12px;
+          background: #ef4444;
+          color: white;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 12px;
+          font-weight: 600;
+        }
+
+        .medicine-actions {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          display: flex;
+          gap: 8px;
+          opacity: 0;
+          transition: opacity 0.2s ease;
+        }
+
+        .medicine-card:hover .medicine-actions {
+          opacity: 1;
+        }
+
+        .action-btn {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          border: none;
+          background: white;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: transform 0.2s ease;
+        }
+
+        .action-btn:hover {
+          transform: scale(1.1);
+        }
+
+        .medicine-info {
+          padding: 20px;
+        }
+
+        .medicine-header {
+          margin-bottom: 16px;
+        }
+
+        .medicine-name {
+          font-size: 18px;
+          font-weight: 600;
+          color: #111827;
+          margin: 0 0 4px 0;
+          line-height: 1.4;
+        }
+
+        .manufacturer {
+          color: #6b7280;
+          font-size: 14px;
+          margin-bottom: 4px;
+        }
+
+        .strip-size {
+          color: #374151;
+          font-size: 14px;
+          font-weight: 500;
+        }
+
+        .price-section {
+          margin-bottom: 16px;
+        }
+
+        .price-container {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 4px;
+        }
+
+        .current-price {
+          font-size: 24px;
+          font-weight: 700;
+          color: #111827;
+        }
+
+        .original-price {
+          font-size: 16px;
+          color: #9ca3af;
+          text-decoration: line-through;
+        }
+
+        .discount-percent {
+          background: #ef4444;
+          color: white;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-size: 12px;
+          font-weight: 600;
+        }
+
+        .price-per-unit {
+          color: #6b7280;
+          font-size: 12px;
+        }
+
+        .delivery-info {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          color: #059669;
+          font-size: 14px;
+          margin-bottom: 8px;
+        }
+
+        .offer-info {
+          color: #6b7280;
+          font-size: 12px;
+          margin-bottom: 16px;
+        }
+
+        .medicine-actions-bottom {
+          margin-bottom: 20px;
+        }
+
+        .add-to-cart-primary {
+          width: 100%;
+          background: #059669;
+          color: white;
+          border: none;
+          padding: 12px 16px;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+        }
+
+        .add-to-cart-primary:hover:not(:disabled) {
+          background: #047857;
+        }
+
+        .add-to-cart-primary:disabled {
+          background: #d1d5db;
+          cursor: not-allowed;
+        }
+
+        .out-of-stock {
+          background: #fef2f2;
+          color: #dc2626;
+          text-align: center;
+          padding: 8px;
+          border-radius: 6px;
+          font-weight: 500;
+          margin-top: 8px;
+        }
+
+        .quick-links {
+          margin-bottom: 20px;
+        }
+
+        .link-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 16px;
+          margin-bottom: 8px;
+        }
+
+        .link-row span {
+          color: #059669;
+          font-size: 14px;
+          cursor: pointer;
+          transition: color 0.2s ease;
+        }
+
+        .link-row span:hover {
+          color: #047857;
+          text-decoration: underline;
+        }
+
+        .offers-section {
+          background: #fef7f0;
+          padding: 16px;
+          border-radius: 8px;
+          margin-bottom: 16px;
+        }
+
+        .offers-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 12px;
+        }
+
+        .offers-header span {
+          font-weight: 600;
+          color: #111827;
+        }
+
+        .view-all {
+          color: #059669;
+          text-decoration: none;
+          font-size: 14px;
+        }
+
+        .offer-items {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .offer-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .offer-badge {
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 12px;
+          font-weight: 600;
+          color: white;
+        }
+
+        .offer-badge.save {
+          background: #059669;
+        }
+
+        .offer-badge.discount {
+          background: #0891b2;
+        }
+
+        .return-policy {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 16px;
+          font-size: 14px;
+          color: #374151;
+        }
+
+        .read-more {
+          color: #059669;
+          text-decoration: none;
+          margin-left: auto;
+        }
+
+        .safety-info {
+          margin-bottom: 16px;
+        }
+
+        .safety-badge {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: #eff6ff;
+          color: #1e40af;
+          padding: 12px;
+          border-radius: 8px;
+          font-size: 14px;
+        }
+
+        .medicine-description h4 {
+          color: #111827;
+          font-size: 16px;
+          font-weight: 600;
+          margin: 0 0 8px 0;
+        }
+
+        .medicine-description p {
+          color: #6b7280;
+          font-size: 14px;
+          line-height: 1.5;
+          margin: 0;
+        }
+
+        /* Navigation breadcrumb */
+        .breadcrumb {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 24px;
+          font-size: 14px;
+          color: #6b7280;
+        }
+
+        .breadcrumb a {
+          color: #059669;
+          text-decoration: none;
+        }
+
+        .breadcrumb span {
+          color: #9ca3af;
+        }
+
+        /* Cart Header Section */
+        .cart-header-section {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: #f9fafb;
+          padding: 16px 20px;
+          border-radius: 8px;
+          margin-bottom: 16px;
+          border: 1px solid #e5e7eb;
+        }
+
+        .cart-message {
+          font-size: 16px;
+          font-weight: 500;
+          color: #374151;
+        }
+
+        .view-cart-btn {
+          background: #059669;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 6px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+        }
+
+        .view-cart-btn:hover:not(:disabled) {
+          background: #047857;
+        }
+
+        .view-cart-btn:disabled {
+          background: #d1d5db;
+          cursor: not-allowed;
+        }
+
+        /* Language Support */
+        .language-support {
+          display: flex;
+          justify-content: flex-end;
+          margin-bottom: 20px;
+        }
+
+        .hindi-text {
+          background: #eff6ff;
+          color: #1e40af;
+          padding: 8px 16px;
+          border-radius: 20px;
+          border: none;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .hindi-text:hover {
+          background: #dbeafe;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+          .medicines-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            padding: 1rem 0;
+          }
+          
+          .medicine-card {
+            margin: 0 1rem;
+          }
+          
+          .medicine-image-container {
+            height: 200px;
+          }
+          
+          .medicine-info {
+            padding: 16px;
+          }
+          
+          .link-row {
+            flex-direction: column;
+            gap: 8px;
+          }
+        }
+      `}</style>
     </div>
   );
 };
