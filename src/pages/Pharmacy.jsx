@@ -1,5 +1,5 @@
 import  { useState, useEffect } from 'react';
-import { Search, Plus, Edit3, User, Lock, Mail, Phone, Clock, MapPin, Package, ShoppingCart, Minus, X, CreditCard, Truck, CheckCircle, Star, Share2, Heart, Percent, IndianRupee } from 'lucide-react';
+import { Search, Plus, Edit3, User, Lock, Mail, Phone, Clock, MapPin, Package, ShoppingCart, Minus, X, CreditCard, Truck, CheckCircle, Star, Share2, Percent, IndianRupee } from 'lucide-react';
 import HealthIcon from '../components/UI/HealthIcon';
 import PaymentService from '../services/PaymentService';
 
@@ -751,6 +751,130 @@ const Pharmacy = () => {
 
   const getCartItemCount = () => {
     return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  // Share functionality
+  const shareMedicine = async (medicine) => {
+    const shareData = {
+      title: `${medicine.name} - Nabha Healthcare Pharmacy`,
+      text: `Check out ${medicine.name} - ${medicine.description}. Price: ₹${medicine.price}. Available at ${medicine.location}.`,
+      url: window.location.href + `?medicine=${medicine.id}`
+    };
+
+    // Check if Web Share API is supported (mainly mobile devices)
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+        console.log('Medicine shared successfully');
+      } catch (error) {
+        console.log('Error sharing medicine:', error);
+        // Fallback to manual sharing options
+        showShareOptions(medicine);
+      }
+    } else {
+      // Fallback for desktop and unsupported browsers
+      showShareOptions(medicine);
+    }
+  };
+
+  // Show share options modal for browsers that don't support Web Share API
+  const showShareOptions = (medicine) => {
+    const shareUrl = window.location.href + `?medicine=${medicine.id}`;
+    const shareText = `Check out ${medicine.name} - ${medicine.description}. Price: ₹${medicine.price}. Available at ${medicine.location}.`;
+    
+    // Create share options
+    const shareOptions = [
+      {
+        name: 'WhatsApp',
+        url: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`,
+        color: '#25D366'
+      },
+      {
+        name: 'Telegram',
+        url: `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`,
+        color: '#0088cc'
+      },
+      {
+        name: 'Facebook',
+        url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+        color: '#1877f2'
+      },
+      {
+        name: 'Twitter',
+        url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+        color: '#1da1f2'
+      },
+      {
+        name: 'LinkedIn',
+        url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+        color: '#0077b5'
+      },
+      {
+        name: 'Email',
+        url: `mailto:?subject=${encodeURIComponent(`${medicine.name} - Nabha Healthcare`)}&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`,
+        color: '#ea4335'
+      }
+    ];
+
+    // Create and show modal
+    const modal = document.createElement('div');
+    modal.className = 'share-modal-overlay';
+    modal.innerHTML = `
+      <div class="share-modal">
+        <div class="share-modal-header">
+          <h3>Share ${medicine.name}</h3>
+          <button class="close-share-modal">&times;</button>
+        </div>
+        <div class="share-options">
+          ${shareOptions.map(option => `
+            <a href="${option.url}" target="_blank" class="share-option" style="border-left: 4px solid ${option.color}">
+              <span class="share-option-name">${option.name}</span>
+            </a>
+          `).join('')}
+        </div>
+        <div class="share-link-section">
+          <label>Or copy link:</label>
+          <div class="share-link-container">
+            <input type="text" value="${shareUrl}" readonly class="share-link-input" id="shareUrlInput">
+            <button class="copy-link-btn" onclick="copyShareLink()">Copy</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Add event listeners
+    modal.querySelector('.close-share-modal').onclick = () => {
+      document.body.removeChild(modal);
+    };
+
+    modal.onclick = (e) => {
+      if (e.target === modal) {
+        document.body.removeChild(modal);
+      }
+    };
+
+    // Add copy function to window (temporary)
+    window.copyShareLink = () => {
+      const input = document.getElementById('shareUrlInput');
+      input.select();
+      input.setSelectionRange(0, 99999); // For mobile devices
+      
+      try {
+        document.execCommand('copy');
+        const btn = modal.querySelector('.copy-link-btn');
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.background = '#10b981';
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.style.background = '';
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+      }
+    };
   };
 
   const clearCart = () => {
@@ -2497,6 +2621,173 @@ const Pharmacy = () => {
               font-size: 1.5rem;
             }
           }
+
+          /* Share Modal Styles */
+          .share-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease-out;
+          }
+
+          .share-modal {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+          }
+
+          .share-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f3f4f6;
+          }
+
+          .share-modal-header h3 {
+            margin: 0;
+            color: #1f2937;
+            font-size: 1.2rem;
+            font-weight: 600;
+          }
+
+          .close-share-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+          }
+
+          .close-share-modal:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+          }
+
+          .share-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+          }
+
+          .share-option {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: #f9fafb;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #1f2937;
+            transition: all 0.2s;
+            border: 1px solid #e5e7eb;
+          }
+
+          .share-option:hover {
+            background: #f3f4f6;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          }
+
+          .share-option-name {
+            font-weight: 500;
+            margin-left: 0.5rem;
+          }
+
+          .share-link-section {
+            border-top: 2px solid #f3f4f6;
+            padding-top: 1rem;
+          }
+
+          .share-link-section label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+            font-weight: 500;
+            font-size: 0.9rem;
+          }
+
+          .share-link-container {
+            display: flex;
+            gap: 0.5rem;
+          }
+
+          .share-link-input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            background: #f9fafb;
+          }
+
+          .copy-link-btn {
+            padding: 0.5rem 1rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+            white-space: nowrap;
+          }
+
+          .copy-link-btn:hover {
+            background: #2563eb;
+          }
+
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+
+          @keyframes slideIn {
+            from { 
+              opacity: 0;
+              transform: translateY(-20px) scale(0.95);
+            }
+            to { 
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
+          }
+
+          @media (max-width: 480px) {
+            .share-modal {
+              width: 95%;
+              padding: 1rem;
+            }
+            
+            .share-link-container {
+              flex-direction: column;
+            }
+            
+            .copy-link-btn {
+              width: 100%;
+            }
+          }
         `}
       </style>
 
@@ -2798,10 +3089,11 @@ const Pharmacy = () => {
                       </div>
                     )}
                     <div className="medicine-actions">
-                      <button className="action-btn" title="Add to wishlist">
-                        <Heart size={16} />
-                      </button>
-                      <button className="action-btn" title="Share">
+                      <button 
+                        className="action-btn" 
+                        title="Share"
+                        onClick={() => shareMedicine(medicine)}
+                      >
                         <Share2 size={16} />
                       </button>
                     </div>
