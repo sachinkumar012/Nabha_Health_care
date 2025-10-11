@@ -1,6 +1,7 @@
 import  { useState, useEffect } from 'react';
-import { Search, Plus, Edit3, User, Lock, Mail, Phone, Clock, MapPin, Package } from 'lucide-react';
+import { Search, Plus, Edit3, User, Lock, Mail, Phone, Clock, MapPin, Package, ShoppingCart, Minus, X, CreditCard, Truck, CheckCircle } from 'lucide-react';
 import NabhaHealthIcon from '../components/UI/NabhaHealthIcon';
+import PaymentService from '../services/PaymentService';
 
 const Pharmacy = () => {
   // State management
@@ -10,21 +11,36 @@ const Pharmacy = () => {
       name: 'Paracetamol 500mg',
       type: 'Tablet',
       availability: true,
-      location: 'Main Street Pharmacy'
+      location: 'Main Street Pharmacy',
+      price: 25.00,
+      description: 'Pain relief and fever reducer',
+      inStock: 150,
+      manufacturer: 'Generic Pharma',
+      prescriptionRequired: false
     },
     {
       id: 2,
       name: 'Amoxicillin 250mg',
       type: 'Capsule',
       availability: true,
-      location: 'City Center Pharmacy'
+      location: 'City Center Pharmacy',
+      price: 180.00,
+      description: 'Antibiotic for bacterial infections',
+      inStock: 75,
+      manufacturer: 'MedLife',
+      prescriptionRequired: true
     },
     {
       id: 3,
       name: 'Ibuprofen 400mg',
       type: 'Tablet',
       availability: false,
-      location: 'Downtown Pharmacy'
+      location: 'Downtown Pharmacy',
+      price: 45.00,
+      description: 'Anti-inflammatory pain reliever',
+      inStock: 0,
+      manufacturer: 'HealthCorp',
+      prescriptionRequired: false
     },
     {
       id: 4,
@@ -32,133 +48,293 @@ const Pharmacy = () => {
       type: 'Syrup',
       availability: true,
       location: 'City Center Pharmacy',
+      price: 85.00,
+      description: 'Relief from cough and cold symptoms',
+      inStock: 45,
+      manufacturer: 'ColdCare',
+      prescriptionRequired: false
     },
     {
       id: 5,
       name: 'Aspirin 75mg',
       type: 'Tablet',
       availability: true,
-      location: 'Main Street Pharmacy'
+      location: 'Main Street Pharmacy',
+      price: 35.00,
+      description: 'Blood thinner and pain relief',
+      inStock: 200,
+      manufacturer: 'CardioMed',
+      prescriptionRequired: false
     },
     {
       id: 6,
       name: 'Omeprazole 20mg',
       type: 'Capsule',
       availability: true,
-      location: 'Health Plus Pharmacy'
+      location: 'Health Plus Pharmacy',
+      price: 120.00,
+      description: 'Acid reflux and heartburn relief',
+      inStock: 80,
+      manufacturer: 'GastroHealth',
+      prescriptionRequired: false
     },
     {
       id: 7,
       name: 'Metformin 500mg',
       type: 'Tablet',
       availability: false,
-      location: 'Downtown Pharmacy'
+      location: 'Downtown Pharmacy',
+      price: 95.00,
+      description: 'Diabetes management medication',
+      inStock: 0,
+      manufacturer: 'DiabetCare',
+      prescriptionRequired: true
     },
     {
       id: 8,
       name: 'Cetirizine 10mg',
       type: 'Tablet',
       availability: true,
-      location: 'Quick Care Pharmacy'
+      location: 'Quick Care Pharmacy',
+      price: 55.00,
+      description: 'Allergy relief antihistamine',
+      inStock: 120,
+      manufacturer: 'AllergyFree',
+      prescriptionRequired: false
     },
     {
       id: 9,
       name: 'Vitamin D3',
       type: 'Capsule',
       availability: true,
-      location: 'Health Plus Pharmacy'
+      location: 'Health Plus Pharmacy',
+      price: 150.00,
+      description: 'Bone health and immune support',
+      inStock: 90,
+      manufacturer: 'VitaHealth',
+      prescriptionRequired: false
     },
     {
       id: 10,
       name: 'Insulin Injection',
       type: 'Injection',
       availability: false,
-      location: 'Main Street Pharmacy'
+      location: 'Main Street Pharmacy',
+      price: 450.00,
+      description: 'Diabetes insulin therapy',
+      inStock: 0,
+      manufacturer: 'InsulinCorp',
+      prescriptionRequired: true
     },
     {
       id: 11,
       name: 'Losartan 50mg',
       type: 'Tablet',
       availability: true,
-      location: 'City Center Pharmacy'
+      location: 'City Center Pharmacy',
+      price: 110.00,
+      description: 'Blood pressure management',
+      inStock: 65,
+      manufacturer: 'CardioMed',
+      prescriptionRequired: true
     },
     {
       id: 12,
       name: 'Azithromycin 500mg',
       type: 'Tablet',
       availability: true,
-      location: 'Quick Care Pharmacy'
+      location: 'Quick Care Pharmacy',
+      price: 220.00,
+      description: 'Broad-spectrum antibiotic',
+      inStock: 40,
+      manufacturer: 'AntibioCorp',
+      prescriptionRequired: true
     },
     {
       id: 13,
       name: 'Salbutamol Inhaler',
       type: 'Inhaler',
       availability: false,
-      location: 'Health Plus Pharmacy'
+      location: 'Health Plus Pharmacy',
+      price: 320.00,
+      description: 'Asthma and breathing relief',
+      inStock: 0,
+      manufacturer: 'RespiCare',
+      prescriptionRequired: true
     },
     {
       id: 14,
       name: 'Diclofenac Gel',
       type: 'Ointment',
       availability: true,
-      location: 'Downtown Pharmacy'
+      location: 'Downtown Pharmacy',
+      price: 75.00,
+      description: 'Topical pain relief gel',
+      inStock: 30,
+      manufacturer: 'PainRelief Inc',
+      prescriptionRequired: false
     },
     {
       id: 15,
       name: 'Loratadine 10mg',
       type: 'Tablet',
       availability: true,
-      location: 'Quick Care Pharmacy'
+      location: 'Quick Care Pharmacy',
+      price: 60.00,
+      description: 'Non-drowsy allergy relief',
+      inStock: 85,
+      manufacturer: 'AllergyFree',
+      prescriptionRequired: false
     },
     {
       id: 16,
       name: 'Simvastatin 20mg',
       type: 'Tablet',
       availability: false,
-      location: 'Main Street Pharmacy'
+      location: 'Main Street Pharmacy',
+      price: 140.00,
+      description: 'Cholesterol management',
+      inStock: 0,
+      manufacturer: 'CardioMed',
+      prescriptionRequired: true
     },
     {
       id: 17,
       name: 'Calcium Carbonate',
       type: 'Tablet',
       availability: true,
-      location: 'Health Plus Pharmacy'
+      location: 'Health Plus Pharmacy',
+      price: 80.00,
+      description: 'Bone health supplement',
+      inStock: 110,
+      manufacturer: 'BoneStrong',
+      prescriptionRequired: false
     },
     {
       id: 18,
       name: 'Hydrocortisone Cream',
       type: 'Ointment',
       availability: true,
-      location: 'City Center Pharmacy'
+      location: 'City Center Pharmacy',
+      price: 65.00,
+      description: 'Anti-inflammatory skin cream',
+      inStock: 55,
+      manufacturer: 'SkinCare Ltd',
+      prescriptionRequired: false
     },
     {
       id: 19,
       name: 'Ranitidine 150mg',
       type: 'Tablet',
       availability: false,
-      location: 'Downtown Pharmacy'
+      location: 'Downtown Pharmacy',
+      price: 90.00,
+      description: 'Stomach acid reducer',
+      inStock: 0,
+      manufacturer: 'GastroHealth',
+      prescriptionRequired: false
     },
     {
       id: 20,
       name: 'Multivitamin Syrup',
       type: 'Syrup',
       availability: true,
-      location: 'Quick Care Pharmacy'
+      location: 'Quick Care Pharmacy',
+      price: 125.00,
+      description: 'Complete vitamin supplement',
+      inStock: 70,
+      manufacturer: 'VitaHealth',
+      prescriptionRequired: false
     }
   ]);
+
+  // Shopping cart state
+  const [cart, setCart] = useState([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [orderHistory, setOrderHistory] = useState([
+    // Sample orders for testing
+    {
+      id: 1728123456789,
+      items: [
+        { id: 1, name: 'Paracetamol 500mg', type: 'Tablet', quantity: 2, price: 25.00 },
+        { id: 4, name: 'Cough Syrup', type: 'Syrup', quantity: 1, price: 85.00 }
+      ],
+      total: 185.00,
+      customerInfo: {
+        customerName: 'John Doe',
+        email: 'john@email.com',
+        phone: '9876543210',
+        address: '123 Main Street',
+        city: 'Nabha',
+        pincode: '147201'
+      },
+      orderDate: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
+      status: 'confirmed',
+      deliveryDate: new Date(Date.now() + 18 * 60 * 60 * 1000).toISOString(), // 18 hours from now
+      paymentStatus: 'paid',
+      paymentId: 'pay_test123456'
+    },
+    {
+      id: 1728098765432,
+      items: [
+        { id: 8, name: 'Cetirizine 10mg', type: 'Tablet', quantity: 1, price: 55.00 },
+        { id: 9, name: 'Vitamin D3', type: 'Capsule', quantity: 1, price: 150.00 }
+      ],
+      total: 255.00,
+      customerInfo: {
+        customerName: 'John Doe',
+        email: 'john@email.com',
+        phone: '9876543210',
+        address: '123 Main Street',
+        city: 'Nabha',
+        pincode: '147201'
+      },
+      orderDate: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString(), // 26 hours ago
+      status: 'confirmed',
+      deliveryDate: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago (delivered)
+      paymentStatus: 'cod'
+    }
+  ]);
+  
+  // Order tracking state
+  const [isOrderTrackingOpen, setIsOrderTrackingOpen] = useState(false);
+  const [trackingOrderId, setTrackingOrderId] = useState('');
+  const [isMyOrdersOpen, setIsMyOrdersOpen] = useState(false);
+  
+  // Checkout form state
+  const [checkoutForm, setCheckoutForm] = useState({
+    customerName: '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
+    pincode: '',
+    paymentMethod: 'cod',
+    prescriptionFile: null
+  });
 
   // User management state
   const [users, setUsers] = useState([
     { id: 1, username: 'sachin', password: '12345', name: 'Sachin Kumar', email: 'sachin@pharmacy.com', role: 'admin' }
   ]);
+  
+  // Customer management state
+  const [customers, setCustomers] = useState([
+    { id: 1, username: 'customer1', password: '123456', name: 'John Doe', email: 'john@email.com', phone: '9876543210', role: 'customer' }
+  ]);
+  
   const [currentUser, setCurrentUser] = useState(null);
+  const [currentCustomer, setCurrentCustomer] = useState(null);
   const [currentView, setCurrentView] = useState('user-search');
   const [searchQuery, setSearchQuery] = useState('');
   const [showLogin, setShowLogin] = useState(false);
+  const [showCustomerAuth, setShowCustomerAuth] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [showAddMedicine, setShowAddMedicine] = useState(false);
   const [editingMedicine, setEditingMedicine] = useState(null);
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
+  const [customerAuthMode, setCustomerAuthMode] = useState('login'); // 'login' or 'signup'
   
   // Form states
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
@@ -168,6 +344,15 @@ const Pharmacy = () => {
     confirmPassword: '', 
     name: '', 
     email: '' 
+  });
+  const [customerLoginForm, setCustomerLoginForm] = useState({ username: '', password: '' });
+  const [customerSignupForm, setCustomerSignupForm] = useState({ 
+    username: '', 
+    password: '', 
+    confirmPassword: '', 
+    name: '', 
+    email: '',
+    phone: ''
   });
   const [medicineForm, setMedicineForm] = useState({
     name: '',
@@ -242,6 +427,78 @@ const Pharmacy = () => {
     setCurrentView('user-search');
   };
 
+  // Customer authentication functions
+  const handleCustomerLogin = (e) => {
+    e.preventDefault();
+    const customer = customers.find(c => c.username === customerLoginForm.username && c.password === customerLoginForm.password);
+    
+    if (customer) {
+      setCurrentCustomer(customer);
+      setShowCustomerAuth(false);
+      setCustomerLoginForm({ username: '', password: '' });
+      alert(`Welcome back, ${customer.name}! You can now add medicines to your cart.`);
+    } else {
+      alert('Invalid credentials! Please check your username and password.');
+    }
+  };
+
+  const handleCustomerSignup = (e) => {
+    e.preventDefault();
+    
+    // Validation
+    if (customerSignupForm.password !== customerSignupForm.confirmPassword) {
+      alert('Passwords do not match!');
+      return;
+    }
+    
+    if (customerSignupForm.password.length < 4) {
+      alert('Password must be at least 4 characters long!');
+      return;
+    }
+    
+    // Check if username already exists
+    const existingCustomer = customers.find(c => c.username === customerSignupForm.username);
+    if (existingCustomer) {
+      alert('Username already exists! Please choose a different username.');
+      return;
+    }
+    
+    // Check if email already exists
+    const existingEmail = customers.find(c => c.email === customerSignupForm.email);
+    if (existingEmail) {
+      alert('Email already registered! Please use a different email.');
+      return;
+    }
+    
+    // Create new customer
+    const newCustomer = {
+      id: Date.now(),
+      username: customerSignupForm.username,
+      password: customerSignupForm.password,
+      name: customerSignupForm.name,
+      email: customerSignupForm.email,
+      phone: customerSignupForm.phone,
+      role: 'customer'
+    };
+    
+    setCustomers([...customers, newCustomer]);
+    setCurrentCustomer(newCustomer);
+    setShowCustomerAuth(false);
+    setCustomerSignupForm({ username: '', password: '', confirmPassword: '', name: '', email: '', phone: '' });
+    alert(`Account created successfully! Welcome to Nabha Healthcare, ${newCustomer.name}!`);
+  };
+
+  const handleCustomerLogout = () => {
+    setCurrentCustomer(null);
+    clearCart(); // Clear cart when customer logs out
+    alert('You have been logged out successfully.');
+  };
+
+  const resetCustomerAuthForms = () => {
+    setCustomerLoginForm({ username: '', password: '' });
+    setCustomerSignupForm({ username: '', password: '', confirmPassword: '', name: '', email: '', phone: '' });
+  };
+
   const resetAuthForms = () => {
     setLoginForm({ username: '', password: '' });
     setSignupForm({ username: '', password: '', confirmPassword: '', name: '', email: '' });
@@ -303,6 +560,254 @@ const Pharmacy = () => {
     medicine.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
     medicine.location.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Cart functionality
+  const addToCart = (medicine, quantity = 1) => {
+    // Check if customer is logged in
+    if (!currentCustomer) {
+      alert('Please login or create an account to add medicines to cart.');
+      setShowCustomerAuth(true);
+      setCustomerAuthMode('login');
+      return;
+    }
+
+    const existingItem = cart.find(item => item.id === medicine.id);
+    
+    if (existingItem) {
+      setCart(cart.map(item =>
+        item.id === medicine.id
+          ? { ...item, quantity: Math.min(item.quantity + quantity, medicine.inStock) }
+          : item
+      ));
+    } else {
+      setCart([...cart, { ...medicine, quantity: Math.min(quantity, medicine.inStock) }]);
+    }
+  };
+
+  const removeFromCart = (medicineId) => {
+    setCart(cart.filter(item => item.id !== medicineId));
+  };
+
+  const updateCartQuantity = (medicineId, newQuantity) => {
+    if (newQuantity <= 0) {
+      removeFromCart(medicineId);
+      return;
+    }
+    
+    const medicine = medicines.find(m => m.id === medicineId);
+    setCart(cart.map(item =>
+      item.id === medicineId
+        ? { ...item, quantity: Math.min(newQuantity, medicine.inStock) }
+        : item
+    ));
+  };
+
+  const getCartTotal = () => {
+    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+
+  const getCartItemCount = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  };
+
+  // Checkout functionality
+  const handleCheckout = () => {
+    if (!currentCustomer) {
+      alert('Please login to proceed with checkout.');
+      setShowCustomerAuth(true);
+      setCustomerAuthMode('login');
+      return;
+    }
+
+    if (cart.length === 0) {
+      alert('Your cart is empty!');
+      return;
+    }
+    
+    // Pre-fill checkout form with customer data
+    setCheckoutForm({
+      ...checkoutForm,
+      customerName: currentCustomer.name,
+      email: currentCustomer.email,
+      phone: currentCustomer.phone || ''
+    });
+    
+    setIsCheckoutOpen(true);
+  };
+
+  const processOrder = async (e) => {
+    e.preventDefault();
+    
+    // Validate prescription requirement
+    const prescriptionRequired = cart.some(item => item.prescriptionRequired);
+    if (prescriptionRequired && !checkoutForm.prescriptionFile) {
+      alert('Some medicines require a prescription. Please upload a valid prescription.');
+      return;
+    }
+
+    const totalAmount = getCartTotal() + 50; // Including delivery charges
+
+    // Create order object
+    const orderData = {
+      id: Date.now(),
+      items: [...cart],
+      total: totalAmount,
+      customerInfo: { ...checkoutForm },
+      orderDate: new Date().toISOString(),
+      status: 'confirmed',
+      deliveryDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from now
+      paymentStatus: 'pending'
+    };
+
+    try {
+      if (checkoutForm.paymentMethod === 'online') {
+        // Process online payment with customer info
+        const customerInfo = {
+          name: checkoutForm.customerName,
+          email: checkoutForm.email,
+          phone: checkoutForm.phone,
+          address: checkoutForm.address,
+          city: checkoutForm.city,
+          pincode: checkoutForm.pincode
+        };
+        
+        const orderCreation = await PaymentService.createOrder(totalAmount, 'INR', customerInfo);
+        
+        if (!orderCreation.success) {
+          alert('Failed to initiate payment. Please try again.');
+          return;
+        }
+
+        await PaymentService.processOnlinePayment({
+          orderId: orderCreation.orderId,
+          amount: totalAmount,
+          customerName: checkoutForm.customerName,
+          email: checkoutForm.email,
+          phone: checkoutForm.phone,
+          address: checkoutForm.address,
+          city: checkoutForm.city,
+          pincode: checkoutForm.pincode,
+          onSuccess: async (paymentResponse) => {
+            // Verify payment
+            const verification = await PaymentService.verifyPayment(paymentResponse);
+            
+            if (verification.verified) {
+              // Update order with payment details
+              orderData.paymentStatus = 'paid';
+              orderData.paymentId = paymentResponse.paymentId;
+              orderData.transactionId = verification.transactionId;
+              
+              // Add to order history
+              setOrderHistory([orderData, ...orderHistory]);
+              
+              // Clear cart and close modals
+              clearCart();
+              setIsCheckoutOpen(false);
+              setIsCartOpen(false);
+              setCheckoutForm({
+                customerName: '',
+                email: '',
+                phone: '',
+                address: '',
+                city: '',
+                pincode: '',
+                paymentMethod: 'cod',
+                prescriptionFile: null
+              });
+
+              alert(`✅ Payment successful! Order ID: ${orderData.id}\n💊 Your medicines will be delivered in 2 days.\n📧 Order confirmation sent to your email.`);
+            } else {
+              alert('Payment verification failed. Please contact support if amount was deducted.');
+            }
+          },
+          onFailure: (error) => {
+            alert(`Payment failed: ${error}\nYou can try again or choose Cash on Delivery.`);
+          }
+        });
+      } else {
+        // Cash on Delivery
+        orderData.paymentStatus = 'cod';
+        
+        // Add to order history
+        setOrderHistory([orderData, ...orderHistory]);
+
+        // Clear cart and close modals
+        clearCart();
+        setIsCheckoutOpen(false);
+        setIsCartOpen(false);
+        setCheckoutForm({
+          customerName: '',
+          email: '',
+          phone: '',
+          address: '',
+          city: '',
+          pincode: '',
+          paymentMethod: 'cod',
+          prescriptionFile: null
+        });
+
+        alert(`✅ Order placed successfully! Order ID: ${orderData.id}\n💰 Payment: Cash on Delivery\n🚚 Delivery in 2 days\n📞 We'll call you before delivery.`);
+      }
+    } catch (error) {
+      console.error('Order processing error:', error);
+      alert('Failed to process order. Please try again.');
+    }
+  };
+
+  // Order tracking functions
+  const getCustomerOrders = () => {
+    if (!currentCustomer) return [];
+    return orderHistory.filter(order => 
+      order.customerInfo.email === currentCustomer.email ||
+      order.customerInfo.customerName === currentCustomer.name
+    );
+  };
+
+  const findOrderById = (orderId) => {
+    return orderHistory.find(order => order.id.toString() === orderId.toString());
+  };
+
+  const getOrderStatus = (order) => {
+    const now = new Date();
+    const orderDate = new Date(order.orderDate);
+    const deliveryDate = new Date(order.deliveryDate);
+    const hoursSinceOrder = (now - orderDate) / (1000 * 60 * 60);
+    
+    if (hoursSinceOrder < 1) {
+      return { status: 'confirmed', message: 'Order Confirmed', progress: 25 };
+    } else if (hoursSinceOrder < 24) {
+      return { status: 'processing', message: 'Being Prepared', progress: 50 };
+    } else if (now < deliveryDate) {
+      return { status: 'out_for_delivery', message: 'Out for Delivery', progress: 75 };
+    } else {
+      return { status: 'delivered', message: 'Delivered', progress: 100 };
+    }
+  };
+
+  const trackOrderById = (orderId) => {
+    const order = findOrderById(orderId);
+    if (order) {
+      setIsOrderTrackingOpen(true);
+      return order;
+    } else {
+      alert('Order not found. Please check your Order ID.');
+      return null;
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   return (
     <div className="pharmacy-container">
@@ -419,7 +924,7 @@ const Pharmacy = () => {
             color: white;
             padding: 1.5rem 2rem;
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1.5fr auto;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr 1.2fr;
             gap: 1rem;
             font-weight: 600;
             font-size: 0.9rem;
@@ -429,7 +934,7 @@ const Pharmacy = () => {
 
           .medicine-item {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1.5fr auto;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr 1.2fr;
             gap: 1rem;
             padding: 1.5rem 2rem;
             border-bottom: 1px solid #e5e7eb;
@@ -990,6 +1495,778 @@ const Pharmacy = () => {
             to { transform: translateY(0); opacity: 1; }
           }
 
+          /* Cart Styles */
+          .cart-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
+            z-index: 100;
+            transition: all 0.3s ease;
+          }
+
+          .cart-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(31, 41, 55, 0.4);
+          }
+
+          .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+          }
+
+          .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: 400px;
+            background: white;
+            box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+          }
+
+          .cart-sidebar.open {
+            transform: translateX(0);
+          }
+
+          .cart-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9fafb;
+          }
+
+          .cart-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+          }
+
+          .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+          }
+
+          .cart-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+          }
+
+          .cart-item-info {
+            flex: 1;
+          }
+
+          .cart-item-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0 0 0.25rem 0;
+          }
+
+          .cart-item-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin: 0.25rem 0;
+          }
+
+          .cart-item-price {
+            font-weight: 600;
+            color: #059669;
+            margin: 0.25rem 0;
+          }
+
+          .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+          }
+
+          .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+
+          .quantity-btn:hover {
+            background: #f3f4f6;
+            border-color: #1f2937;
+          }
+
+          .quantity-input {
+            width: 50px;
+            text-align: center;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 0.25rem;
+            font-size: 0.875rem;
+          }
+
+          .remove-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+
+          .remove-btn:hover {
+            background: #dc2626;
+          }
+
+          .cart-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            background: #f9fafb;
+          }
+
+          .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+          }
+
+          .checkout-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+
+          .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+          }
+
+          .checkout-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+          }
+
+          .add-to-cart-btn {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+
+          .add-to-cart-btn:hover {
+            background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
+          }
+
+          .add-to-cart-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+          }
+
+          .medicine-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #059669;
+            margin: 0.5rem 0;
+          }
+
+          .stock-info {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin: 0.25rem 0;
+          }
+
+          .prescription-badge {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            display: inline-block;
+          }
+
+          .checkout-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            padding: 1rem;
+          }
+
+          .checkout-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+          }
+
+          .checkout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+          }
+
+          .checkout-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+          }
+
+          .order-summary {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+          }
+
+          .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e5e7eb;
+          }
+
+          .order-item:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #1f2937;
+          }
+
+          .checkout-form {
+            display: grid;
+            gap: 1rem;
+          }
+
+          .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+          }
+
+          .file-input-wrapper {
+            position: relative;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+          }
+
+          .file-input-wrapper:hover {
+            border-color: #1f2937;
+            background: #f9fafb;
+          }
+
+          .file-input-wrapper.has-file {
+            border-color: #059669;
+            background: #f0fdf4;
+          }
+
+          .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+          }
+
+          .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+          }
+
+          .payment-method {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+
+          .payment-method.selected {
+            border-color: #1f2937;
+            background: #f9fafb;
+          }
+
+          .payment-method:hover {
+            border-color: #6b7280;
+          }
+
+          /* Order Tracking Styles */
+          .order-tracking-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+
+          .order-tracking-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+          }
+
+          .my-orders-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+
+          .my-orders-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+          }
+
+          .orders-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1200;
+            padding: 1rem;
+          }
+
+          .orders-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+          }
+
+          .orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+          }
+
+          .orders-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+
+          .order-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+          }
+
+          .order-card:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          }
+
+          .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+          }
+
+          .order-id {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f2937;
+          }
+
+          .order-date {
+            color: #6b7280;
+            font-size: 0.875rem;
+          }
+
+          .order-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+          }
+
+          .status-confirmed {
+            background: #fef3c7;
+            color: #92400e;
+          }
+
+          .status-processing {
+            background: #dbeafe;
+            color: #1e40af;
+          }
+
+          .status-out_for_delivery {
+            background: #fed7d7;
+            color: #c53030;
+          }
+
+          .status-delivered {
+            background: #d1fae5;
+            color: #065f46;
+          }
+
+          .order-progress {
+            margin: 1rem 0;
+          }
+
+          .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+          }
+
+          .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            transition: width 0.3s ease;
+          }
+
+          .progress-text {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+            text-align: center;
+          }
+
+          .order-items {
+            margin: 1rem 0;
+          }
+
+          .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e5e7eb;
+          }
+
+          .order-item:last-child {
+            border-bottom: none;
+          }
+
+          .order-item-name {
+            font-weight: 600;
+            color: #1f2937;
+          }
+
+          .order-item-details {
+            color: #6b7280;
+            font-size: 0.875rem;
+          }
+
+          .order-item-price {
+            font-weight: 600;
+            color: #059669;
+          }
+
+          .order-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f2937;
+          }
+
+          .track-order-btn {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+
+          .track-order-btn:hover {
+            background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+            transform: translateY(-1px);
+          }
+
+          .tracking-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1300;
+            padding: 1rem;
+          }
+
+          .tracking-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+          }
+
+          .tracking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+          }
+
+          .tracking-timeline {
+            margin: 2rem 0;
+          }
+
+          .timeline-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            position: relative;
+          }
+
+          .timeline-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 40px;
+            width: 2px;
+            height: 40px;
+            background: #e5e7eb;
+          }
+
+          .timeline-step.active::after {
+            background: #10b981;
+          }
+
+          .timeline-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e5e7eb;
+            color: #6b7280;
+            margin-right: 1rem;
+            z-index: 1;
+          }
+
+          .timeline-icon.active {
+            background: #10b981;
+            color: white;
+          }
+
+          .timeline-content {
+            flex: 1;
+          }
+
+          .timeline-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0 0 0.25rem 0;
+          }
+
+          .timeline-title.active {
+            color: #059669;
+          }
+
+          .timeline-description {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin: 0;
+          }
+
+          .tracking-search {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+          }
+
+          .tracking-search-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0 0 1rem 0;
+          }
+
+          .tracking-search-form {
+            display: flex;
+            gap: 1rem;
+          }
+
+          .tracking-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+          }
+
+          .tracking-submit-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+
+          .tracking-submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+          }
+
+          @media (max-width: 768px) {
+            .cart-sidebar {
+              width: 100%;
+            }
+
+            .checkout-content {
+              margin: 1rem;
+              padding: 1.5rem;
+            }
+
+            .form-row {
+              grid-template-columns: 1fr;
+            }
+
+            .payment-methods {
+              grid-template-columns: 1fr;
+            }
+          }
+
           @media (max-width: 1200px) {
             .medicines-grid {
               grid-template-columns: repeat(4, 1fr);
@@ -999,7 +2276,7 @@ const Pharmacy = () => {
           @media (max-width: 992px) {
             .medicines-header,
             .medicine-item {
-              grid-template-columns: 1.5fr 1fr 1fr auto;
+              grid-template-columns: 2fr 1fr 1fr 1fr auto;
             }
             
             .pharmacy-cell {
@@ -1014,7 +2291,7 @@ const Pharmacy = () => {
           @media (max-width: 768px) {
             .medicines-header,
             .medicine-item {
-              grid-template-columns: 2fr 1fr auto;
+              grid-template-columns: 2fr 1fr 1fr auto;
               gap: 0.75rem;
             }
             
@@ -1222,6 +2499,78 @@ const Pharmacy = () => {
           )}
         </div>
 
+        {/* Customer Login Section */}
+        <div className="customer-login-section" style={{
+          textAlign: 'center',
+          marginBottom: '2rem',
+          padding: '1rem',
+          backgroundColor: '#f0fdf4',
+          border: '2px solid #22c55e',
+          borderRadius: '12px'
+        }}>
+          {currentCustomer ? (
+            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', flexWrap: 'wrap'}}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <ShoppingCart size={20} color="#22c55e" />
+                <span style={{color: '#15803d', fontWeight: '600'}}>
+                  Logged in as: {currentCustomer.name}
+                </span>
+              </div>
+              <button 
+                className="my-orders-btn"
+                onClick={() => setIsMyOrdersOpen(true)}
+              >
+                <Package size={16} />
+                My Orders
+              </button>
+              <button 
+                className="order-tracking-btn"
+                onClick={() => setIsOrderTrackingOpen(true)}
+              >
+                <Clock size={16} />
+                Track Order
+              </button>
+              <button 
+                className="btn btn-secondary" 
+                onClick={handleCustomerLogout}
+                style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div>
+              <p style={{color: '#15803d', margin: '0 0 1rem 0', fontWeight: '600'}}>
+                🛒 Login to add medicines to cart and place orders
+              </p>
+              <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', flexWrap: 'wrap'}}>
+                <button
+                  className="btn btn-success"
+                  onClick={() => {
+                    setCustomerAuthMode('login');
+                    setShowCustomerAuth(true);
+                    resetCustomerAuthForms();
+                  }}
+                >
+                  <User size={16} />
+                  Customer Login
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setCustomerAuthMode('signup');
+                    setShowCustomerAuth(true);
+                    resetCustomerAuthForms();
+                  }}
+                >
+                  <Plus size={16} />
+                  Create Account
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* User Search View */}
         {currentView === 'user-search' && (
           <div>
@@ -1261,18 +2610,29 @@ const Pharmacy = () => {
               <div className="medicines-header">
                 <div>Medicine</div>
                 <div>Type</div>
+                <div>Price</div>
                 <div>Availability</div>
                 <div>Pharmacy Location</div>
-                <div></div>
+                <div>Actions</div>
               </div>
               {filteredMedicines.map((medicine) => (
                 <div key={medicine.id} className="medicine-item">
                   <div className="medicine-name-cell">
                     <h3 className="medicine-name-primary">{medicine.name}</h3>
-                    <p className="medicine-name-secondary">ID: {medicine.id}</p>
+                    <p className="medicine-name-secondary">{medicine.description}</p>
+                    <p className="stock-info">Stock: {medicine.inStock} units</p>
+                    {medicine.prescriptionRequired && (
+                      <span className="prescription-badge">
+                        Prescription Required
+                      </span>
+                    )}
                   </div>
                   <div className="medicine-type-cell">
                     <span className="medicine-type-badge">{medicine.type}</span>
+                  </div>
+                  <div className="medicine-price-cell">
+                    <div className="medicine-price">₹{medicine.price}</div>
+                    <div className="stock-info">{medicine.manufacturer}</div>
                   </div>
                   <div className="availability-cell">
                     <span className={`availability-badge ${medicine.availability ? 'available' : 'unavailable'}`}>
@@ -1284,7 +2644,15 @@ const Pharmacy = () => {
                     {medicine.location}
                   </div>
                   <div className="actions-cell">
-                    <Package size={16} color="#6b7280" />
+                    <button
+                      className="add-to-cart-btn"
+                      onClick={() => addToCart(medicine)}
+                      disabled={!medicine.availability || medicine.inStock === 0}
+                      title={!currentCustomer ? 'Login required to add to cart' : 'Add to cart'}
+                    >
+                      <ShoppingCart size={16} />
+                      {!currentCustomer ? 'Buy' : 'Add to Cart'}
+                    </button>
                   </div>
                 </div>
               ))}
@@ -1629,6 +2997,724 @@ const Pharmacy = () => {
               </form>
             </div>
           </div>
+        )}
+
+        {/* Shopping Cart Button */}
+        {cart.length > 0 && (
+          <button
+            className="cart-button"
+            onClick={() => setIsCartOpen(true)}
+          >
+            <ShoppingCart size={24} />
+            {getCartItemCount() > 0 && (
+              <span className="cart-badge">{getCartItemCount()}</span>
+            )}
+          </button>
+        )}
+
+        {/* Cart Sidebar */}
+        <div className={`cart-sidebar ${isCartOpen ? 'open' : ''}`}>
+          <div className="cart-header">
+            <h3 className="cart-title">Shopping Cart ({getCartItemCount()})</h3>
+            <button
+              className="close-btn"
+              onClick={() => setIsCartOpen(false)}
+            >
+              <X size={24} />
+            </button>
+          </div>
+          
+          <div className="cart-items">
+            {cart.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
+                <ShoppingCart size={48} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
+                <p>Your cart is empty</p>
+              </div>
+            ) : (
+              cart.map((item) => (
+                <div key={item.id} className="cart-item">
+                  <div className="cart-item-info">
+                    <h4 className="cart-item-name">{item.name}</h4>
+                    <p className="cart-item-details">{item.type} • {item.manufacturer}</p>
+                    <p className="cart-item-price">₹{item.price} each</p>
+                    <div className="quantity-controls">
+                      <button
+                        className="quantity-btn"
+                        onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <input
+                        type="number"
+                        className="quantity-input"
+                        value={item.quantity}
+                        onChange={(e) => updateCartQuantity(item.id, parseInt(e.target.value) || 1)}
+                        min="1"
+                        max={item.inStock}
+                      />
+                      <button
+                        className="quantity-btn"
+                        onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
+                        disabled={item.quantity >= item.inStock}
+                      >
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                    {item.prescriptionRequired && (
+                      <span className="prescription-badge" style={{ marginTop: '0.5rem' }}>
+                        Prescription Required
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    className="remove-btn"
+                    onClick={() => removeFromCart(item.id)}
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+          
+          {cart.length > 0 && (
+            <div className="cart-footer">
+              <div className="cart-total">
+                <span>Total: ₹{getCartTotal().toFixed(2)}</span>
+              </div>
+              <button
+                className="checkout-btn"
+                onClick={handleCheckout}
+              >
+                <CreditCard size={20} style={{ marginRight: '0.5rem' }} />
+                Proceed to Checkout
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Checkout Modal */}
+        {isCheckoutOpen && (
+          <div className="checkout-modal">
+            <div className="checkout-content">
+              <div className="checkout-header">
+                <h3 className="checkout-title">Checkout</h3>
+                <button
+                  className="close-btn"
+                  onClick={() => setIsCheckoutOpen(false)}
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              {/* Order Summary */}
+              <div className="order-summary">
+                <h4 style={{ margin: '0 0 1rem 0', color: '#1f2937' }}>Order Summary</h4>
+                {cart.map((item) => (
+                  <div key={item.id} className="order-item">
+                    <span>{item.name} × {item.quantity}</span>
+                    <span>₹{(item.price * item.quantity).toFixed(2)}</span>
+                  </div>
+                ))}
+                <div className="order-item">
+                  <span>Delivery Charges</span>
+                  <span>₹50.00</span>
+                </div>
+                <div className="order-item">
+                  <span><strong>Total Amount</strong></span>
+                  <span><strong>₹{(getCartTotal() + 50).toFixed(2)}</strong></span>
+                </div>
+              </div>
+
+              {/* Checkout Form */}
+              <form onSubmit={processOrder} className="checkout-form">
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Full Name *</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={checkoutForm.customerName}
+                      onChange={(e) => setCheckoutForm({...checkoutForm, customerName: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Email *</label>
+                    <input
+                      type="email"
+                      className="form-input"
+                      value={checkoutForm.email}
+                      onChange={(e) => setCheckoutForm({...checkoutForm, email: e.target.value})}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Phone Number *</label>
+                    <input
+                      type="tel"
+                      className="form-input"
+                      value={checkoutForm.phone}
+                      onChange={(e) => setCheckoutForm({...checkoutForm, phone: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">PIN Code *</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={checkoutForm.pincode}
+                      onChange={(e) => setCheckoutForm({...checkoutForm, pincode: e.target.value})}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Delivery Address *</label>
+                  <textarea
+                    className="form-input"
+                    rows="3"
+                    value={checkoutForm.address}
+                    onChange={(e) => setCheckoutForm({...checkoutForm, address: e.target.value})}
+                    placeholder="Enter your complete address"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">City *</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={checkoutForm.city}
+                    onChange={(e) => setCheckoutForm({...checkoutForm, city: e.target.value})}
+                    required
+                  />
+                </div>
+
+                {/* Prescription Upload */}
+                {cart.some(item => item.prescriptionRequired) && (
+                  <div className="form-group">
+                    <label className="form-label">Upload Prescription *</label>
+                    <div className={`file-input-wrapper ${checkoutForm.prescriptionFile ? 'has-file' : ''}`}>
+                      <input
+                        type="file"
+                        className="file-input"
+                        accept="image/*,.pdf"
+                        onChange={(e) => setCheckoutForm({...checkoutForm, prescriptionFile: e.target.files[0]})}
+                        required
+                      />
+                      {checkoutForm.prescriptionFile ? (
+                        <div>
+                          <CheckCircle size={24} color="#059669" style={{ marginBottom: '0.5rem' }} />
+                          <p style={{ margin: 0, color: '#059669', fontWeight: '600' }}>
+                            {checkoutForm.prescriptionFile.name}
+                          </p>
+                        </div>
+                      ) : (
+                        <div>
+                          <Package size={24} color="#6b7280" style={{ marginBottom: '0.5rem' }} />
+                          <p style={{ margin: 0, color: '#6b7280' }}>
+                            Click to upload prescription (PDF or Image)
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Payment Methods */}
+                <div className="form-group">
+                  <label className="form-label">Payment Method</label>
+                  <div className="payment-methods">
+                    <div
+                      className={`payment-method ${checkoutForm.paymentMethod === 'cod' ? 'selected' : ''}`}
+                      onClick={() => setCheckoutForm({...checkoutForm, paymentMethod: 'cod'})}
+                    >
+                      <Truck size={24} style={{ marginBottom: '0.5rem' }} />
+                      <div style={{ fontWeight: '600' }}>Cash on Delivery</div>
+                      <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Pay when delivered</div>
+                    </div>
+                    <div
+                      className={`payment-method ${checkoutForm.paymentMethod === 'online' ? 'selected' : ''}`}
+                      onClick={() => setCheckoutForm({...checkoutForm, paymentMethod: 'online'})}
+                    >
+                      <CreditCard size={24} style={{ marginBottom: '0.5rem' }} />
+                      <div style={{ fontWeight: '600' }}>Online Payment</div>
+                      <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>UPI/Card/Wallet</div>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" className="checkout-btn">
+                  <CheckCircle size={20} style={{ marginRight: '0.5rem' }} />
+                  Place Order - ₹{(getCartTotal() + 50).toFixed(2)}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Customer Authentication Modal */}
+        {showCustomerAuth && (
+          <div className="auth-modal">
+            <div className="auth-modal-content">
+              <button
+                className="close-btn"
+                onClick={() => {
+                  setShowCustomerAuth(false);
+                  resetCustomerAuthForms();
+                }}
+                style={{position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer'}}
+              >
+                ×
+              </button>
+
+              <div className="auth-header">
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                  <ShoppingCart size={48} color="#22c55e" />
+                  <div>
+                    <h2 className="auth-title" style={{ margin: 0, color: '#15803d' }}>Customer Account</h2>
+                    <p className="auth-subtitle" style={{ margin: '0.25rem 0 0 0' }}>Login or create account to purchase medicines</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="auth-tabs">
+                <button
+                  type="button"
+                  className={`auth-tab ${customerAuthMode === 'login' ? 'active' : ''}`}
+                  onClick={() => setCustomerAuthMode('login')}
+                >
+                  Login
+                </button>
+                <button
+                  type="button"
+                  className={`auth-tab ${customerAuthMode === 'signup' ? 'active' : ''}`}
+                  onClick={() => setCustomerAuthMode('signup')}
+                >
+                  Sign Up
+                </button>
+              </div>
+
+              {customerAuthMode === 'login' ? (
+                <form onSubmit={handleCustomerLogin} className="auth-form">
+                  <div className="form-group">
+                    <label className="form-label">Username</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={customerLoginForm.username}
+                      onChange={(e) => setCustomerLoginForm({...customerLoginForm, username: e.target.value})}
+                      placeholder="Enter your username"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label className="form-label">Password</label>
+                    <input
+                      type="password"
+                      className="form-input"
+                      value={customerLoginForm.password}
+                      onChange={(e) => setCustomerLoginForm({...customerLoginForm, password: e.target.value})}
+                      placeholder="Enter your password"
+                      required
+                    />
+                  </div>
+                  
+                  <button type="submit" className="auth-submit-btn" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #15803d 100%)' }}>
+                    Login to Shop
+                  </button>
+
+                  <div className="demo-credentials">
+                    <h4>Demo Customer Account</h4>
+                    <p><strong>Username:</strong> customer1</p>
+                    <p><strong>Password:</strong> 123456</p>
+                  </div>
+                </form>
+              ) : (
+                <form onSubmit={handleCustomerSignup} className="auth-form">
+                  <div className="form-group">
+                    <label className="form-label">Full Name</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={customerSignupForm.name}
+                      onChange={(e) => setCustomerSignupForm({...customerSignupForm, name: e.target.value})}
+                      placeholder="Enter your full name"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Email Address</label>
+                    <input
+                      type="email"
+                      className="form-input"
+                      value={customerSignupForm.email}
+                      onChange={(e) => setCustomerSignupForm({...customerSignupForm, email: e.target.value})}
+                      placeholder="Enter your email"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Phone Number</label>
+                    <input
+                      type="tel"
+                      className="form-input"
+                      value={customerSignupForm.phone}
+                      onChange={(e) => setCustomerSignupForm({...customerSignupForm, phone: e.target.value})}
+                      placeholder="Enter your phone number"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label className="form-label">Username</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={customerSignupForm.username}
+                      onChange={(e) => setCustomerSignupForm({...customerSignupForm, username: e.target.value})}
+                      placeholder="Choose a username"
+                      required
+                      minLength="3"
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label className="form-label">Password</label>
+                    <input
+                      type="password"
+                      className="form-input"
+                      value={customerSignupForm.password}
+                      onChange={(e) => setCustomerSignupForm({...customerSignupForm, password: e.target.value})}
+                      placeholder="Create a password"
+                      required
+                      minLength="4"
+                    />
+                    {customerSignupForm.password && (
+                      <div className="password-strength">
+                        <span className={
+                          customerSignupForm.password.length < 6 ? 'strength-weak' :
+                          customerSignupForm.password.length < 8 ? 'strength-medium' : 'strength-strong'
+                        }>
+                          Password strength: {
+                            customerSignupForm.password.length < 6 ? 'Weak' :
+                            customerSignupForm.password.length < 8 ? 'Medium' : 'Strong'
+                          }
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="form-group">
+                    <label className="form-label">Confirm Password</label>
+                    <input
+                      type="password"
+                      className={`form-input ${customerSignupForm.confirmPassword && customerSignupForm.password !== customerSignupForm.confirmPassword ? 'error' : ''}`}
+                      value={customerSignupForm.confirmPassword}
+                      onChange={(e) => setCustomerSignupForm({...customerSignupForm, confirmPassword: e.target.value})}
+                      placeholder="Confirm your password"
+                      required
+                    />
+                    {customerSignupForm.confirmPassword && customerSignupForm.password !== customerSignupForm.confirmPassword && (
+                      <span className="error-message">Passwords do not match</span>
+                    )}
+                  </div>
+                  
+                  <button 
+                    type="submit" 
+                    className="auth-submit-btn"
+                    style={{ background: 'linear-gradient(135deg, #22c55e 0%, #15803d 100%)' }}
+                    disabled={customerSignupForm.password !== customerSignupForm.confirmPassword}
+                  >
+                    Create Account & Start Shopping
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* My Orders Modal */}
+        {isMyOrdersOpen && (
+          <div className="orders-modal">
+            <div className="orders-content">
+              <div className="orders-header">
+                <h3 className="orders-title">
+                  <Package size={24} />
+                  My Orders
+                </h3>
+                <button
+                  className="close-btn"
+                  onClick={() => setIsMyOrdersOpen(false)}
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              {getCustomerOrders().length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
+                  <Package size={64} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
+                  <h3>No Orders Yet</h3>
+                  <p>You haven&apos;t placed any orders yet. Start shopping to see your orders here!</p>
+                </div>
+              ) : (
+                getCustomerOrders().map((order) => {
+                  const status = getOrderStatus(order);
+                  return (
+                    <div key={order.id} className="order-card">
+                      <div className="order-header">
+                        <div>
+                          <div className="order-id">Order #{order.id}</div>
+                          <div className="order-date">{formatDate(order.orderDate)}</div>
+                        </div>
+                        <div className={`order-status status-${status.status}`}>
+                          {status.message}
+                        </div>
+                      </div>
+
+                      <div className="order-progress">
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{ width: `${status.progress}%` }}
+                          />
+                        </div>
+                        <div className="progress-text">
+                          {status.progress}% Complete
+                        </div>
+                      </div>
+
+                      <div className="order-items">
+                        <h4 style={{ margin: '0 0 0.5rem 0', color: '#1f2937' }}>Items:</h4>
+                        {order.items.map((item, index) => (
+                          <div key={index} className="order-item">
+                            <div>
+                              <div className="order-item-name">{item.name}</div>
+                              <div className="order-item-details">
+                                Qty: {item.quantity} | {item.type}
+                              </div>
+                            </div>
+                            <div className="order-item-price">
+                              ₹{(item.price * item.quantity).toFixed(2)}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="order-total">
+                        <span>Total Amount:</span>
+                        <span>₹{order.total.toFixed(2)}</span>
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                          Payment: {order.paymentStatus === 'paid' ? '✅ Paid' : '💰 Cash on Delivery'}
+                        </div>
+                        <button
+                          className="track-order-btn"
+                          onClick={() => {
+                            setTrackingOrderId(order.id.toString());
+                            setIsMyOrdersOpen(false);
+                            setIsOrderTrackingOpen(true);
+                          }}
+                        >
+                          <MapPin size={16} />
+                          Track Order
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Order Tracking Modal */}
+        {isOrderTrackingOpen && (
+          <div className="tracking-modal">
+            <div className="tracking-content">
+              <div className="tracking-header">
+                <h3 className="orders-title">
+                  <MapPin size={24} />
+                  Track Your Order
+                </h3>
+                <button
+                  className="close-btn"
+                  onClick={() => {
+                    setIsOrderTrackingOpen(false);
+                    setTrackingOrderId('');
+                  }}
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              {/* Order Search */}
+              <div className="tracking-search">
+                <h4 className="tracking-search-title">Enter Order ID</h4>
+                <div className="tracking-search-form">
+                  <input
+                    type="text"
+                    className="tracking-input"
+                    placeholder="Enter your Order ID (e.g., 1728123456789)"
+                    value={trackingOrderId}
+                    onChange={(e) => setTrackingOrderId(e.target.value)}
+                  />
+                  <button
+                    className="tracking-submit-btn"
+                    onClick={() => {
+                      const order = trackOrderById(trackingOrderId);
+                      if (!order) {
+                        setTrackingOrderId('');
+                      }
+                    }}
+                  >
+                    <Search size={16} />
+                    Track
+                  </button>
+                </div>
+              </div>
+
+              {/* Tracking Timeline */}
+              {trackingOrderId && findOrderById(trackingOrderId) && (() => {
+                const order = findOrderById(trackingOrderId);
+                const status = getOrderStatus(order);
+                
+                return (
+                  <div>
+                    {/* Order Info */}
+                    <div style={{ 
+                      background: '#f9fafb', 
+                      padding: '1rem', 
+                      borderRadius: '8px', 
+                      marginBottom: '2rem' 
+                    }}>
+                      <h4 style={{ margin: '0 0 0.5rem 0' }}>Order #{order.id}</h4>
+                      <p style={{ margin: '0.25rem 0', color: '#6b7280' }}>
+                        Ordered: {formatDate(order.orderDate)}
+                      </p>
+                      <p style={{ margin: '0.25rem 0', color: '#6b7280' }}>
+                        Expected Delivery: {formatDate(order.deliveryDate)}
+                      </p>
+                      <p style={{ margin: '0.25rem 0', color: '#6b7280' }}>
+                        Total: ₹{order.total.toFixed(2)}
+                      </p>
+                    </div>
+
+                    {/* Timeline */}
+                    <div className="tracking-timeline">
+                      <div className={`timeline-step ${status.progress >= 25 ? 'active' : ''}`}>
+                        <div className={`timeline-icon ${status.progress >= 25 ? 'active' : ''}`}>
+                          <CheckCircle size={20} />
+                        </div>
+                        <div className="timeline-content">
+                          <h4 className={`timeline-title ${status.progress >= 25 ? 'active' : ''}`}>
+                            Order Confirmed
+                          </h4>
+                          <p className="timeline-description">
+                            Your order has been received and confirmed
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className={`timeline-step ${status.progress >= 50 ? 'active' : ''}`}>
+                        <div className={`timeline-icon ${status.progress >= 50 ? 'active' : ''}`}>
+                          <Package size={20} />
+                        </div>
+                        <div className="timeline-content">
+                          <h4 className={`timeline-title ${status.progress >= 50 ? 'active' : ''}`}>
+                            Being Prepared
+                          </h4>
+                          <p className="timeline-description">
+                            Your medicines are being prepared and packed
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className={`timeline-step ${status.progress >= 75 ? 'active' : ''}`}>
+                        <div className={`timeline-icon ${status.progress >= 75 ? 'active' : ''}`}>
+                          <Truck size={20} />
+                        </div>
+                        <div className="timeline-content">
+                          <h4 className={`timeline-title ${status.progress >= 75 ? 'active' : ''}`}>
+                            Out for Delivery
+                          </h4>
+                          <p className="timeline-description">
+                            Your order is on the way to your address
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className={`timeline-step ${status.progress >= 100 ? 'active' : ''}`}>
+                        <div className={`timeline-icon ${status.progress >= 100 ? 'active' : ''}`}>
+                          <CheckCircle size={20} />
+                        </div>
+                        <div className="timeline-content">
+                          <h4 className={`timeline-title ${status.progress >= 100 ? 'active' : ''}`}>
+                            Delivered
+                          </h4>
+                          <p className="timeline-description">
+                            Order delivered successfully
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Current Status */}
+                    <div style={{ 
+                      background: status.progress >= 100 ? '#d1fae5' : '#dbeafe', 
+                      padding: '1rem', 
+                      borderRadius: '8px', 
+                      textAlign: 'center' 
+                    }}>
+                      <h4 style={{ 
+                        margin: '0 0 0.5rem 0', 
+                        color: status.progress >= 100 ? '#065f46' : '#1e40af' 
+                      }}>
+                        Current Status: {status.message}
+                      </h4>
+                      <p style={{ 
+                        margin: 0, 
+                        color: status.progress >= 100 ? '#047857' : '#1d4ed8' 
+                      }}>
+                        {status.progress >= 100 
+                          ? '🎉 Your order has been delivered!' 
+                          : `📦 Your order is ${status.progress}% complete`
+                        }
+                      </p>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        )}
+
+        {/* Cart Sidebar Overlay */}
+        {isCartOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.3)',
+              zIndex: 999
+            }}
+            onClick={() => setIsCartOpen(false)}
+          />
         )}
       </div>
     </div>
