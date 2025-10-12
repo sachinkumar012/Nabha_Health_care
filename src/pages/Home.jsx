@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Heart, Users, Clock, ArrowRight, Building2, Video, Pill, Stethoscope, Search, Calendar, FileText } from 'lucide-react';
+import { Heart, Users, Shield, Clock, ArrowRight, Building2, Video, Pill, Stethoscope, Search, Calendar, FileText } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import AppointmentChatBot from '../components/AppointmentChatBot';
 import AnimatedCounter from '../components/UI/AnimatedCounter';
@@ -11,7 +11,6 @@ import symptomImage from '../assets/chat-img.png';
 import hospitalImage from '../assets/hospital.jpg';
 import healthRecordImage from '../assets/health record.webp';
 import appointmentImage from '../assets/appointment.jpg';
-import bannerImage from '../assets/banner.png';
 
 export default function Home() {
   const { t } = useLanguage();
@@ -90,6 +89,11 @@ export default function Home() {
       description: 'Healthcare solutions designed specifically for rural communities.',
     },
     {
+      icon: Shield,
+      title: 'Secure Records',
+      description: 'Your health data is protected with offline backup capabilities.',
+    },
+    {
       icon: Clock,
       title: '24/7 Support',
       description: 'Access healthcare guidance and emergency support anytime.',
@@ -106,29 +110,39 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section 
-        className="hero"
-        style={{
-          backgroundImage: `linear-gradient(rgba(214, 207, 207, 0.2), rgba(255, 249, 249, 0.2)), url(${bannerImage})`,
-          backgroundSize: '100% auto',
-          backgroundPosition: 'center top',
-          backgroundRepeat: 'no-repeat',
-          minHeight: '650px',
-          height: 'auto',
-          display: 'flex',
-          alignItems: 'flex-end',
-          paddingBottom: '4rem',
-          paddingTop: '2rem',
-          color: 'white',
-          position: 'relative'
-        }}
-      >
+      <section className="hero">
         <div className="container">
           <div className="text-center">
-            <motion.div
+            <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
+            >
+              {t('welcome')}
+            </motion.h1>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="subtitle"
+            >
+              {t('subtitle')}
+            </motion.p>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="description"
+            >
+              {t('description')}
+            </motion.p>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
               <Link to="/doctors" className="btn btn-primary group">
@@ -280,146 +294,6 @@ export default function Home() {
       <AppointmentChatBot />
 
       <style>{`
-        .hero {
-          position: relative;
-          overflow: visible;
-          background-color: #f8fafc;
-        }
-
-        .hero .container {
-          position: relative;
-          z-index: 2;
-          padding: 2rem 1rem;
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        .hero h1 {
-          font-size: 3.5rem;
-          font-weight: 800;
-          margin-bottom: 1.5rem;
-          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .hero .subtitle {
-          font-size: 1.5rem;
-          font-weight: 600;
-          margin-bottom: 1rem;
-          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        .hero .description {
-          font-size: 1.2rem;
-          margin-bottom: 2rem;
-          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-          max-width: 600px;
-          margin-left: auto;
-          margin-right: auto;
-        }
-
-        .hero .btn {
-          padding: 1rem 2rem;
-          border-radius: 50px;
-          font-weight: 600;
-          text-decoration: none;
-          display: inline-flex;
-          align-items: center;
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .hero .btn-primary {
-          background: #10b981;
-          color: white;
-          border: none;
-        }
-
-        .hero .btn-primary:hover {
-          background: #059669;
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .hero .btn-secondary {
-          background: transparent;
-          color: black;
-          border: 2px solid white;
-        }
-
-        .hero .btn-secondary:hover {
-          background: white;
-          color: #1f2937;
-          transform: translateY(-2px);
-        }
-
-        /* Social Media Icons */
-        .social-icons {
-          margin-top: 1rem;
-        }
-
-        .social-icon {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
-          color: white;
-          transition: all 0.3s ease;
-          text-decoration: none;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .social-icon:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .social-icon.instagram {
-          background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-        }
-
-        .social-icon.facebook {
-          background: #1877f2;
-        }
-
-        .social-icon.twitter {
-          background: #1da1f2;
-        }
-
-        .social-icon.whatsapp {
-          background: #25d366;
-        }
-
-        @media (max-width: 768px) {
-          .hero {
-            min-height: 400px !important;
-            background-size: cover !important;
-            background-position: center center !important;
-          }
-          
-          .hero .container {
-            padding: 1.5rem 1rem;
-          }
-          
-          .hero h1 {
-            font-size: 2.5rem;
-          }
-          
-          .hero .subtitle {
-            font-size: 1.25rem;
-          }
-          
-          .hero .description {
-            font-size: 1rem;
-          }
-          
-          .hero .btn {
-            padding: 0.75rem 1.5rem;
-            font-size: 0.9rem;
-          }
-        }
-
         .facilities {
           padding: 4rem 0;
           background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);

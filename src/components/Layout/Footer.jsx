@@ -5,36 +5,50 @@ export default function Footer() {
   const { t } = useLanguage();
 
   return (
-    <>
-      <footer className="footer">
-        <div className="container">
-          <div className="footer-content">
-            {/* Company Info */}
-            <div className="footer-section">
-              <div className="flex items-center space-x-2" style={{ marginBottom: '1rem' }}>
-                <div className="logo-icon">
-                  <Stethoscope size={20} />
-                </div>
-                <span style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>Nabha Healthcare</span>
+    <footer className="footer">
+      <div className="container">
+        <div className="footer-content">
+          {/* Company Info */}
+          <div className="footer-section">
+            <div className="flex items-center space-x-2" style={{ marginBottom: '1rem' }}>
+              <div className="logo-icon">
+                <Stethoscope size={20} />
               </div>
-              <p style={{ marginBottom: '1rem' }}>
-                {t('missionText')}
-              </p>
-              <div className="flex space-x-4">
-                <a href="#" className="social-icon facebook">
-                  <Facebook size={20} />
-                  <span className="sr-only">Facebook</span>
-                </a>
-                <a href="#" className="social-icon twitter">
-                  <Twitter size={20} />
-                  <span className="sr-only">Twitter</span>
-                </a>
-                <a href="#" className="social-icon instagram">
-                  <Instagram size={20} />
-                  <span className="sr-only">Instagram</span>
-                </a>
-              </div>
+              <span style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>Nabha Healthcare</span>
             </div>
+            <p style={{ marginBottom: '1rem' }}>
+              {t('missionText')}
+            </p>
+            <div className="flex space-x-4">
+              <a 
+                href="https://facebook.com/nabhahealthcare" 
+                className="social-icon facebook"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow us on Facebook"
+              >
+                <Facebook size={20} />
+              </a>
+              <a 
+                href="https://twitter.com/nabhahealthcare" 
+                className="social-icon twitter"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow us on Twitter"
+              >
+                <Twitter size={20} />
+              </a>
+              <a 
+                href="https://instagram.com/nabhahealthcare" 
+                className="social-icon instagram"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow us on Instagram"
+              >
+                <Instagram size={20} />
+              </a>
+            </div>
+          </div>
 
           {/* Quick Links */}
           <div className="footer-section">
@@ -69,53 +83,9 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <p>© 2025 Nabha Healthcare Solution. All rights reserved.</p>
+          <p>© 2024 Nabha Healthcare Solution. All rights reserved.</p>
         </div>
       </div>
     </footer>
-
-    <style>{`
-      .social-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-        text-decoration: none;
-      }
-
-      .social-icon.facebook {
-        background-color: #1877f2;
-        color: white;
-      }
-
-      .social-icon.facebook:hover {
-        background-color: #166fe5;
-        transform: translateY(-2px);
-      }
-
-      .social-icon.twitter {
-        background-color: #1da1f2;
-        color: white;
-      }
-
-      .social-icon.twitter:hover {
-        background-color: #1a91da;
-        transform: translateY(-2px);
-      }
-
-      .social-icon.instagram {
-        background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-        color: white;
-      }
-
-      .social-icon.instagram:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(188, 24, 136, 0.3);
-      }
-    `}</style>
-    </>
   );
 }
