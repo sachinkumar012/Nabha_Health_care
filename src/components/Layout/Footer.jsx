@@ -69,7 +69,7 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <p>© 2025 Nabha Healthcare Solution. All rights reserved.</p>
+          <p>© 2024 Nabha Healthcare Solution. All rights reserved.</p>
         </div>
       </div>
     </footer>
