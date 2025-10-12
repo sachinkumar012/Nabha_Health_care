@@ -1,13 +1,76 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Heart, Users, Shield, Clock, ArrowRight, Building2 } from 'lucide-react';
+import { Heart, Users, Shield, Clock, ArrowRight, Building2, Video, Pill, Stethoscope, Search, Calendar, FileText } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import AppointmentChatBot from '../components/AppointmentChatBot';
 import AnimatedCounter from '../components/UI/AnimatedCounter';
 import { nabhaHospitals } from '../data/hospitalsData';
+import videocallImage from '../assets/videocall.jpg';
+import pharmacyImage from '../assets/pharmacy.jpg';
+import symptomImage from '../assets/chat-img.png';
+import hospitalImage from '../assets/hospital.jpg';
+import healthRecordImage from '../assets/health record.webp';
+import appointmentImage from '../assets/appointment.jpg';
 
 export default function Home() {
   const { t } = useLanguage();
+
+  const facilities = [
+    {
+      icon: Video,
+      title: 'Video Consultation',
+      description: 'Connect with doctors remotely through secure video calls for instant medical advice.',
+      image: videocallImage,
+      isImageFile: true,
+      link: '/doctors',
+      color: 'bg-gradient-to-br from-blue-500 to-blue-600'
+    },
+    {
+      icon: Pill,
+      title: 'Pharmacy Services',
+      description: 'Order medicines online with home delivery and get expert pharmaceutical guidance.',
+      image: pharmacyImage,
+      isImageFile: true,
+      link: '/pharmacy',
+      color: 'bg-gradient-to-br from-green-500 to-green-600'
+    },
+    {
+      icon: Search,
+      title: 'Symptom Checker',
+      description: 'AI-powered symptom analysis to help you understand your health conditions better.',
+      image: symptomImage,
+      isImageFile: true,
+      link: '/symptom-checker',
+      color: 'bg-gradient-to-br from-purple-500 to-purple-600'
+    },
+    {
+      icon: Building2,
+      title: 'Hospital Directory',
+      description: 'Find nearby hospitals with complete information about services and facilities.',
+      image: hospitalImage,
+      isImageFile: true,
+      link: '/hospitals',
+      color: 'bg-gradient-to-br from-red-500 to-red-600'
+    },
+    {
+      icon: Calendar,
+      title: 'Appointment Booking',
+      description: 'Schedule appointments with doctors at your convenience with easy online booking.',
+      image: appointmentImage,
+      isImageFile: true,
+      link: '/doctors',
+      color: 'bg-gradient-to-br from-indigo-500 to-indigo-600'
+    },
+    {
+      icon: FileText,
+      title: 'Health Records',
+      description: 'Access and manage your medical records securely with offline backup capabilities.',
+      image: healthRecordImage,
+      isImageFile: true,
+      link: '/health-records',
+      color: 'bg-gradient-to-br from-teal-500 to-teal-600'
+    }
+  ];
 
   const features = [
     {
@@ -123,6 +186,66 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Facilities Section */}
+      <section className="facilities">
+        <div className="container">
+          <div className="text-center" style={{ marginBottom: '4rem' }}>
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              Our Healthcare Services
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-gray-600"
+              style={{ maxWidth: '600px', margin: '0 auto' }}
+            >
+              Comprehensive healthcare solutions designed for modern medical needs
+            </motion.p>
+          </div>
+          
+          <div className="facilities-grid">
+            {facilities.map((facility, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="facility-card"
+              >
+                <Link to={facility.link} className="facility-link">
+                  <div className={`facility-icon-wrapper ${facility.color}`}>
+                    {facility.isImageFile ? (
+                      <img 
+                        src={facility.image} 
+                        alt={facility.title}
+                        className="facility-full-img"
+                      />
+                    ) : (
+                      <>
+                        <div className="facility-image">{facility.image}</div>
+                        <facility.icon size={24} className="facility-icon" />
+                      </>
+                    )}
+                  </div>
+                  <div className="facility-content">
+                    <h3 className="facility-title">{facility.title}</h3>
+                    <p className="facility-description">{facility.description}</p>
+                    <div className="facility-arrow">
+                      <ArrowRight size={20} />
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="features">
         <div className="container">
@@ -169,6 +292,193 @@ export default function Home() {
 
       {/* Appointment ChatBot */}
       <AppointmentChatBot />
+
+      <style>{`
+        .facilities {
+          padding: 4rem 0;
+          background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .facilities-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 2rem;
+          max-width: 1400px;
+          margin: 0 auto;
+        }
+
+        @media (min-width: 1024px) {
+          .facilities-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+
+        .facility-card {
+          background: white;
+          border-radius: 20px;
+          overflow: hidden;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+          transition: all 0.3s ease;
+          height: 100%;
+        }
+
+        .facility-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .facility-link {
+          display: block;
+          text-decoration: none;
+          color: inherit;
+          height: 100%;
+        }
+
+        .facility-icon-wrapper {
+          height: 200px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .facility-image {
+          font-size: 4rem;
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          z-index: 1;
+        }
+
+        .facility-img {
+          width: 80px;
+          height: 80px;
+          object-fit: cover;
+          border-radius: 12px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .facility-full-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+          border-radius: 20px 20px 0 0;
+        }
+
+        .facility-icon {
+          color: white;
+          z-index: 2;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .facility-content {
+          padding: 2rem;
+          position: relative;
+        }
+
+        .facility-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+          color: #1a202c;
+        }
+
+        .facility-description {
+          color: #4a5568;
+          line-height: 1.6;
+          margin-bottom: 1.5rem;
+        }
+
+        .facility-arrow {
+          position: absolute;
+          bottom: 2rem;
+          right: 2rem;
+          color: #3182ce;
+          transition: transform 0.3s ease;
+        }
+
+        .facility-card:hover .facility-arrow {
+          transform: translateX(4px);
+        }
+
+        @media (max-width: 768px) {
+          .facilities {
+            padding: 3rem 0;
+          }
+
+          .facilities-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            padding: 0 1rem;
+          }
+
+          .facility-card {
+            border-radius: 16px;
+          }
+
+          .facility-icon-wrapper {
+            height: 180px;
+          }
+
+          .facility-image {
+            font-size: 3rem;
+            top: 15px;
+            left: 15px;
+          }
+
+          .facility-img {
+            width: 60px;
+            height: 60px;
+          }
+
+          .facility-full-img {
+            border-radius: 16px 16px 0 0;
+          }
+
+          .facility-content {
+            padding: 1.5rem;
+          }
+
+          .facility-title {
+            font-size: 1.25rem;
+          }
+
+          .facility-description {
+            font-size: 0.9rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .facilities-grid {
+            padding: 0 0.5rem;
+          }
+
+          .facility-icon-wrapper {
+            height: 160px;
+          }
+
+          .facility-image {
+            font-size: 2.5rem;
+            top: 10px;
+            left: 10px;
+          }
+
+          .facility-img {
+            width: 50px;
+            height: 50px;
+          }
+
+          .facility-full-img {
+            border-radius: 16px 16px 0 0;
+          }
+
+          .facility-content {
+            padding: 1.25rem;
+          }
+        }
+      `}</style>
     </div>
   );
 }
