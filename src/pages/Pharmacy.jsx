@@ -4787,7 +4787,7 @@ const Pharmacy = () => {
           background: #dbeafe;
         }
 
-        /* Mobile Floating Action Button */
+        /* Mobile Floating Action Button - Hidden by default */
         .mobile-cart-fab {
           position: fixed;
           bottom: 20px;
@@ -5441,6 +5441,11 @@ const Pharmacy = () => {
           .understand-btn {
             padding: 14px 20px;
             font-size: 15px;
+          }
+
+          /* Mobile cart FAB */
+          .mobile-cart-fab {
+            display: flex !important;
           }
 
           /* Better spacing for mobile */
