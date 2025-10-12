@@ -110,14 +110,14 @@ export default function Home() {
         className="hero"
         style={{
           backgroundImage: `linear-gradient(rgba(214, 207, 207, 0.2), rgba(255, 249, 249, 0.2)), url(${bannerImage})`,
-          backgroundSize: '100% auto',
-          backgroundPosition: 'center top',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat',
-          minHeight: '650px',
+          minHeight: '100vh',
           height: 'auto',
           display: 'flex',
-          alignItems: 'flex-end',
-          paddingBottom: '4rem',
+          alignItems: 'center',
+          paddingBottom: '2rem',
           paddingTop: '2rem',
           color: 'white',
           position: 'relative'
@@ -280,6 +280,56 @@ export default function Home() {
       <AppointmentChatBot />
 
       <style>{`
+        /* Base responsive container */
+        .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 1rem;
+        }
+
+        @media (max-width: 768px) {
+          .container {
+            padding: 0 0.5rem;
+          }
+        }
+
+        /* Stats section responsiveness */
+        .stats {
+          padding: 3rem 0;
+        }
+
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 2rem;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+          .stats {
+            padding: 2rem 0;
+          }
+          
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin: 0 1rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .stats {
+            padding: 1.5rem 0;
+          }
+          
+          .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin: 0 0.5rem;
+          }
+        }
+
         .hero {
           position: relative;
           overflow: visible;
@@ -393,30 +443,72 @@ export default function Home() {
 
         @media (max-width: 768px) {
           .hero {
-            min-height: 400px !important;
+            min-height: 70vh !important;
             background-size: cover !important;
             background-position: center center !important;
+            padding-bottom: 1rem !important;
+            padding-top: 1rem !important;
+            align-items: center !important;
           }
           
           .hero .container {
-            padding: 1.5rem 1rem;
-          }
-          
-          .hero h1 {
-            font-size: 2.5rem;
-          }
-          
-          .hero .subtitle {
-            font-size: 1.25rem;
-          }
-          
-          .hero .description {
-            font-size: 1rem;
+            padding: 1rem;
+            max-width: 100%;
           }
           
           .hero .btn {
             padding: 0.75rem 1.5rem;
             font-size: 0.9rem;
+            width: 100%;
+            max-width: 200px;
+            margin-bottom: 0.5rem;
+          }
+
+          .hero .flex {
+            flex-direction: column;
+            gap: 1rem;
+          }
+          
+          .hero h1 {
+            font-size: 2rem;
+          }
+          
+          .hero .subtitle {
+            font-size: 1.1rem;
+          }
+          
+          .hero .description {
+            font-size: 1rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .hero {
+            min-height: 60vh !important;
+            padding: 0.5rem !important;
+          }
+          
+          .hero .container {
+            padding: 0.5rem;
+          }
+          
+          .hero h1 {
+            font-size: 1.5rem;
+          }
+          
+          .hero .btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.8rem;
+            max-width: 180px;
+          }
+
+          .social-icons {
+            gap: 0.5rem;
+          }
+
+          .social-icon {
+            width: 35px;
+            height: 35px;
           }
         }
 
@@ -427,15 +519,102 @@ export default function Home() {
 
         .facilities-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
           gap: 2rem;
           max-width: 1400px;
           margin: 0 auto;
+          padding: 0 1rem;
         }
 
         @media (min-width: 1024px) {
           .facilities-grid {
             grid-template-columns: repeat(3, 1fr);
+            padding: 0;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .facilities {
+            padding: 2rem 0;
+          }
+          
+          .facilities-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            padding: 0 1rem;
+          }
+
+          .facility-card {
+            border-radius: 16px;
+          }
+
+          .facility-icon-wrapper {
+            height: 160px;
+          }
+
+          .facility-image {
+            font-size: 3rem;
+            top: 15px;
+            left: 15px;
+          }
+
+          .facility-img {
+            width: 60px;
+            height: 60px;
+          }
+
+          .facility-full-img {
+            border-radius: 16px 16px 0 0;
+          }
+
+          .facility-content {
+            padding: 1.5rem;
+          }
+
+          .facility-title {
+            font-size: 1.25rem;
+          }
+
+          .facility-description {
+            font-size: 0.9rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .facilities {
+            padding: 1.5rem 0;
+          }
+          
+          .facilities-grid {
+            gap: 1rem;
+            padding: 0 0.5rem;
+          }
+
+          .facility-icon-wrapper {
+            height: 140px;
+          }
+
+          .facility-image {
+            font-size: 2.5rem;
+            top: 10px;
+            left: 10px;
+          }
+
+          .facility-img {
+            width: 50px;
+            height: 50px;
+          }
+
+          .facility-content {
+            padding: 1.25rem;
+          }
+
+          .facility-title {
+            font-size: 1.1rem;
+          }
+
+          .facility-description {
+            font-size: 0.85rem;
           }
         }
 
@@ -529,52 +708,7 @@ export default function Home() {
           transform: translateX(4px);
         }
 
-        @media (max-width: 768px) {
-          .facilities {
-            padding: 3rem 0;
-          }
-
-          .facilities-grid {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            padding: 0 1rem;
-          }
-
-          .facility-card {
-            border-radius: 16px;
-          }
-
-          .facility-icon-wrapper {
-            height: 180px;
-          }
-
-          .facility-image {
-            font-size: 3rem;
-            top: 15px;
-            left: 15px;
-          }
-
-          .facility-img {
-            width: 60px;
-            height: 60px;
-          }
-
-          .facility-full-img {
-            border-radius: 16px 16px 0 0;
-          }
-
-          .facility-content {
-            padding: 1.5rem;
-          }
-
-          .facility-title {
-            font-size: 1.25rem;
-          }
-
-          .facility-description {
-            font-size: 0.9rem;
-          }
-        }
+        /* Mobile styles already defined above for facilities */
 
         @media (max-width: 480px) {
           .facilities-grid {
