@@ -1763,46 +1763,6 @@ const Pharmacy = () => {
           }
 
           /* Cart Styles */
-          .cart-button {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
-            z-index: 100;
-            transition: all 0.3s ease;
-          }
-
-          .cart-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(31, 41, 55, 0.4);
-          }
-
-          .cart-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #ef4444;
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 600;
-          }
-
           .cart-sidebar {
             position: fixed;
             top: 0;
@@ -3558,19 +3518,6 @@ const Pharmacy = () => {
               </form>
             </div>
           </div>
-        )}
-
-        {/* Shopping Cart Button */}
-        {cart.length > 0 && (
-          <button
-            className="cart-button"
-            onClick={() => setIsCartOpen(true)}
-          >
-            <ShoppingCart size={24} />
-            {getCartItemCount() > 0 && (
-              <span className="cart-badge">{getCartItemCount()}</span>
-            )}
-          </button>
         )}
 
         {/* Cart Sidebar */}
