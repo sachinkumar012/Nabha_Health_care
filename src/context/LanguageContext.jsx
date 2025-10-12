@@ -13,10 +13,10 @@ const translations = {
     about: 'About',
     
     // Home Page
-    welcome: 'Welcome to Nabha Healthcare',
-    subtitle: 'Quality Healthcare for Rural Communities',
-    description: 'Access doctors, manage health records, and get medical guidance from the comfort of your home.',
-    getStarted: 'Get Started',
+    // welcome: 'Welcome to Nabha Healthcare',
+    // subtitle: 'Quality Healthcare for Rural Communities',
+    // description: 'Access doctors, manage health records, and get medical guidance from the comfort of your home.',
+    // getStarted: 'Get Started',
     
     // Doctors
     doctorsList: 'Our Doctors',
