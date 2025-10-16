@@ -12,7 +12,7 @@ class HomeHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
     final userName = user?.name ?? 'Guest';
-    
+
     return Container(
       padding: const EdgeInsets.all(AppConstants.largeSpacing),
       decoration: BoxDecoration(
@@ -37,16 +37,16 @@ class HomeHeader extends ConsumerWidget {
                   Text(
                     'Good Morning',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColors.white.withOpacity(0.9),
-                    ),
+                          color: AppColors.white.withOpacity(0.9),
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     userName,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: AppColors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                          color: AppColors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ],
               ),
@@ -83,9 +83,9 @@ class HomeHeader extends ConsumerWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: AppConstants.largeSpacing),
-          
+
           // Health Status Card
           Container(
             padding: const EdgeInsets.all(AppConstants.mediumSpacing),
@@ -111,9 +111,7 @@ class HomeHeader extends ConsumerWidget {
                     size: 24,
                   ),
                 ),
-                
                 const SizedBox(width: AppConstants.mediumSpacing),
-                
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,21 +119,20 @@ class HomeHeader extends ConsumerWidget {
                       Text(
                         'Health Status',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: AppColors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
+                              color: AppColors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'All vitals normal • Last updated 2 hours ago',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.white.withOpacity(0.8),
-                        ),
+                              color: AppColors.white.withOpacity(0.8),
+                            ),
                       ),
                     ],
                   ),
                 ),
-                
                 Icon(
                   Icons.arrow_forward_ios,
                   color: AppColors.white.withOpacity(0.7),

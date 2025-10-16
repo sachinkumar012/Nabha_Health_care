@@ -20,7 +20,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _isLoading = false;
@@ -49,34 +49,34 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 Text(
                   'Join Nabha Healthcare',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.grey900,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.grey900,
+                      ),
                   textAlign: TextAlign.center,
                 ),
-                
+
                 const SizedBox(height: AppConstants.smallSpacing),
-                
+
                 Text(
                   'Create your account to access healthcare services',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: AppColors.grey600,
-                  ),
+                        color: AppColors.grey600,
+                      ),
                   textAlign: TextAlign.center,
                 ),
-                
+
                 const SizedBox(height: AppConstants.extraLargeSpacing),
-                
+
                 // User Type Selection
                 Text(
                   'I am a:',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
-                
+
                 const SizedBox(height: AppConstants.smallSpacing),
-                
+
                 Row(
                   children: [
                     Expanded(
@@ -107,9 +107,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: AppConstants.mediumSpacing),
-                
+
                 // Full Name Field
                 TextFormField(
                   controller: _nameController,
@@ -120,9 +120,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   ),
                   validator: _validateName,
                 ),
-                
+
                 const SizedBox(height: AppConstants.mediumSpacing),
-                
+
                 // Email Field
                 TextFormField(
                   controller: _emailController,
@@ -133,9 +133,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   ),
                   validator: _validateEmail,
                 ),
-                
+
                 const SizedBox(height: AppConstants.mediumSpacing),
-                
+
                 // Phone Field
                 TextFormField(
                   controller: _phoneController,
@@ -146,9 +146,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   ),
                   validator: _validatePhone,
                 ),
-                
+
                 const SizedBox(height: AppConstants.mediumSpacing),
-                
+
                 // Password Field
                 TextFormField(
                   controller: _passwordController,
@@ -158,7 +158,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                        _isPasswordVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                       onPressed: () {
                         setState(() {
@@ -169,9 +171,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   ),
                   validator: _validatePassword,
                 ),
-                
+
                 const SizedBox(height: AppConstants.mediumSpacing),
-                
+
                 // Confirm Password Field
                 TextFormField(
                   controller: _confirmPasswordController,
@@ -181,20 +183,23 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isConfirmPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                        _isConfirmPasswordVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                       onPressed: () {
                         setState(() {
-                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                          _isConfirmPasswordVisible =
+                              !_isConfirmPasswordVisible;
                         });
                       },
                     ),
                   ),
                   validator: _validateConfirmPassword,
                 ),
-                
+
                 const SizedBox(height: AppConstants.mediumSpacing),
-                
+
                 // Terms and Conditions
                 CheckboxListTile(
                   value: _agreeToTerms,
@@ -229,9 +234,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   controlAffinity: ListTileControlAffinity.leading,
                   contentPadding: EdgeInsets.zero,
                 ),
-                
+
                 const SizedBox(height: AppConstants.largeSpacing),
-                
+
                 // Register Button
                 ElevatedButton(
                   onPressed: (_isLoading || !_agreeToTerms) ? null : _register,
@@ -241,14 +246,15 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           width: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(AppColors.white),
                           ),
                         )
                       : const Text('Create Account'),
                 ),
-                
+
                 const SizedBox(height: AppConstants.largeSpacing),
-                
+
                 // Sign In Link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -336,19 +342,20 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     try {
       // Register user using the provider
       await ref.read(userProvider.notifier).registerUser(
-        name: _nameController.text.trim(),
-        email: _emailController.text.trim(),
-        phone: _phoneController.text.trim(),
-        password: _passwordController.text,
-        userType: _selectedUserType,
-      );
-      
+            name: _nameController.text.trim(),
+            email: _emailController.text.trim(),
+            phone: _phoneController.text.trim(),
+            password: _passwordController.text,
+            userType: _selectedUserType,
+          );
+
       if (mounted) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Account Created'),
-            content: const Text('Your account has been created successfully. You are now logged in!'),
+            content: const Text(
+                'Your account has been created successfully. You are now logged in!'),
             actions: [
               TextButton(
                 onPressed: () {

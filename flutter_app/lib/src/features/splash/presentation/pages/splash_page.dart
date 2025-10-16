@@ -52,7 +52,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
   Future<void> _navigateToNextScreen() async {
     await Future.delayed(const Duration(seconds: 3));
-    
+
     if (mounted) {
       Navigator.of(context).pushReplacementNamed(AppRoutes.onboarding);
     }
@@ -124,18 +124,22 @@ class _SplashPageState extends ConsumerState<SplashPage>
                       children: [
                         Text(
                           AppConstants.appName,
-                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            color: AppColors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(
+                                color: AppColors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                         const SizedBox(height: AppConstants.smallSpacing),
                         Text(
                           AppConstants.appDescription,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: AppColors.white.withOpacity(0.9),
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: AppColors.white.withOpacity(0.9),
+                                  ),
                         ),
                       ],
                     ),
@@ -149,7 +153,8 @@ class _SplashPageState extends ConsumerState<SplashPage>
                   return Opacity(
                     opacity: _opacityAnimation.value,
                     child: const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColors.white),
                     ),
                   );
                 },

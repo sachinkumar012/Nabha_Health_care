@@ -33,7 +33,8 @@ class RecentActivities extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppConstants.mediumSpacing),
+      padding:
+          const EdgeInsets.symmetric(horizontal: AppConstants.mediumSpacing),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -43,9 +44,9 @@ class RecentActivities extends StatelessWidget {
               Text(
                 'Recent Activities',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.grey900,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.grey900,
+                    ),
               ),
               TextButton(
                 onPressed: () {
@@ -55,9 +56,7 @@ class RecentActivities extends StatelessWidget {
               ),
             ],
           ),
-          
           const SizedBox(height: AppConstants.mediumSpacing),
-          
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -95,9 +94,7 @@ class RecentActivities extends StatelessWidget {
               size: 24,
             ),
           ),
-          
           const SizedBox(width: AppConstants.mediumSpacing),
-          
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,29 +102,28 @@ class RecentActivities extends StatelessWidget {
                 Text(
                   activity.title,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.grey900,
-                  ),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.grey900,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   activity.subtitle,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.grey600,
-                  ),
+                        color: AppColors.grey600,
+                      ),
                 ),
               ],
             ),
           ),
-          
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 activity.time,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.grey500,
-                ),
+                      color: AppColors.grey500,
+                    ),
               ),
               const SizedBox(height: 4),
               Icon(

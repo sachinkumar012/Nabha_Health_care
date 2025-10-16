@@ -31,7 +31,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: AppConstants.extraLargeSpacing),
-                
+
                 // Logo and Title
                 Column(
                   children: [
@@ -48,31 +48,28 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         color: AppColors.white,
                       ),
                     ),
-                    
                     const SizedBox(height: AppConstants.mediumSpacing),
-                    
                     Text(
                       'Welcome Back',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.grey900,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.grey900,
+                              ),
                     ),
-                    
                     const SizedBox(height: AppConstants.smallSpacing),
-                    
                     Text(
                       'Sign in to access your healthcare account',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.grey600,
-                      ),
+                            color: AppColors.grey600,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: AppConstants.extraLargeSpacing),
-                
+
                 // Email Field
                 TextFormField(
                   controller: _emailController,
@@ -83,9 +80,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                   validator: _validateEmail,
                 ),
-                
+
                 const SizedBox(height: AppConstants.mediumSpacing),
-                
+
                 // Password Field
                 TextFormField(
                   controller: _passwordController,
@@ -95,7 +92,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                        _isPasswordVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                       onPressed: () {
                         setState(() {
@@ -106,9 +105,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                   validator: _validatePassword,
                 ),
-                
+
                 const SizedBox(height: AppConstants.smallSpacing),
-                
+
                 // Forgot Password
                 Align(
                   alignment: Alignment.centerRight,
@@ -117,9 +116,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     child: const Text('Forgot Password?'),
                   ),
                 ),
-                
+
                 const SizedBox(height: AppConstants.largeSpacing),
-                
+
                 // Login Button
                 ElevatedButton(
                   onPressed: _isLoading ? null : _login,
@@ -129,20 +128,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           width: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(AppColors.white),
                           ),
                         )
                       : const Text('Sign In'),
                 ),
-                
+
                 const SizedBox(height: AppConstants.largeSpacing),
-                
+
                 // Divider
                 Row(
                   children: [
                     const Expanded(child: Divider()),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: AppConstants.mediumSpacing),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppConstants.mediumSpacing),
                       child: Text(
                         'OR',
                         style: TextStyle(
@@ -154,9 +155,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     const Expanded(child: Divider()),
                   ],
                 ),
-                
+
                 const SizedBox(height: AppConstants.largeSpacing),
-                
+
                 // Quick Login as Patient/Doctor
                 Row(
                   children: [
@@ -167,9 +168,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         label: const Text('Patient Login'),
                       ),
                     ),
-                    
                     const SizedBox(width: AppConstants.mediumSpacing),
-                    
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () => _quickLogin('doctor'),
@@ -179,9 +178,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: AppConstants.extraLargeSpacing),
-                
+
                 // Sign Up Link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -236,7 +235,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     try {
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
-      
+
       if (mounted) {
         Navigator.of(context).pushReplacementNamed(AppRoutes.home);
       }
@@ -268,7 +267,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Forgot Password'),
-        content: const Text('Password reset functionality will be implemented soon.'),
+        content: const Text(
+            'Password reset functionality will be implemented soon.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),

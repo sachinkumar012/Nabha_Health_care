@@ -19,25 +19,29 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   final List<OnboardingData> _onboardingData = [
     OnboardingData(
       title: 'Expert Healthcare',
-      description: 'Connect with qualified doctors and healthcare professionals specializing in rural healthcare needs.',
+      description:
+          'Connect with qualified doctors and healthcare professionals specializing in rural healthcare needs.',
       icon: Icons.medical_services,
       color: AppColors.medical,
     ),
     OnboardingData(
       title: 'Digital Pharmacy',
-      description: 'Order medicines online with home delivery and get expert pharmaceutical guidance.',
+      description:
+          'Order medicines online with home delivery and get expert pharmaceutical guidance.',
       icon: Icons.local_pharmacy,
       color: AppColors.pharmacy,
     ),
     OnboardingData(
       title: 'Health Records',
-      description: 'Securely store and access your medical records with offline backup capabilities.',
+      description:
+          'Securely store and access your medical records with offline backup capabilities.',
       icon: Icons.folder_shared,
       color: AppColors.accent,
     ),
     OnboardingData(
       title: 'Emergency Support',
-      description: 'Get 24/7 emergency support and quick access to nearby hospitals and clinics.',
+      description:
+          'Get 24/7 emergency support and quick access to nearby hospitals and clinics.',
       icon: Icons.emergency,
       color: AppColors.emergency,
     ),
@@ -67,7 +71,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 ),
               ),
             ),
-            
+
             // PageView
             Expanded(
               child: PageView.builder(
@@ -83,7 +87,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 },
               ),
             ),
-            
+
             // Page Indicator and Navigation
             Padding(
               padding: const EdgeInsets.all(AppConstants.largeSpacing),
@@ -97,9 +101,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                       (index) => _buildPageIndicator(index),
                     ),
                   ),
-                  
+
                   const SizedBox(height: AppConstants.largeSpacing),
-                  
+
                   // Navigation Buttons
                   Row(
                     children: [
@@ -110,10 +114,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                             child: const Text('Previous'),
                           ),
                         ),
-                      
                       if (_currentPage > 0)
                         const SizedBox(width: AppConstants.mediumSpacing),
-                      
                       Expanded(
                         child: ElevatedButton(
                           onPressed: _currentPage == _onboardingData.length - 1
@@ -157,28 +159,28 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               color: data.color,
             ),
           ),
-          
+
           const SizedBox(height: AppConstants.extraLargeSpacing),
-          
+
           // Title
           Text(
             data.title,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.grey900,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.grey900,
+                ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: AppConstants.mediumSpacing),
-          
+
           // Description
           Text(
             data.description,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: AppColors.grey600,
-              height: 1.5,
-            ),
+                  color: AppColors.grey600,
+                  height: 1.5,
+                ),
             textAlign: TextAlign.center,
           ),
         ],

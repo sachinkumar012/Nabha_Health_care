@@ -35,19 +35,21 @@ class _HomePageState extends ConsumerState<HomePage> {
         index: _currentIndex,
         children: _pages,
       ),
-      floatingActionButton: _currentIndex == 0 ? FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const AiChatBot(),
-            ),
-          );
-        },
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.white,
-        icon: const Icon(Icons.smart_toy),
-        label: const Text('AI Assistant'),
-      ) : null,
+      floatingActionButton: _currentIndex == 0
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const AiChatBot(),
+                  ),
+                );
+              },
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.white,
+              icon: const Icon(Icons.smart_toy),
+              label: const Text('AI Assistant'),
+            )
+          : null,
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,

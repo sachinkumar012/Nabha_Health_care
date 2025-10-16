@@ -48,20 +48,19 @@ class QuickActionsGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppConstants.mediumSpacing),
+      padding:
+          const EdgeInsets.symmetric(horizontal: AppConstants.mediumSpacing),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Quick Actions',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.grey900,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.grey900,
+                ),
           ),
-          
           const SizedBox(height: AppConstants.mediumSpacing),
-          
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -117,26 +116,22 @@ class QuickActionsGrid extends StatelessWidget {
                     size: 24,
                   ),
                 ),
-                
                 const SizedBox(height: AppConstants.mediumSpacing),
-                
                 Text(
                   action.title,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.grey900,
-                  ),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.grey900,
+                      ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                
                 const SizedBox(height: 4),
-                
                 Text(
                   action.subtitle,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.grey600,
-                  ),
+                        color: AppColors.grey600,
+                      ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

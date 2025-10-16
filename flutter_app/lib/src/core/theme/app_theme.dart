@@ -6,17 +6,17 @@ class AppColors {
   static const Color primary = Color(0xFF22C55E); // Green
   static const Color primaryDark = Color(0xFF16A34A);
   static const Color primaryLight = Color(0xFF86EFAC);
-  
+
   // Secondary Colors
   static const Color secondary = Color(0xFF3B82F6); // Blue
   static const Color secondaryDark = Color(0xFF1D4ED8);
   static const Color secondaryLight = Color(0xFF93C5FD);
-  
+
   // Accent Colors
   static const Color accent = Color(0xFF8B5CF6); // Purple
   static const Color accentDark = Color(0xFF7C3AED);
   static const Color accentLight = Color(0xFFC4B5FD);
-  
+
   // Neutral Colors
   static const Color white = Color(0xFFFFFFFF);
   static const Color black = Color(0xFF000000);
@@ -30,13 +30,13 @@ class AppColors {
   static const Color grey700 = Color(0xFF374151);
   static const Color grey800 = Color(0xFF1F2937);
   static const Color grey900 = Color(0xFF111827);
-  
+
   // Status Colors
   static const Color success = Color(0xFF10B981);
   static const Color warning = Color(0xFFF59E0B);
   static const Color error = Color(0xFFEF4444);
   static const Color info = Color(0xFF3B82F6);
-  
+
   // Healthcare Specific Colors
   static const Color medical = Color(0xFF06B6D4); // Cyan
   static const Color pharmacy = Color(0xFF22C55E); // Green
@@ -122,7 +122,8 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.error),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
       cardTheme: CardThemeData(
         elevation: 2,

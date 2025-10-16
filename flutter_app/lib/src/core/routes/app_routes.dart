@@ -5,9 +5,12 @@ import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
-import '../../features/profile/presentation/pages/profile_page.dart' as ProfileModule;
-import '../../features/appointments/presentation/pages/appointments_page.dart' as AppointmentsModule;
-import '../../features/pharmacy/presentation/pages/pharmacy_page.dart' as PharmacyModule;
+import '../../features/profile/presentation/pages/profile_page.dart'
+    as ProfileModule;
+import '../../features/appointments/presentation/pages/appointments_page.dart'
+    as AppointmentsModule;
+import '../../features/pharmacy/presentation/pages/pharmacy_page.dart'
+    as PharmacyModule;
 import '../../features/symptom_checker/presentation/pages/symptom_checker_page.dart';
 import '../../features/hospitals/presentation/pages/hospitals_page.dart';
 import '../../features/health_records/presentation/pages/health_records_page.dart';

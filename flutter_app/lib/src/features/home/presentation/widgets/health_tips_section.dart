@@ -9,7 +9,8 @@ class HealthTipsSection extends StatelessWidget {
   final List<HealthTip> _healthTips = const [
     HealthTip(
       title: 'Stay Hydrated',
-      description: 'Drink at least 8 glasses of water daily for optimal health.',
+      description:
+          'Drink at least 8 glasses of water daily for optimal health.',
       icon: Icons.water_drop,
       color: AppColors.medical,
     ),
@@ -30,7 +31,8 @@ class HealthTipsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppConstants.mediumSpacing),
+      padding:
+          const EdgeInsets.symmetric(horizontal: AppConstants.mediumSpacing),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -40,9 +42,9 @@ class HealthTipsSection extends StatelessWidget {
               Text(
                 'Health Tips',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.grey900,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.grey900,
+                    ),
               ),
               TextButton(
                 onPressed: () {
@@ -52,9 +54,7 @@ class HealthTipsSection extends StatelessWidget {
               ),
             ],
           ),
-          
           const SizedBox(height: AppConstants.mediumSpacing),
-          
           SizedBox(
             height: 160,
             child: ListView.builder(
@@ -117,9 +117,7 @@ class HealthTipsSection extends StatelessWidget {
                         size: 20,
                       ),
                     ),
-                    
                     const Spacer(),
-                    
                     Icon(
                       Icons.arrow_forward_ios,
                       color: AppColors.white.withOpacity(0.7),
@@ -127,25 +125,21 @@ class HealthTipsSection extends StatelessWidget {
                     ),
                   ],
                 ),
-                
                 const SizedBox(height: AppConstants.mediumSpacing),
-                
                 Text(
                   tip.title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: AppColors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
-                
                 const SizedBox(height: AppConstants.smallSpacing),
-                
                 Text(
                   tip.description,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.white.withOpacity(0.9),
-                    height: 1.4,
-                  ),
+                        color: AppColors.white.withOpacity(0.9),
+                        height: 1.4,
+                      ),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),

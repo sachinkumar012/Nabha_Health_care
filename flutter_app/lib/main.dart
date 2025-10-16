@@ -13,16 +13,16 @@ import 'src/core/routes/app_routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize local storage (simplified without Hive)
   // await Hive.initFlutter();
-  
+
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  
+
   // Set system UI overlay style
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -32,7 +32,7 @@ void main() async {
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
-  
+
   runApp(const ProviderScope(child: NabhaHealthcareApp()));
 }
 
@@ -51,7 +51,8 @@ class NabhaHealthcareApp extends ConsumerWidget {
       routes: AppRoutes.routes,
       builder: (context, child) {
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: const TextScaler.linear(1.0)),
           child: child!,
         );
       },
