@@ -29,9 +29,9 @@ class UserNotifier extends StateNotifier<User?> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userJson = prefs.getString('user_data');
-      
+
       print('DEBUG: Loading user from storage, userJson: $userJson');
-      
+
       if (userJson != null && userJson.isNotEmpty) {
         final userMap = json.decode(userJson) as Map<String, dynamic>;
         final user = User.fromJson(userMap);
@@ -70,13 +70,13 @@ class UserNotifier extends StateNotifier<User?> {
   }) async {
     try {
       print('DEBUG: Registering user: $name ($email)');
-      
+
       // Simulate API call delay
       await Future.delayed(const Duration(seconds: 1));
-      
+
       // Generate a simple user ID (in real app, this would come from the server)
       final userId = 'user_${DateTime.now().millisecondsSinceEpoch}';
-      
+
       final newUser = User(
         id: userId,
         name: name,
@@ -103,20 +103,20 @@ class UserNotifier extends StateNotifier<User?> {
     try {
       // Simulate API call delay
       await Future.delayed(const Duration(seconds: 1));
-      
+
       // Load user from storage
       await _loadUserFromStorage();
-      
+
       // Check if user exists and email matches
       if (state == null || state!.email != email) {
         print('DEBUG: Login failed - User not found or email mismatch');
         throw Exception('Invalid credentials');
       }
-      
+
       // In a real app, you would validate the password hash here
       // For now, we just check if user exists with the email
-      print('DEBUG: Login successful for user: ${state!.name} (${state!.email})');
-      
+      print(
+          'DEBUG: Login successful for user: ${state!.name} (${state!.email})');
     } catch (e) {
       print('DEBUG: Login error: ${e.toString()}');
       throw Exception('Login failed: ${e.toString()}');
@@ -138,10 +138,10 @@ class UserNotifier extends StateNotifier<User?> {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('user_data');
-      
+
       // Clear chat messages on logout
       await ChatStorageService.clearMessages();
-      
+
       state = null;
       print('DEBUG: User logged out and chat messages cleared');
     } catch (e) {

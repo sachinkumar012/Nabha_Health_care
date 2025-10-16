@@ -38,13 +38,18 @@ class HospitalsPage extends StatefulWidget {
 
 class _HospitalsPageState extends State<HospitalsPage> {
   String _searchQuery = '';
-  
+
   final List<Hospital> _hospitals = [
     Hospital(
       name: 'Sawhney Hospital & Maternity Home',
-      address: 'Ripudaman Pura, Nabha, Patiala Gate, Nabha, Punjab – 147201\nNear Gurdwara Akalgarh, Sham Bagh Enclave, Opposite Mata Rani Mandir',
+      address:
+          'Ripudaman Pura, Nabha, Patiala Gate, Nabha, Punjab – 147201\nNear Gurdwara Akalgarh, Sham Bagh Enclave, Opposite Mata Rani Mandir',
       phone: '+91-1765-229611',
-      alternateNumbers: ['+91-98142-20652', '+91-98557-20652', '+91-98146-64201'],
+      alternateNumbers: [
+        '+91-98142-20652',
+        '+91-98557-20652',
+        '+91-98146-64201'
+      ],
       timing: '24×7 (Open all days)',
       is24x7: true,
       services: [
@@ -57,13 +62,14 @@ class _HospitalsPageState extends State<HospitalsPage> {
         'Laboratory & Radiology',
         'Diagnostic Services'
       ],
-      directions: 'Navigate towards Patiala Gate area of Nabha, then look for Ripudaman Pura / Sham Bagh Enclave, or follow signs for Gurdwara Akalgarh.',
+      directions:
+          'Navigate towards Patiala Gate area of Nabha, then look for Ripudaman Pura / Sham Bagh Enclave, or follow signs for Gurdwara Akalgarh.',
       specialNote: 'Key landmark: Gurdwara Akalgarh is nearby',
     ),
-    
     Hospital(
       name: 'Goyal Health Care Hospital',
-      address: 'Nabha, Patiala district, Punjab\nNear Sahmane Dhanetha Hospital and Ekjyot Eye Hospital',
+      address:
+          'Nabha, Patiala district, Punjab\nNear Sahmane Dhanetha Hospital and Ekjyot Eye Hospital',
       phone: 'Contact for phone number',
       timing: 'Contact for timings',
       services: [
@@ -72,10 +78,10 @@ class _HospitalsPageState extends State<HospitalsPage> {
         'Emergency Services',
         'Multi-specialty care'
       ],
-      directions: 'Located in the local hospital cluster in Nabha, near Bansal Hospital & Laparoscopic Centre, Ekjyot Eye Hospital, and Aneja Children & Maternity Hospital.',
+      directions:
+          'Located in the local hospital cluster in Nabha, near Bansal Hospital & Laparoscopic Centre, Ekjyot Eye Hospital, and Aneja Children & Maternity Hospital.',
       specialNote: 'GPS: Latitude ~ 30.37669°, Longitude ~ 76.16144°',
     ),
-    
     Hospital(
       name: 'Bansal Hospital & Laparoscopic Centre',
       address: 'Circular Road, Nabha, Punjab',
@@ -88,22 +94,18 @@ class _HospitalsPageState extends State<HospitalsPage> {
         'Endoscopy',
         'OPD Services'
       ],
-      directions: 'Located on Circular Road in Nabha\'s central area. Close to Goyal Health Care Hospital and other hospitals in the cluster.',
+      directions:
+          'Located on Circular Road in Nabha\'s central area. Close to Goyal Health Care Hospital and other hospitals in the cluster.',
     ),
-    
     Hospital(
       name: 'Veenu Goyal Hospital',
       address: 'Bouran Gate, Nabha, Punjab',
       phone: 'Contact for phone number',
       timing: 'Contact for timings',
-      services: [
-        'General Medicine',
-        'Surgery',
-        'Emergency Services'
-      ],
-      directions: 'Located at Bouran Gate area of Nabha. Use navigation apps with "Veenu Goyal Hospital, Nabha" for exact location.',
+      services: ['General Medicine', 'Surgery', 'Emergency Services'],
+      directions:
+          'Located at Bouran Gate area of Nabha. Use navigation apps with "Veenu Goyal Hospital, Nabha" for exact location.',
     ),
-    
     Hospital(
       name: 'Nabha Medicare Hospital',
       address: 'Nabha, Punjab',
@@ -117,9 +119,9 @@ class _HospitalsPageState extends State<HospitalsPage> {
         'Surgery',
         'ICU Services'
       ],
-      directions: 'Use "Nabha Medicare Hospital, Nabha" in navigation apps to locate.',
+      directions:
+          'Use "Nabha Medicare Hospital, Nabha" in navigation apps to locate.',
     ),
-    
     Hospital(
       name: 'Ekjyot Eye Hospital',
       address: 'Sangatpura Colony, Nabha, Punjab',
@@ -132,9 +134,9 @@ class _HospitalsPageState extends State<HospitalsPage> {
         'Eye Checkups',
         'Vision Care'
       ],
-      directions: 'Navigate toward Sangatpura in Nabha. Close to Goyal Health Care Hospital and Bansal Hospital & Laparoscopic Centre.',
+      directions:
+          'Navigate toward Sangatpura in Nabha. Close to Goyal Health Care Hospital and Bansal Hospital & Laparoscopic Centre.',
     ),
-    
     Hospital(
       name: 'Aneja Children & Maternity Hospital',
       address: 'Hira Mahal Colony, Nabha, Punjab',
@@ -147,9 +149,9 @@ class _HospitalsPageState extends State<HospitalsPage> {
         'NICU Services',
         'Child Care'
       ],
-      directions: 'Located in Hira Mahal Colony area. Use "Aneja Children & Maternity Hospital, Nabha" in map apps.',
+      directions:
+          'Located in Hira Mahal Colony area. Use "Aneja Children & Maternity Hospital, Nabha" in map apps.',
     ),
-    
     Hospital(
       name: 'Garg Surgical & Children Hospital',
       address: 'Circular Road, Nabha, Punjab',
@@ -162,7 +164,8 @@ class _HospitalsPageState extends State<HospitalsPage> {
         'Child Surgery',
         'Emergency Care'
       ],
-      directions: 'Located on Circular Road in Nabha. Look for hospital signage when you reach Circular Road area.',
+      directions:
+          'Located on Circular Road in Nabha. Look for hospital signage when you reach Circular Road area.',
     ),
   ];
 
@@ -172,7 +175,8 @@ class _HospitalsPageState extends State<HospitalsPage> {
     }
     return _hospitals.where((hospital) {
       return hospital.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-             hospital.services.any((service) => service.toLowerCase().contains(_searchQuery.toLowerCase()));
+          hospital.services.any((service) =>
+              service.toLowerCase().contains(_searchQuery.toLowerCase()));
     }).toList();
   }
 
@@ -214,14 +218,16 @@ class _HospitalsPageState extends State<HospitalsPage> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.white, width: 2),
+                      borderSide:
+                          const BorderSide(color: Colors.white, width: 2),
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    const Icon(Icons.location_on, color: Colors.white, size: 20),
+                    const Icon(Icons.location_on,
+                        color: Colors.white, size: 20),
                     const SizedBox(width: 8),
                     const Text(
                       'Nabha, Punjab',
@@ -233,7 +239,8 @@ class _HospitalsPageState extends State<HospitalsPage> {
                     ),
                     const Spacer(),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20),
@@ -328,7 +335,8 @@ class _HospitalsPageState extends State<HospitalsPage> {
                 ),
                 if (hospital.is24x7)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: AppColors.success.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -344,7 +352,7 @@ class _HospitalsPageState extends State<HospitalsPage> {
                   ),
               ],
             ),
-            
+
             if (hospital.specialNote != null) ...[
               const SizedBox(height: 8),
               Container(
@@ -371,29 +379,31 @@ class _HospitalsPageState extends State<HospitalsPage> {
                 ),
               ),
             ],
-            
+
             const SizedBox(height: 12),
-            
+
             // Address
             _buildInfoRow(Icons.location_on, 'Address', hospital.address),
             const SizedBox(height: 8),
-            
+
             // Phone
-            _buildInfoRow(Icons.phone, 'Phone', hospital.phone, isClickable: true),
-            
+            _buildInfoRow(Icons.phone, 'Phone', hospital.phone,
+                isClickable: true),
+
             // Alternate numbers
             if (hospital.alternateNumbers.isNotEmpty) ...[
               const SizedBox(height: 4),
-              _buildInfoRow(Icons.phone_android, 'Alternate Numbers', 
-                hospital.alternateNumbers.join(', '), isClickable: true),
+              _buildInfoRow(Icons.phone_android, 'Alternate Numbers',
+                  hospital.alternateNumbers.join(', '),
+                  isClickable: true),
             ],
-            
+
             const SizedBox(height: 8),
-            
+
             // Timing
             _buildInfoRow(Icons.access_time, 'Timing', hospital.timing),
             const SizedBox(height: 12),
-            
+
             // Services
             const Text(
               'Services:',
@@ -409,7 +419,8 @@ class _HospitalsPageState extends State<HospitalsPage> {
               runSpacing: 8,
               children: hospital.services.map((service) {
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: AppColors.grey100,
                     borderRadius: BorderRadius.circular(20),
@@ -426,9 +437,9 @@ class _HospitalsPageState extends State<HospitalsPage> {
                 );
               }).toList(),
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             // Directions
             Container(
               padding: const EdgeInsets.all(12),
@@ -441,7 +452,8 @@ class _HospitalsPageState extends State<HospitalsPage> {
                 children: [
                   const Row(
                     children: [
-                      Icon(Icons.directions, color: AppColors.primary, size: 16),
+                      Icon(Icons.directions,
+                          color: AppColors.primary, size: 16),
                       SizedBox(width: 8),
                       Text(
                         'Directions:',
@@ -465,9 +477,9 @@ class _HospitalsPageState extends State<HospitalsPage> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Action buttons
             Row(
               children: [
@@ -488,13 +500,13 @@ class _HospitalsPageState extends State<HospitalsPage> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: hospital.phone.contains('+91') 
+                    onPressed: hospital.phone.contains('+91')
                         ? () => _makePhoneCall(hospital.phone)
                         : null,
                     icon: const Icon(Icons.phone, size: 16),
                     label: const Text('Call Now'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: hospital.phone.contains('+91') 
+                      backgroundColor: hospital.phone.contains('+91')
                           ? AppColors.success
                           : AppColors.grey400,
                       foregroundColor: Colors.white,
@@ -512,7 +524,8 @@ class _HospitalsPageState extends State<HospitalsPage> {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value, {bool isClickable = false}) {
+  Widget _buildInfoRow(IconData icon, String label, String value,
+      {bool isClickable = false}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -542,8 +555,9 @@ class _HospitalsPageState extends State<HospitalsPage> {
 
   void _openInMaps(String hospitalName) async {
     final query = Uri.encodeComponent('$hospitalName, Nabha, Punjab');
-    final uri = Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
-    
+    final uri =
+        Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
+
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
@@ -559,7 +573,7 @@ class _HospitalsPageState extends State<HospitalsPage> {
 
   void _makePhoneCall(String phoneNumber) async {
     final uri = Uri.parse('tel:$phoneNumber');
-    
+
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {

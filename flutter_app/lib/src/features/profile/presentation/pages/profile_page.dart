@@ -190,7 +190,8 @@ class ProfilePage extends ConsumerWidget {
             _buildInfoRow('Phone', user.phone),
             _buildInfoRow('User Type', user.userType),
             if (user.address != null) _buildInfoRow('Address', user.address!),
-            if (user.dateOfBirth != null) _buildInfoRow('Date of Birth', user.dateOfBirth!),
+            if (user.dateOfBirth != null)
+              _buildInfoRow('Date of Birth', user.dateOfBirth!),
             if (user.gender != null) _buildInfoRow('Gender', user.gender!),
             _buildInfoRow('Member Since', _formatDate(user.createdAt)),
           ],
@@ -319,7 +320,7 @@ class ProfilePage extends ConsumerWidget {
     final nameController = TextEditingController(text: user.name);
     final phoneController = TextEditingController(text: user.phone);
     final addressController = TextEditingController(text: user.address ?? '');
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -364,12 +365,13 @@ class ProfilePage extends ConsumerWidget {
             onPressed: () async {
               try {
                 await ref.read(userProvider.notifier).updateProfile(
-                  name: nameController.text.trim(),
-                  phone: phoneController.text.trim(),
-                  address: addressController.text.trim().isEmpty 
-                      ? null : addressController.text.trim(),
-                );
-                
+                      name: nameController.text.trim(),
+                      phone: phoneController.text.trim(),
+                      address: addressController.text.trim().isEmpty
+                          ? null
+                          : addressController.text.trim(),
+                    );
+
                 if (context.mounted) {
                   Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(

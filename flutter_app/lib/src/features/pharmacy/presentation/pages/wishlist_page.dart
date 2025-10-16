@@ -12,7 +12,7 @@ class WishlistPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final wishlist = ref.watch(wishlistProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Wishlist'),
@@ -69,7 +69,8 @@ class WishlistPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildWishlistItems(BuildContext context, WidgetRef ref, List<Medicine> wishlist) {
+  Widget _buildWishlistItems(
+      BuildContext context, WidgetRef ref, List<Medicine> wishlist) {
     return ListView.builder(
       padding: const EdgeInsets.all(AppConstants.mediumSpacing),
       itemCount: wishlist.length,
@@ -148,17 +149,19 @@ class WishlistPage extends ConsumerWidget {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: medicine.availability 
+                                  color: medicine.availability
                                       ? AppColors.success.withOpacity(0.1)
                                       : AppColors.error.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
-                                  medicine.availability ? 'Available' : 'Out of Stock',
+                                  medicine.availability
+                                      ? 'Available'
+                                      : 'Out of Stock',
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,
-                                    color: medicine.availability 
+                                    color: medicine.availability
                                         ? AppColors.success
                                         : AppColors.error,
                                   ),
@@ -171,10 +174,13 @@ class WishlistPage extends ConsumerWidget {
                     ),
                     IconButton(
                       onPressed: () {
-                        ref.read(wishlistProvider.notifier).removeFromWishlist(medicine.id);
+                        ref
+                            .read(wishlistProvider.notifier)
+                            .removeFromWishlist(medicine.id);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('${medicine.name} removed from wishlist'),
+                            content:
+                                Text('${medicine.name} removed from wishlist'),
                             duration: const Duration(seconds: 2),
                           ),
                         );
@@ -200,30 +206,36 @@ class WishlistPage extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: medicine.availability ? () {
-                          ref.read(cartProvider.notifier).addToCart(medicine);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('${medicine.name} added to cart'),
-                              duration: const Duration(seconds: 2),
-                              action: SnackBarAction(
-                                label: 'View Cart',
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const CartPage(),
+                        onPressed: medicine.availability
+                            ? () {
+                                ref
+                                    .read(cartProvider.notifier)
+                                    .addToCart(medicine);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content:
+                                        Text('${medicine.name} added to cart'),
+                                    duration: const Duration(seconds: 2),
+                                    action: SnackBarAction(
+                                      label: 'View Cart',
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const CartPage(),
+                                          ),
+                                        );
+                                      },
                                     ),
-                                  );
-                                },
-                              ),
-                            ),
-                          );
-                        } : null,
+                                  ),
+                                );
+                              }
+                            : null,
                         icon: const Icon(Icons.add_shopping_cart),
                         label: const Text('Add to Cart'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: medicine.availability 
+                          backgroundColor: medicine.availability
                               ? AppColors.primary
                               : AppColors.grey400,
                           foregroundColor: AppColors.white,
@@ -237,10 +249,13 @@ class WishlistPage extends ConsumerWidget {
                     const SizedBox(width: 12),
                     OutlinedButton.icon(
                       onPressed: () {
-                        ref.read(wishlistProvider.notifier).removeFromWishlist(medicine.id);
+                        ref
+                            .read(wishlistProvider.notifier)
+                            .removeFromWishlist(medicine.id);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('${medicine.name} removed from wishlist'),
+                            content:
+                                Text('${medicine.name} removed from wishlist'),
                             duration: const Duration(seconds: 2),
                           ),
                         );
@@ -271,7 +286,8 @@ class WishlistPage extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Clear Wishlist'),
-        content: const Text('Are you sure you want to remove all items from your wishlist?'),
+        content: const Text(
+            'Are you sure you want to remove all items from your wishlist?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),

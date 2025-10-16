@@ -7,7 +7,8 @@ import '../../../../core/theme/app_theme.dart';
 
 // API Configuration
 const String API_KEY = "AIzaSyBEoyP49AjxnE6pTLhEivfNAylcGDaH_04";
-const String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
+const String GEMINI_API_URL =
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
 
 // Language selection provider
 final selectedLanguageProvider = StateProvider<String>((ref) => 'English');
@@ -59,7 +60,8 @@ class AIChatState {
 }
 
 // AI Chat state provider
-final aiChatProvider = StateNotifierProvider<AIChatNotifier, AIChatState>((ref) {
+final aiChatProvider =
+    StateNotifierProvider<AIChatNotifier, AIChatState>((ref) {
   return AIChatNotifier();
 });
 
@@ -93,7 +95,7 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
     for (int attempt = 1; attempt <= 3; attempt++) {
       try {
         print('Attempt $attempt of 3 for API call');
-        
+
         // Check network connection on first attempt
         if (attempt == 1) {
           final hasNetwork = await _checkNetworkConnection();
@@ -101,41 +103,46 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
             throw Exception('No internet connection available');
           }
         }
-        
+
         // Call Gemini API
         final aiResponse = await _callGeminiAPI(userMessage, language);
-        
+
         // Add AI response
         addMessage(ChatMessage(
-          content: aiResponse['content'] ?? 'Sorry, I could not process your request.',
+          content: aiResponse['content'] ??
+              'Sorry, I could not process your request.',
           isFromUser: false,
           timestamp: DateTime.now(),
           severity: aiResponse['severity'],
           recommendations: aiResponse['recommendations']?.cast<String>(),
         ));
-        
+
         // Success - break out of retry loop
         break;
-        
       } catch (e) {
         print('Attempt $attempt failed: $e');
-        
+
         // If this is the last attempt, show error
         if (attempt == 3) {
-          String errorMessage = 'Sorry, I encountered an error. Please try again.';
-          
+          String errorMessage =
+              'Sorry, I encountered an error. Please try again.';
+
           if (e.toString().contains('timeout')) {
-            errorMessage = 'Request timed out. Please check your internet connection and try again.';
+            errorMessage =
+                'Request timed out. Please check your internet connection and try again.';
           } else if (e.toString().contains('Network')) {
-            errorMessage = 'Network error. Please check your internet connection.';
+            errorMessage =
+                'Network error. Please check your internet connection.';
           } else if (e.toString().contains('API Error: 400')) {
-            errorMessage = 'Invalid request. Please rephrase your question and try again.';
+            errorMessage =
+                'Invalid request. Please rephrase your question and try again.';
           } else if (e.toString().contains('API Error: 401')) {
             errorMessage = 'Authentication error. Please contact support.';
           } else if (e.toString().contains('API Error: 403')) {
             errorMessage = 'Access denied. Please contact support.';
           } else if (e.toString().contains('API Error: 429')) {
-            errorMessage = 'Too many requests. Please wait a moment and try again.';
+            errorMessage =
+                'Too many requests. Please wait a moment and try again.';
           } else if (e.toString().contains('API Error: 500')) {
             errorMessage = 'Server error. Please try again in a few minutes.';
           }
@@ -153,20 +160,23 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
         }
       }
     }
-    
+
     state = state.copyWith(isLoading: false);
   }
 
   Future<bool> _checkNetworkConnection() async {
     try {
-      final response = await http.get(Uri.parse('https://www.google.com')).timeout(const Duration(seconds: 5));
+      final response = await http
+          .get(Uri.parse('https://www.google.com'))
+          .timeout(const Duration(seconds: 5));
       return response.statusCode == 200;
     } catch (e) {
       return false;
     }
   }
 
-  Future<Map<String, dynamic>> _callGeminiAPI(String userMessage, String language) async {
+  Future<Map<String, dynamic>> _callGeminiAPI(
+      String userMessage, String language) async {
     try {
       final systemInstruction = _getSystemInstruction(language);
       final prompt = "$systemInstruction\n\nPatient: $userMessage";
@@ -211,78 +221,94 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
 
       print('📝 Request body: ${jsonEncode(requestBody).substring(0, 200)}...');
 
-      final response = await http.post(
-        Uri.parse('$GEMINI_API_URL?key=$API_KEY'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(requestBody),
-      ).timeout(const Duration(seconds: 30));
+      final response = await http
+          .post(
+            Uri.parse('$GEMINI_API_URL?key=$API_KEY'),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode(requestBody),
+          )
+          .timeout(const Duration(seconds: 30));
 
       print('✅ API Response Status: ${response.statusCode}');
       print('📄 API Response Body: ${response.body.substring(0, 500)}...');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        
+
         // Check if response has candidates
         if (data['candidates'] == null || data['candidates'].isEmpty) {
           print('❌ No candidates in response');
-          
+
           // Check for blocked response
-          if (data['promptFeedback'] != null && data['promptFeedback']['blockReason'] != null) {
-            print('🚫 Response blocked: ${data['promptFeedback']['blockReason']}');
+          if (data['promptFeedback'] != null &&
+              data['promptFeedback']['blockReason'] != null) {
+            print(
+                '🚫 Response blocked: ${data['promptFeedback']['blockReason']}');
             return {
-              'content': 'I understand you\'re asking about health concerns. Could you please rephrase your question? I\'m here to help with general health information.',
+              'content':
+                  'I understand you\'re asking about health concerns. Could you please rephrase your question? I\'m here to help with general health information.',
               'severity': 'mild',
               'recommendations': <String>[]
             };
           }
-          
+
           return {
-            'content': 'I apologize, but I cannot provide a response right now. Please rephrase your question or try again.',
+            'content':
+                'I apologize, but I cannot provide a response right now. Please rephrase your question or try again.',
             'severity': 'mild',
             'recommendations': <String>[]
           };
         }
 
         final candidate = data['candidates'][0];
-        
+
         // Check if candidate has content
-        if (candidate['content'] == null || candidate['content']['parts'] == null || candidate['content']['parts'].isEmpty) {
+        if (candidate['content'] == null ||
+            candidate['content']['parts'] == null ||
+            candidate['content']['parts'].isEmpty) {
           print('❌ No content in candidate');
-          
+
           // Check for finish reason
           if (candidate['finishReason'] != null) {
             print('🏁 Finish reason: ${candidate['finishReason']}');
             if (candidate['finishReason'] == 'SAFETY') {
               return {
-                'content': 'I understand you\'re asking about health concerns. For safety reasons, please consult with a healthcare professional for medical advice.',
+                'content':
+                    'I understand you\'re asking about health concerns. For safety reasons, please consult with a healthcare professional for medical advice.',
                 'severity': 'moderate',
-                'recommendations': ['Consult with a healthcare professional', 'Contact your doctor for medical advice']
+                'recommendations': [
+                  'Consult with a healthcare professional',
+                  'Contact your doctor for medical advice'
+                ]
               };
             }
           }
-          
+
           return {
-            'content': 'I apologize, but I cannot provide a response to that specific query. Please try asking about your symptoms in a different way.',
+            'content':
+                'I apologize, but I cannot provide a response to that specific query. Please try asking about your symptoms in a different way.',
             'severity': 'mild',
             'recommendations': <String>[]
           };
         }
 
-        final aiContent = candidate['content']['parts'][0]['text'] ?? 'No response available';
+        final aiContent =
+            candidate['content']['parts'][0]['text'] ?? 'No response available';
         print('🤖 AI Content: ${aiContent.substring(0, 100)}...');
-        
+
         return _parseAIResponse(aiContent, language);
       } else {
-        print('💥 API Error - Status: ${response.statusCode}, Body: ${response.body}');
-        
+        print(
+            '💥 API Error - Status: ${response.statusCode}, Body: ${response.body}');
+
         // Handle specific error codes with more details
         if (response.statusCode == 400) {
           try {
             final errorData = jsonDecode(response.body);
-            if (errorData['error'] != null && errorData['error']['message'] != null) {
+            if (errorData['error'] != null &&
+                errorData['error']['message'] != null) {
               print('💥 API Error Message: ${errorData['error']['message']}');
               throw Exception('API Error: ${errorData['error']['message']}');
             }
@@ -290,15 +316,17 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
             print('💥 Error parsing error response: $e');
           }
         }
-        
+
         throw Exception('API Error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
       print('💥 API Error: $e');
       if (e.toString().contains('TimeoutException')) {
-        throw Exception('Request timeout - please check your internet connection');
+        throw Exception(
+            'Request timeout - please check your internet connection');
       } else if (e.toString().contains('SocketException')) {
-        throw Exception('Network error - please check your internet connection');
+        throw Exception(
+            'Network error - please check your internet connection');
       } else if (e.toString().contains('API Error:')) {
         throw e; // Re-throw API errors as-is
       } else {
@@ -310,21 +338,21 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
   Map<String, dynamic> _parseAIResponse(String aiContent, String language) {
     String severity = 'mild';
     List<String> recommendations = [];
-    
-    if (aiContent.toLowerCase().contains('severe') || 
+
+    if (aiContent.toLowerCase().contains('severe') ||
         aiContent.toLowerCase().contains('emergency') ||
         aiContent.toLowerCase().contains('immediate')) {
       severity = 'severe';
-    } else if (aiContent.toLowerCase().contains('moderate') || 
-               aiContent.toLowerCase().contains('doctor') ||
-               aiContent.toLowerCase().contains('medical')) {
+    } else if (aiContent.toLowerCase().contains('moderate') ||
+        aiContent.toLowerCase().contains('doctor') ||
+        aiContent.toLowerCase().contains('medical')) {
       severity = 'moderate';
     }
 
     final lines = aiContent.split('\n');
     for (String line in lines) {
-      if (line.trim().startsWith('-') || 
-          line.trim().startsWith('•') || 
+      if (line.trim().startsWith('-') ||
+          line.trim().startsWith('•') ||
           line.trim().startsWith('*')) {
         recommendations.add(line.trim().substring(1).trim());
       }
@@ -339,7 +367,8 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
 
   String _getSystemInstruction(String language) {
     final instructions = {
-      'English': '''You are a helpful AI medical assistant. Provide concise, accurate health information about symptoms.
+      'English':
+          '''You are a helpful AI medical assistant. Provide concise, accurate health information about symptoms.
 
 IMPORTANT GUIDELINES:
 - Keep responses under 200 words
@@ -364,8 +393,8 @@ Example format:
 - Monitor your temperature
 - Avoid strenuous activities
 Consult a healthcare professional if symptoms worsen or persist beyond 2-3 days."''',
-
-      'Hindi': '''आप एक सहायक AI चिकित्सा सहायक हैं। लक्षणों के बारे में संक्षिप्त, सटीक स्वास्थ्य जानकारी प्रदान करें।
+      'Hindi':
+          '''आप एक सहायक AI चिकित्सा सहायक हैं। लक्षणों के बारे में संक्षिप्त, सटीक स्वास्थ्य जानकारी प्रदान करें।
 
 महत्वपूर्ण दिशानिर्देश:
 - जवाब 200 शब्दों से कम रखें
@@ -378,8 +407,8 @@ Consult a healthcare professional if symptoms worsen or persist beyond 2-3 days.
 - "-" से शुरू होने वाली 2-3 सिफारिशें प्रदान करें
 
 हमेशा याद दिलाएं कि यह पेशेवर चिकित्सा सलाह का विकल्प नहीं है।''',
-
-      'Punjabi': '''ਤੁਸੀਂ ਇੱਕ ਮਦਦਗਾਰ AI ਮੈਡੀਕਲ ਸਹਾਇਕ ਹੋ। ਲੱਛਣਾਂ ਬਾਰੇ ਸੰਖੇਪ, ਸਟੀਕ ਸਿਹਤ ਜਾਣਕਾਰੀ ਦਿਓ।
+      'Punjabi':
+          '''ਤੁਸੀਂ ਇੱਕ ਮਦਦਗਾਰ AI ਮੈਡੀਕਲ ਸਹਾਇਕ ਹੋ। ਲੱਛਣਾਂ ਬਾਰੇ ਸੰਖੇਪ, ਸਟੀਕ ਸਿਹਤ ਜਾਣਕਾਰੀ ਦਿਓ।
 
 ਮਹੱਤਵਪੂਰਨ ਦਿਸ਼ਾ-ਨਿਰਦੇਸ਼:
 - ਜਵਾਬ 200 ਸ਼ਬਦਾਂ ਤੋਂ ਘੱਟ ਰੱਖੋ
@@ -404,10 +433,11 @@ Consult a healthcare professional if symptoms worsen or persist beyond 2-3 days.
   Future<void> retryMessage(String originalMessage, String language) async {
     // Remove the last error message
     if (state.messages.isNotEmpty && state.messages.last.isError) {
-      final updatedMessages = state.messages.sublist(0, state.messages.length - 1);
+      final updatedMessages =
+          state.messages.sublist(0, state.messages.length - 1);
       state = state.copyWith(messages: updatedMessages);
     }
-    
+
     // Retry sending the message
     await sendMessage(originalMessage, language);
   }
@@ -497,14 +527,13 @@ class SymptomCheckerPage extends ConsumerWidget {
               ],
             ),
           ),
-          
           Expanded(
             child: chatState.messages.isEmpty
                 ? _buildWelcomeScreen(selectedLanguage, chatNotifier)
                 : _buildChatMessages(chatState, selectedLanguage, ref),
           ),
-          
-          _buildInputSection(chatNotifier, selectedLanguage, chatState.isLoading),
+          _buildInputSection(
+              chatNotifier, selectedLanguage, chatState.isLoading),
         ],
       ),
     );
@@ -542,7 +571,6 @@ class SymptomCheckerPage extends ConsumerWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
-          
           ..._getQuickStartQuestions(language).map((question) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
@@ -569,9 +597,7 @@ class SymptomCheckerPage extends ConsumerWidget {
               ),
             );
           }).toList(),
-          
           const SizedBox(height: 32),
-          
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -616,7 +642,8 @@ class SymptomCheckerPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildChatMessages(AIChatState chatState, String language, WidgetRef ref) {
+  Widget _buildChatMessages(
+      AIChatState chatState, String language, WidgetRef ref) {
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.all(16),
@@ -625,19 +652,20 @@ class SymptomCheckerPage extends ConsumerWidget {
         if (index == chatState.messages.length) {
           return _buildTypingIndicator();
         }
-        
+
         final message = chatState.messages[index];
         return _buildMessageBubble(message, language, ref);
       },
     );
   }
 
-  Widget _buildMessageBubble(ChatMessage message, String language, WidgetRef ref) {
+  Widget _buildMessageBubble(
+      ChatMessage message, String language, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
-        mainAxisAlignment: message.isFromUser 
-            ? MainAxisAlignment.end 
+        mainAxisAlignment: message.isFromUser
+            ? MainAxisAlignment.end
             : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -653,20 +681,18 @@ class SymptomCheckerPage extends ConsumerWidget {
             ),
             const SizedBox(width: 12),
           ],
-          
           Flexible(
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: message.isFromUser 
-                    ? AppColors.primary 
-                    : AppColors.grey100,
+                color:
+                    message.isFromUser ? AppColors.primary : AppColors.grey100,
                 borderRadius: BorderRadius.circular(16).copyWith(
-                  bottomRight: message.isFromUser 
-                      ? const Radius.circular(4) 
+                  bottomRight: message.isFromUser
+                      ? const Radius.circular(4)
                       : const Radius.circular(16),
-                  bottomLeft: message.isFromUser 
-                      ? const Radius.circular(16) 
+                  bottomLeft: message.isFromUser
+                      ? const Radius.circular(16)
                       : const Radius.circular(4),
                 ),
               ),
@@ -676,45 +702,49 @@ class SymptomCheckerPage extends ConsumerWidget {
                   Text(
                     message.content,
                     style: TextStyle(
-                      color: message.isFromUser 
-                          ? Colors.white 
-                          : AppColors.grey800,
+                      color:
+                          message.isFromUser ? Colors.white : AppColors.grey800,
                       fontSize: 16,
                       height: 1.4,
                     ),
                   ),
-                  
+
                   if (!message.isFromUser && message.severity != null) ...[
                     const SizedBox(height: 12),
                     _buildSeverityIndicator(message.severity!, language),
                   ],
-                  
+
                   // Add retry button for error messages
-                  if (!message.isFromUser && message.isError && message.originalUserMessage != null) ...[
+                  if (!message.isFromUser &&
+                      message.isError &&
+                      message.originalUserMessage != null) ...[
                     const SizedBox(height: 12),
                     OutlinedButton.icon(
                       onPressed: () {
                         final chatNotifier = ref.read(aiChatProvider.notifier);
-                        chatNotifier.retryMessage(message.originalUserMessage!, language);
+                        chatNotifier.retryMessage(
+                            message.originalUserMessage!, language);
                       },
                       icon: const Icon(Icons.refresh, size: 16),
                       label: Text(_getLocalizedText('retry', language)),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.primary,
-                        side: BorderSide(color: AppColors.primary.withOpacity(0.5)),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        side: BorderSide(
+                            color: AppColors.primary.withOpacity(0.5)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ),
                   ],
-                  
+
                   const SizedBox(height: 8),
                   Text(
                     _formatTime(message.timestamp),
                     style: TextStyle(
-                      color: message.isFromUser 
-                          ? Colors.white.withOpacity(0.7) 
+                      color: message.isFromUser
+                          ? Colors.white.withOpacity(0.7)
                           : AppColors.grey500,
                       fontSize: 12,
                     ),
@@ -723,7 +753,6 @@ class SymptomCheckerPage extends ConsumerWidget {
               ),
             ),
           ),
-          
           if (message.isFromUser) ...[
             const SizedBox(width: 12),
             CircleAvatar(
@@ -745,7 +774,7 @@ class SymptomCheckerPage extends ConsumerWidget {
     Color severityColor;
     IconData severityIcon;
     String severityText;
-    
+
     switch (severity) {
       case 'severe':
         severityColor = AppColors.error;
@@ -819,7 +848,8 @@ class SymptomCheckerPage extends ConsumerWidget {
                   height: 20,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(AppColors.primary),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -839,7 +869,8 @@ class SymptomCheckerPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildInputSection(AIChatNotifier chatNotifier, String language, bool isLoading) {
+  Widget _buildInputSection(
+      AIChatNotifier chatNotifier, String language, bool isLoading) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -889,7 +920,8 @@ class SymptomCheckerPage extends ConsumerWidget {
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              onPressed: isLoading ? null : () => _sendMessage(chatNotifier, language),
+              onPressed:
+                  isLoading ? null : () => _sendMessage(chatNotifier, language),
               icon: Icon(
                 isLoading ? Icons.hourglass_empty : Icons.send,
                 color: Colors.white,
@@ -912,7 +944,7 @@ class SymptomCheckerPage extends ConsumerWidget {
   String _formatTime(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inMinutes < 1) {
       return 'Just now';
     } else if (difference.inHours < 1) {
@@ -958,10 +990,12 @@ class SymptomCheckerPage extends ConsumerWidget {
         'title': 'AI Health Assistant',
         'subtitle': 'Chat with AI about your symptoms',
         'welcomeTitle': 'Welcome to AI Health Chat',
-        'welcomeMessage': 'I\'m here to help you understand your symptoms. Please describe how you\'re feeling, and I\'ll provide guidance and recommendations.',
+        'welcomeMessage':
+            'I\'m here to help you understand your symptoms. Please describe how you\'re feeling, and I\'ll provide guidance and recommendations.',
         'typeMessage': 'Describe your symptoms...',
         'disclaimer': 'Important Disclaimer',
-        'disclaimerText': 'This AI assistant provides general health information only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult with qualified healthcare professionals for medical concerns.',
+        'disclaimerText':
+            'This AI assistant provides general health information only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult with qualified healthcare professionals for medical concerns.',
         'retry': 'Retry',
         'severityHigh': 'High Severity',
         'severityModerate': 'Moderate',
@@ -971,10 +1005,12 @@ class SymptomCheckerPage extends ConsumerWidget {
         'title': 'AI स्वास्थ्य सहायक',
         'subtitle': 'अपने लक्षणों के बारे में AI से बात करें',
         'welcomeTitle': 'AI स्वास्थ्य चैट में आपका स्वागत है',
-        'welcomeMessage': 'मैं आपके लक्षणों को समझने में आपकी मदद करने के लिए यहाँ हूँ। कृपया बताएं कि आप कैसा महसूस कर रहे हैं, और मैं मार्गदर्शन और सुझाव प्रदान करूंगा।',
+        'welcomeMessage':
+            'मैं आपके लक्षणों को समझने में आपकी मदद करने के लिए यहाँ हूँ। कृपया बताएं कि आप कैसा महसूस कर रहे हैं, और मैं मार्गदर्शन और सुझाव प्रदान करूंगा।',
         'typeMessage': 'अपने लक्षणों का वर्णन करें...',
         'disclaimer': 'महत्वपूर्ण अस्वीकरण',
-        'disclaimerText': 'यह AI सहायक केवल सामान्य स्वास्थ्य जानकारी प्रदान करता है। यह पेशेवर चिकित्सा सलाह, निदान या उपचार का विकल्प नहीं है। चिकित्सा संबंधी चिंताओं के लिए हमेशा योग्य स्वास्थ्य पेशेवरों से सलाह लें।',
+        'disclaimerText':
+            'यह AI सहायक केवल सामान्य स्वास्थ्य जानकारी प्रदान करता है। यह पेशेवर चिकित्सा सलाह, निदान या उपचार का विकल्प नहीं है। चिकित्सा संबंधी चिंताओं के लिए हमेशा योग्य स्वास्थ्य पेशेवरों से सलाह लें।',
         'retry': 'पुनः प्रयास करें',
         'severityHigh': 'उच्च गंभीरता',
         'severityModerate': 'मध्यम',
@@ -984,10 +1020,12 @@ class SymptomCheckerPage extends ConsumerWidget {
         'title': 'AI ਸਿਹਤ ਸਹਾਇਕ',
         'subtitle': 'ਆਪਣੇ ਲੱਛਣਾਂ ਬਾਰੇ AI ਨਾਲ ਗੱਲ ਕਰੋ',
         'welcomeTitle': 'AI ਸਿਹਤ ਚੈਟ ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ',
-        'welcomeMessage': 'ਮੈਂ ਤੁਹਾਡੇ ਲੱਛਣਾਂ ਨੂੰ ਸਮਝਣ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਨ ਲਈ ਇੱਥੇ ਹਾਂ। ਕਿਰਪਾ ਕਰਕੇ ਦੱਸੋ ਕਿ ਤੁਸੀਂ ਕਿਵੇਂ ਮਹਿਸੂਸ ਕਰ ਰਹੇ ਹੋ, ਅਤੇ ਮੈਂ ਮਾਰਗਦਰਸ਼ਨ ਅਤੇ ਸਿਫਾਰਸ਼ਾਂ ਪ੍ਰਦਾਨ ਕਰਾਂਗਾ।',
+        'welcomeMessage':
+            'ਮੈਂ ਤੁਹਾਡੇ ਲੱਛਣਾਂ ਨੂੰ ਸਮਝਣ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਨ ਲਈ ਇੱਥੇ ਹਾਂ। ਕਿਰਪਾ ਕਰਕੇ ਦੱਸੋ ਕਿ ਤੁਸੀਂ ਕਿਵੇਂ ਮਹਿਸੂਸ ਕਰ ਰਹੇ ਹੋ, ਅਤੇ ਮੈਂ ਮਾਰਗਦਰਸ਼ਨ ਅਤੇ ਸਿਫਾਰਸ਼ਾਂ ਪ੍ਰਦਾਨ ਕਰਾਂਗਾ।',
         'typeMessage': 'ਆਪਣੇ ਲੱਛਣਾਂ ਦਾ ਵਰਣਨ ਕਰੋ...',
         'disclaimer': 'ਮਹੱਤਵਪੂਰਨ ਅਸਵੀਕਰਣ',
-        'disclaimerText': 'ਇਹ AI ਸਹਾਇਕ ਸਿਰਫ਼ ਆਮ ਸਿਹਤ ਜਾਣਕਾਰੀ ਪ੍ਰਦਾਨ ਕਰਦਾ ਹੈ। ਇਹ ਪੇਸ਼ੇਵਰ ਮੈਡੀਕਲ ਸਲਾਹ, ਨਿਦਾਨ ਜਾਂ ਇਲਾਜ ਦਾ ਵਿਕਲਪ ਨਹੀਂ ਹੈ। ਮੈਡੀਕਲ ਚਿੰਤਾਵਾਂ ਲਈ ਹਮੇਸ਼ਾ ਯੋਗ ਸਿਹਤ ਪੇਸ਼ੇਵਰਾਂ ਨਾਲ ਸਲਾਹ ਕਰੋ।',
+        'disclaimerText':
+            'ਇਹ AI ਸਹਾਇਕ ਸਿਰਫ਼ ਆਮ ਸਿਹਤ ਜਾਣਕਾਰੀ ਪ੍ਰਦਾਨ ਕਰਦਾ ਹੈ। ਇਹ ਪੇਸ਼ੇਵਰ ਮੈਡੀਕਲ ਸਲਾਹ, ਨਿਦਾਨ ਜਾਂ ਇਲਾਜ ਦਾ ਵਿਕਲਪ ਨਹੀਂ ਹੈ। ਮੈਡੀਕਲ ਚਿੰਤਾਵਾਂ ਲਈ ਹਮੇਸ਼ਾ ਯੋਗ ਸਿਹਤ ਪੇਸ਼ੇਵਰਾਂ ਨਾਲ ਸਲਾਹ ਕਰੋ।',
         'retry': 'ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ',
         'severityHigh': 'ਉੱਚ ਗੰਭੀਰਤਾ',
         'severityModerate': 'ਮੱਧਮ',

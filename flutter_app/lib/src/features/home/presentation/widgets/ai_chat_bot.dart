@@ -29,7 +29,7 @@ class _AiChatBotState extends ConsumerState<AiChatBot> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    
+
     // Watch for user changes
     final user = ref.watch(userProvider);
     if (_currentUser != null && user == null) {
@@ -42,7 +42,7 @@ class _AiChatBotState extends ConsumerState<AiChatBot> {
   // Load chat history from storage
   Future<void> _loadChatHistory() async {
     final savedMessages = await ChatStorageService.loadMessages();
-    
+
     if (savedMessages.isNotEmpty) {
       setState(() {
         _messages.clear();
@@ -53,14 +53,15 @@ class _AiChatBotState extends ConsumerState<AiChatBot> {
       setState(() {
         _messages.add(
           ChatMessage(
-            message: "Hello! I'm your AI health assistant. I can help you book appointments with doctors. What kind of specialist would you like to see?",
+            message:
+                "Hello! I'm your AI health assistant. I can help you book appointments with doctors. What kind of specialist would you like to see?",
             isUser: false,
             timestamp: DateTime.now(),
           ),
         );
       });
     }
-    
+
     // Scroll to bottom after loading messages
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
@@ -79,19 +80,20 @@ class _AiChatBotState extends ConsumerState<AiChatBot> {
       // Add welcome message
       _messages.add(
         ChatMessage(
-          message: "Hello! I'm your AI health assistant. I can help you book appointments with doctors. What kind of specialist would you like to see?",
+          message:
+              "Hello! I'm your AI health assistant. I can help you book appointments with doctors. What kind of specialist would you like to see?",
           isUser: false,
           timestamp: DateTime.now(),
         ),
       );
     });
-    
+
     // Clear from storage
     await ChatStorageService.clearMessages();
-    
+
     // Save the welcome message
     await _saveMessages();
-    
+
     _scrollToBottom();
   }
 
@@ -154,17 +156,25 @@ class _AiChatBotState extends ConsumerState<AiChatBot> {
   String _getAiResponse(String userMessage) {
     final lowerMessage = userMessage.toLowerCase();
 
-    if (lowerMessage.contains('cardiologist') || lowerMessage.contains('heart')) {
+    if (lowerMessage.contains('cardiologist') ||
+        lowerMessage.contains('heart')) {
       return "I can help you book an appointment with a cardiologist. We have Dr. Sarah Johnson available:\n\n• Monday-Friday: 9:00 AM - 5:00 PM\n• Consultation fee: \$150\n• Next available: Tomorrow 2:00 PM\n\nWould you like me to book this appointment for you?";
-    } else if (lowerMessage.contains('dermatologist') || lowerMessage.contains('skin')) {
+    } else if (lowerMessage.contains('dermatologist') ||
+        lowerMessage.contains('skin')) {
       return "Great! I can schedule you with our dermatologist Dr. Michael Chen:\n\n• Tuesday, Thursday, Saturday: 10:00 AM - 4:00 PM\n• Consultation fee: \$120\n• Next available: Friday 11:00 AM\n\nShall I proceed with the booking?";
-    } else if (lowerMessage.contains('pediatrician') || lowerMessage.contains('child')) {
+    } else if (lowerMessage.contains('pediatrician') ||
+        lowerMessage.contains('child')) {
       return "Perfect! Dr. Emily Rodriguez is our excellent pediatrician:\n\n• Monday-Friday: 8:00 AM - 6:00 PM\n• Consultation fee: \$100\n• Next available: Today 4:30 PM\n\nWould you like to book this slot?";
-    } else if (lowerMessage.contains('yes') || lowerMessage.contains('book') || lowerMessage.contains('confirm')) {
+    } else if (lowerMessage.contains('yes') ||
+        lowerMessage.contains('book') ||
+        lowerMessage.contains('confirm')) {
       return "Excellent! I've successfully booked your appointment. You'll receive a confirmation SMS shortly with:\n\n✅ Appointment details\n✅ Doctor's location\n✅ Preparation instructions\n✅ Payment link\n\nIs there anything else I can help you with?";
-    } else if (lowerMessage.contains('emergency') || lowerMessage.contains('urgent')) {
+    } else if (lowerMessage.contains('emergency') ||
+        lowerMessage.contains('urgent')) {
       return "For emergencies, please call 911 immediately or visit the nearest emergency room.\n\nFor urgent but non-emergency care, I can book you with our urgent care clinic:\n\n📍 Available 24/7\n⏰ Average wait time: 15 minutes\n💰 Fee: \$80\n\nWould you like me to check you in now?";
-    } else if (lowerMessage.contains('price') || lowerMessage.contains('cost') || lowerMessage.contains('fee')) {
+    } else if (lowerMessage.contains('price') ||
+        lowerMessage.contains('cost') ||
+        lowerMessage.contains('fee')) {
       return "Here are our consultation fees:\n\n👨‍⚕️ General Physician: \$80\n❤️ Cardiologist: \$150\n🧠 Neurologist: \$180\n👶 Pediatrician: \$100\n👨‍⚕️ Dermatologist: \$120\n🦴 Orthopedic: \$160\n\nMost insurance plans are accepted. Which specialist interests you?";
     } else {
       return "I can help you book appointments with these specialists:\n\n👨‍⚕️ General Physician\n❤️ Cardiologist\n🧠 Neurologist\n👶 Pediatrician\n👨‍⚕️ Dermatologist\n🦴 Orthopedic Surgeon\n👁️ Ophthalmologist\n\nWhich type of doctor would you like to see? Or do you have specific symptoms you'd like to discuss?";
@@ -231,7 +241,8 @@ class _AiChatBotState extends ConsumerState<AiChatBot> {
                 context: context,
                 builder: (context) => AlertDialog(
                   title: const Text('Clear Chat'),
-                  content: const Text('Are you sure you want to clear all chat messages? This action cannot be undone.'),
+                  content: const Text(
+                      'Are you sure you want to clear all chat messages? This action cannot be undone.'),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(false),
@@ -247,7 +258,7 @@ class _AiChatBotState extends ConsumerState<AiChatBot> {
                   ],
                 ),
               );
-              
+
               if (shouldClear == true) {
                 await _clearChat();
                 if (mounted) {
@@ -328,7 +339,8 @@ class _AiChatBotState extends ConsumerState<AiChatBot> {
                   Text(
                     message.message,
                     style: TextStyle(
-                      color: message.isUser ? AppColors.white : AppColors.grey900,
+                      color:
+                          message.isUser ? AppColors.white : AppColors.grey900,
                       fontSize: 14,
                     ),
                   ),
@@ -336,7 +348,7 @@ class _AiChatBotState extends ConsumerState<AiChatBot> {
                   Text(
                     _formatTime(message.timestamp),
                     style: TextStyle(
-                      color: message.isUser 
+                      color: message.isUser
                           ? AppColors.white.withOpacity(0.7)
                           : AppColors.grey600,
                       fontSize: 12,

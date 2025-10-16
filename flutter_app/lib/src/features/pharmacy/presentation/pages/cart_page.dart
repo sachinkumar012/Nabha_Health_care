@@ -13,7 +13,7 @@ class CartPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cart = ref.watch(cartProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shopping Cart'),
@@ -77,7 +77,8 @@ class CartPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildCartItems(BuildContext context, WidgetRef ref, List<CartItem> cart) {
+  Widget _buildCartItems(
+      BuildContext context, WidgetRef ref, List<CartItem> cart) {
     return ListView.builder(
       padding: const EdgeInsets.all(AppConstants.mediumSpacing),
       itemCount: cart.length,
@@ -130,7 +131,9 @@ class CartPage extends ConsumerWidget {
                     ),
                     IconButton(
                       onPressed: () {
-                        ref.read(cartProvider.notifier).removeFromCart(item.medicine.id);
+                        ref
+                            .read(cartProvider.notifier)
+                            .removeFromCart(item.medicine.id);
                       },
                       icon: const Icon(Icons.delete_outline),
                       color: AppColors.error,
@@ -144,14 +147,20 @@ class CartPage extends ConsumerWidget {
                     Row(
                       children: [
                         IconButton(
-                          onPressed: item.quantity > 1 ? () {
-                            ref.read(cartProvider.notifier).updateQuantity(
-                              item.medicine.id,
-                              item.quantity - 1,
-                            );
-                          } : null,
+                          onPressed: item.quantity > 1
+                              ? () {
+                                  ref
+                                      .read(cartProvider.notifier)
+                                      .updateQuantity(
+                                        item.medicine.id,
+                                        item.quantity - 1,
+                                      );
+                                }
+                              : null,
                           icon: const Icon(Icons.remove_circle_outline),
-                          color: item.quantity > 1 ? AppColors.primary : AppColors.grey400,
+                          color: item.quantity > 1
+                              ? AppColors.primary
+                              : AppColors.grey400,
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -173,9 +182,9 @@ class CartPage extends ConsumerWidget {
                         IconButton(
                           onPressed: () {
                             ref.read(cartProvider.notifier).updateQuantity(
-                              item.medicine.id,
-                              item.quantity + 1,
-                            );
+                                  item.medicine.id,
+                                  item.quantity + 1,
+                                );
                           },
                           icon: const Icon(Icons.add_circle_outline),
                           color: AppColors.primary,
@@ -203,7 +212,7 @@ class CartPage extends ConsumerWidget {
   Widget _buildCartSummary(BuildContext context, WidgetRef ref) {
     final total = ref.watch(cartProvider.notifier).totalAmount;
     final itemCount = ref.watch(cartProvider).length;
-    
+
     return Container(
       padding: const EdgeInsets.all(AppConstants.largeSpacing),
       decoration: const BoxDecoration(

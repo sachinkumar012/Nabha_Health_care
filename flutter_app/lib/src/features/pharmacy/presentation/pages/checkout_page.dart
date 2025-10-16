@@ -59,9 +59,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
         foregroundColor: AppColors.white,
         elevation: 0,
       ),
-      body: cart.isEmpty
-          ? _buildEmptyCart()
-          : _buildCheckoutForm(cart, total),
+      body: cart.isEmpty ? _buildEmptyCart() : _buildCheckoutForm(cart, total),
     );
   }
 
@@ -160,29 +158,29 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           ),
           const SizedBox(height: 16),
           ...cart.map((item) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    '${item.medicine.name} × ${item.quantity}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${item.medicine.name} × ${item.quantity}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
-                  ),
+                    Text(
+                      '₹${(item.medicine.price * item.quantity).toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  '₹${(item.medicine.price * item.quantity).toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          )),
+              )),
           const Divider(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -259,7 +257,6 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           },
         ),
         const SizedBox(height: 16),
-        
         TextFormField(
           controller: _emailController,
           decoration: const InputDecoration(
@@ -279,7 +276,6 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           },
         ),
         const SizedBox(height: 16),
-        
         TextFormField(
           controller: _phoneController,
           decoration: const InputDecoration(
@@ -296,7 +292,6 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           },
         ),
         const SizedBox(height: 16),
-        
         TextFormField(
           controller: _addressController,
           decoration: const InputDecoration(
@@ -313,7 +308,6 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           },
         ),
         const SizedBox(height: 16),
-        
         TextFormField(
           controller: _streetController,
           decoration: const InputDecoration(
@@ -329,7 +323,6 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           },
         ),
         const SizedBox(height: 16),
-        
         TextFormField(
           controller: _pincodeController,
           decoration: const InputDecoration(
@@ -455,10 +448,10 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     if (_formKey.currentState!.validate()) {
       // Generate order ID
       final orderId = 'NH${DateTime.now().millisecondsSinceEpoch}';
-      
+
       // Clear cart
       ref.read(cartProvider.notifier).clearCart();
-      
+
       // Show success dialog
       showDialog(
         context: context,
@@ -479,7 +472,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
               const SizedBox(height: 8),
               Text('Order ID: $orderId'),
               const SizedBox(height: 8),
-              Text('Payment Method: ${_selectedPaymentMethod == 'cod' ? 'Cash on Delivery' : 'Online Payment'}'),
+              Text(
+                  'Payment Method: ${_selectedPaymentMethod == 'cod' ? 'Cash on Delivery' : 'Online Payment'}'),
               const SizedBox(height: 16),
               const Text('We will send you order updates via email and SMS.'),
             ],

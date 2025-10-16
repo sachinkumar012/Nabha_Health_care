@@ -49,8 +49,9 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
   CartNotifier() : super([]);
 
   void addToCart(Medicine medicine) {
-    final existingIndex = state.indexWhere((item) => item.medicine.id == medicine.id);
-    
+    final existingIndex =
+        state.indexWhere((item) => item.medicine.id == medicine.id);
+
     if (existingIndex >= 0) {
       // Update quantity if item already exists
       state[existingIndex].quantity++;
@@ -83,7 +84,8 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
   }
 
   double get totalAmount {
-    return state.fold(0.0, (total, item) => total + (item.medicine.price * item.quantity));
+    return state.fold(
+        0.0, (total, item) => total + (item.medicine.price * item.quantity));
   }
 
   int get totalItems {
@@ -92,7 +94,8 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
 }
 
 // Wishlist provider
-final wishlistProvider = StateNotifierProvider<WishlistNotifier, List<Medicine>>((ref) {
+final wishlistProvider =
+    StateNotifierProvider<WishlistNotifier, List<Medicine>>((ref) {
   return WishlistNotifier();
 });
 
@@ -128,7 +131,7 @@ class PharmacyPage extends ConsumerStatefulWidget {
 class _PharmacyPageState extends ConsumerState<PharmacyPage> {
   String _searchQuery = '';
   String _selectedFilter = 'All';
-  
+
   // Sample medicines data as requested
   final List<Medicine> _medicines = [
     Medicine(
@@ -264,15 +267,22 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
 
     // Apply search filter
     if (_searchQuery.isNotEmpty) {
-      filtered = filtered.where((medicine) =>
-          medicine.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          medicine.pharmacy.toLowerCase().contains(_searchQuery.toLowerCase())
-      ).toList();
+      filtered = filtered
+          .where((medicine) =>
+              medicine.name
+                  .toLowerCase()
+                  .contains(_searchQuery.toLowerCase()) ||
+              medicine.pharmacy
+                  .toLowerCase()
+                  .contains(_searchQuery.toLowerCase()))
+          .toList();
     }
 
     // Apply type filter
     if (_selectedFilter != 'All') {
-      filtered = filtered.where((medicine) => medicine.type == _selectedFilter).toList();
+      filtered = filtered
+          .where((medicine) => medicine.type == _selectedFilter)
+          .toList();
     }
 
     return filtered;
@@ -345,7 +355,7 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
           ),
         ],
       ),
-      body: user == null 
+      body: user == null
           ? _buildLoginPrompt()
           : _buildMedicineStore(context, cart, wishlist),
     );
@@ -393,7 +403,8 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: AppColors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               ),
             ),
           ],
@@ -402,7 +413,8 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
     );
   }
 
-  Widget _buildMedicineStore(BuildContext context, List<CartItem> cart, List<Medicine> wishlist) {
+  Widget _buildMedicineStore(
+      BuildContext context, List<CartItem> cart, List<Medicine> wishlist) {
     return Column(
       children: [
         // Search and filter section
@@ -490,9 +502,12 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
                   itemCount: _filteredMedicines.length,
                   itemBuilder: (context, index) {
                     final medicine = _filteredMedicines[index];
-                    final isInWishlist = ref.read(wishlistProvider.notifier).isInWishlist(medicine.id);
-                    final isInCart = cart.any((item) => item.medicine.id == medicine.id);
-                    
+                    final isInWishlist = ref
+                        .read(wishlistProvider.notifier)
+                        .isInWishlist(medicine.id);
+                    final isInCart =
+                        cart.any((item) => item.medicine.id == medicine.id);
+
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
                       elevation: 2,
@@ -509,7 +524,8 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
                               children: [
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         medicine.name,
@@ -533,26 +549,38 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
                                 IconButton(
                                   onPressed: () {
                                     if (isInWishlist) {
-                                      ref.read(wishlistProvider.notifier).removeFromWishlist(medicine.id);
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ref
+                                          .read(wishlistProvider.notifier)
+                                          .removeFromWishlist(medicine.id);
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         SnackBar(
-                                          content: Text('${medicine.name} removed from wishlist'),
+                                          content: Text(
+                                              '${medicine.name} removed from wishlist'),
                                           duration: const Duration(seconds: 2),
                                         ),
                                       );
                                     } else {
-                                      ref.read(wishlistProvider.notifier).addToWishlist(medicine);
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ref
+                                          .read(wishlistProvider.notifier)
+                                          .addToWishlist(medicine);
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         SnackBar(
-                                          content: Text('${medicine.name} added to wishlist'),
+                                          content: Text(
+                                              '${medicine.name} added to wishlist'),
                                           duration: const Duration(seconds: 2),
                                         ),
                                       );
                                     }
                                   },
                                   icon: Icon(
-                                    isInWishlist ? Icons.favorite : Icons.favorite_border,
-                                    color: isInWishlist ? AppColors.error : AppColors.grey400,
+                                    isInWishlist
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: isInWishlist
+                                        ? AppColors.error
+                                        : AppColors.grey400,
                                   ),
                                 ),
                               ],
@@ -561,7 +589,8 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
                             Row(
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
                                     color: AppColors.primary.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(6),
@@ -577,15 +606,23 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
                                 ),
                                 const SizedBox(width: 12),
                                 Icon(
-                                  medicine.availability ? Icons.check_circle : Icons.cancel,
-                                  color: medicine.availability ? AppColors.success : AppColors.error,
+                                  medicine.availability
+                                      ? Icons.check_circle
+                                      : Icons.cancel,
+                                  color: medicine.availability
+                                      ? AppColors.success
+                                      : AppColors.error,
                                   size: 16,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  medicine.availability ? 'Available' : 'Out of Stock',
+                                  medicine.availability
+                                      ? 'Available'
+                                      : 'Out of Stock',
                                   style: TextStyle(
-                                    color: medicine.availability ? AppColors.success : AppColors.error,
+                                    color: medicine.availability
+                                        ? AppColors.success
+                                        : AppColors.error,
                                     fontWeight: FontWeight.w500,
                                     fontSize: 14,
                                   ),
@@ -625,25 +662,34 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
                                   onPressed: medicine.availability
                                       ? () {
                                           if (isInCart) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
                                               SnackBar(
-                                                content: Text('${medicine.name} is already in cart'),
-                                                duration: const Duration(seconds: 2),
+                                                content: Text(
+                                                    '${medicine.name} is already in cart'),
+                                                duration:
+                                                    const Duration(seconds: 2),
                                               ),
                                             );
                                           } else {
-                                            ref.read(cartProvider.notifier).addToCart(medicine);
-                                            ScaffoldMessenger.of(context).showSnackBar(
+                                            ref
+                                                .read(cartProvider.notifier)
+                                                .addToCart(medicine);
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
                                               SnackBar(
-                                                content: Text('${medicine.name} added to cart'),
-                                                duration: const Duration(seconds: 2),
+                                                content: Text(
+                                                    '${medicine.name} added to cart'),
+                                                duration:
+                                                    const Duration(seconds: 2),
                                                 action: SnackBarAction(
                                                   label: 'View Cart',
                                                   onPressed: () {
                                                     Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
-                                                        builder: (context) => const CartPage(),
+                                                        builder: (context) =>
+                                                            const CartPage(),
                                                       ),
                                                     );
                                                   },
@@ -654,7 +700,9 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
                                         }
                                       : null,
                                   icon: Icon(
-                                    isInCart ? Icons.check : Icons.add_shopping_cart,
+                                    isInCart
+                                        ? Icons.check
+                                        : Icons.add_shopping_cart,
                                     size: 16,
                                   ),
                                   label: Text(
@@ -662,13 +710,14 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
                                     style: const TextStyle(fontSize: 12),
                                   ),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: isInCart 
-                                        ? AppColors.success 
-                                        : medicine.availability 
-                                            ? AppColors.primary 
+                                    backgroundColor: isInCart
+                                        ? AppColors.success
+                                        : medicine.availability
+                                            ? AppColors.primary
                                             : AppColors.grey400,
                                     foregroundColor: AppColors.white,
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 8),
                                   ),
                                 ),
                               ],

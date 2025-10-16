@@ -11,18 +11,21 @@ class ChatStorageService {
   static Future<void> saveMessages(List<ChatMessage> messages) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Convert messages to JSON
-      final messagesJson = messages.map((message) => {
-        'message': message.message,
-        'isUser': message.isUser,
-        'timestamp': message.timestamp.toIso8601String(),
-      }).toList();
-      
+      final messagesJson = messages
+          .map((message) => {
+                'message': message.message,
+                'isUser': message.isUser,
+                'timestamp': message.timestamp.toIso8601String(),
+              })
+          .toList();
+
       // Save messages and timestamp
       await prefs.setString(_chatMessagesKey, json.encode(messagesJson));
-      await prefs.setString(_chatTimestampKey, DateTime.now().toIso8601String());
-      
+      await prefs.setString(
+          _chatTimestampKey, DateTime.now().toIso8601String());
+
       print('DEBUG: Chat messages saved - ${messages.length} messages');
     } catch (e) {
       print('ERROR: Failed to save chat messages: $e');
@@ -34,12 +37,12 @@ class ChatStorageService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final messagesJson = prefs.getString(_chatMessagesKey);
-      
+
       if (messagesJson == null || messagesJson.isEmpty) {
         print('DEBUG: No chat messages found in storage');
         return [];
       }
-      
+
       final messagesData = json.decode(messagesJson) as List<dynamic>;
       final messages = messagesData.map((messageData) {
         return ChatMessage(
@@ -48,7 +51,7 @@ class ChatStorageService {
           timestamp: DateTime.parse(messageData['timestamp'] as String),
         );
       }).toList();
-      
+
       print('DEBUG: Chat messages loaded - ${messages.length} messages');
       return messages;
     } catch (e) {
@@ -84,7 +87,7 @@ class ChatStorageService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final timestampString = prefs.getString(_chatTimestampKey);
-      
+
       if (timestampString != null) {
         return DateTime.parse(timestampString);
       }
@@ -98,11 +101,12 @@ class ChatStorageService {
   static Future<bool> isChatFromToday() async {
     final lastTimestamp = await getLastChatTimestamp();
     if (lastTimestamp == null) return false;
-    
+
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final chatDate = DateTime(lastTimestamp.year, lastTimestamp.month, lastTimestamp.day);
-    
+    final chatDate =
+        DateTime(lastTimestamp.year, lastTimestamp.month, lastTimestamp.day);
+
     return chatDate.isAtSameMomentAs(today);
   }
 }
