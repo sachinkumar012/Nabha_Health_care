@@ -78,9 +78,9 @@ class AbhaPage extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Benefits Section
             const Text(
               'Benefits of ABHA',
@@ -91,7 +91,7 @@ class AbhaPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             _buildBenefitItem(
               icon: Icons.security,
               title: 'Secure & Private',
@@ -112,9 +112,9 @@ class AbhaPage extends StatelessWidget {
               title: 'Government Verified',
               description: 'Official health ID by Government of India',
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Action Buttons
             SizedBox(
               width: double.infinity,
@@ -139,9 +139,9 @@ class AbhaPage extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(

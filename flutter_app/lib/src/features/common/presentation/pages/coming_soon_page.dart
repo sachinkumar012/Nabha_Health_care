@@ -10,7 +10,8 @@ class ComingSoonPage extends StatelessWidget {
   const ComingSoonPage({
     super.key,
     required this.title,
-    this.description = 'This feature is under development and will be available soon.',
+    this.description =
+        'This feature is under development and will be available soon.',
     this.icon = Icons.construction,
     this.color = AppColors.primary,
   });
@@ -46,16 +47,16 @@ class ComingSoonPage extends StatelessWidget {
               Text(
                 'Coming Soon',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.grey800,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.grey800,
+                    ),
               ),
               const SizedBox(height: 16),
               Text(
                 description,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.grey600,
-                ),
+                      color: AppColors.grey600,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -64,7 +65,8 @@ class ComingSoonPage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: color,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 ),
                 child: const Text('Go Back'),
               ),

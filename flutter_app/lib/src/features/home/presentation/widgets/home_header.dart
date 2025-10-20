@@ -81,17 +81,19 @@ class HomeHeader extends ConsumerWidget {
                     children: [
                       Text(
                         '${_getGreetingEmoji()} ${_getGreeting()}',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: AppColors.white.withOpacity(0.9),
-                            ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: AppColors.white.withOpacity(0.9),
+                                ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         userName,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                     ],
                   ),

@@ -11,7 +11,7 @@ class AppDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
-    
+
     return Drawer(
       backgroundColor: AppColors.white,
       child: SafeArea(
@@ -71,7 +71,8 @@ class AppDrawer extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
                       color: AppColors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(12),
@@ -88,7 +89,7 @@ class AppDrawer extends ConsumerWidget {
                 ],
               ),
             ),
-            
+
             // Care Plan Banner
             Container(
               margin: const EdgeInsets.all(16),
@@ -149,7 +150,7 @@ class AppDrawer extends ConsumerWidget {
                 ],
               ),
             ),
-            
+
             // Menu Items
             Expanded(
               child: ListView(
@@ -177,7 +178,8 @@ class AppDrawer extends ConsumerWidget {
                     icon: Icons.shopping_bag,
                     title: 'Orders',
                     color: const Color(0xFF673AB7),
-                    onTap: () => _navigateToPage(context, AppRoutes.orderHistory),
+                    onTap: () =>
+                        _navigateToPage(context, AppRoutes.orderHistory),
                   ),
                   _buildMenuItem(
                     icon: Icons.chat_bubble_outline,
@@ -319,10 +321,10 @@ class AppDrawer extends ConsumerWidget {
 
   void _navigateToPage(BuildContext context, String route) {
     Navigator.pop(context); // Close drawer
-    
+
     // Check if route exists in app routes
-    if (route == '/pharmacy' || 
-        route == '/hospitals' || 
+    if (route == '/pharmacy' ||
+        route == '/hospitals' ||
         route == '/symptom-checker' ||
         route == '/video-call' ||
         route == '/health-records' ||
@@ -341,7 +343,8 @@ class AppDrawer extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Coming Soon'),
-        content: Text('${feature.replaceAll('/', '').replaceAll('-', ' ').toUpperCase()} feature is under development.'),
+        content: Text(
+            '${feature.replaceAll('/', '').replaceAll('-', ' ').toUpperCase()} feature is under development.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
