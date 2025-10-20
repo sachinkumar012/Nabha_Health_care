@@ -152,7 +152,7 @@ class ProfilePage extends ConsumerWidget {
 
   Widget _buildProfileImage(String imageUrl) {
     print('📸 IMAGE_DEBUG: Displaying image with URL: $imageUrl');
-    
+
     return Consumer(
       builder: (context, ref, child) {
         return GestureDetector(
@@ -237,7 +237,7 @@ class ProfilePage extends ConsumerWidget {
       // Local file
       final file = File(imageUrl);
       print('📸 IMAGE_DEBUG: File exists: ${file.existsSync()}');
-      
+
       return Image.file(
         file,
         width: 114,
@@ -294,17 +294,17 @@ class ProfilePage extends ConsumerWidget {
           Text(
             user?.name ?? 'Guest',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.grey900,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.grey900,
+                ),
           ),
           if (user?.email != null) ...[
             const SizedBox(height: AppConstants.smallSpacing),
             Text(
               user!.email,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.grey600,
-              ),
+                    color: AppColors.grey600,
+                  ),
             ),
           ],
         ],
@@ -440,12 +440,12 @@ class ProfilePage extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: AppConstants.smallSpacing),
       decoration: BoxDecoration(
-        color: isDestructive 
-            ? AppColors.error.withOpacity(0.05) 
+        color: isDestructive
+            ? AppColors.error.withOpacity(0.05)
             : AppColors.primary.withOpacity(0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDestructive 
+          color: isDestructive
               ? AppColors.error.withOpacity(0.2)
               : AppColors.primary.withOpacity(0.2),
           width: 1,
@@ -460,7 +460,7 @@ class ProfilePage extends ConsumerWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: isDestructive 
+            color: isDestructive
                 ? AppColors.error.withOpacity(0.1)
                 : AppColors.primary.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
@@ -556,7 +556,7 @@ class ProfilePage extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: AppConstants.largeSpacing),
-              
+
               // Form Fields
               _buildEditField(
                 controller: nameController,
@@ -576,9 +576,9 @@ class ProfilePage extends ConsumerWidget {
                 icon: Icons.location_on_outlined,
                 maxLines: 2,
               ),
-              
+
               const SizedBox(height: AppConstants.largeSpacing),
-              
+
               // Action Buttons
               Row(
                 children: [
@@ -818,7 +818,8 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  Future<void> _pickImage(ImageSource source, WidgetRef ref, BuildContext context) async {
+  Future<void> _pickImage(
+      ImageSource source, WidgetRef ref, BuildContext context) async {
     try {
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(
@@ -830,15 +831,15 @@ class ProfilePage extends ConsumerWidget {
 
       if (pickedFile != null) {
         print('📸 IMAGE_DEBUG: Selected image path: ${pickedFile.path}');
-        
+
         try {
           // Process image without showing loading dialog to avoid context issues
           print('📸 IMAGE_DEBUG: Processing image...');
-          
+
           // In a real app, you would upload the image to a server
           // For now, we'll convert it to a local file path
           final imageUrl = await _uploadImage(File(pickedFile.path));
-          
+
           print('📸 IMAGE_DEBUG: Image URL to save: $imageUrl');
 
           // Update user profile with new image URL
@@ -892,32 +893,34 @@ class ProfilePage extends ConsumerWidget {
       // Get the app's documents directory for permanent storage
       final appDir = await getApplicationDocumentsDirectory();
       final profileImagesDir = Directory('${appDir.path}/profile_images');
-      
+
       // Create the directory if it doesn't exist
       if (!profileImagesDir.existsSync()) {
         await profileImagesDir.create(recursive: true);
-        print('📸 IMAGE_DEBUG: Created profile images directory: ${profileImagesDir.path}');
+        print(
+            '📸 IMAGE_DEBUG: Created profile images directory: ${profileImagesDir.path}');
       }
 
       // Create a unique filename using timestamp
       final fileName = 'profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final permanentPath = '${profileImagesDir.path}/$fileName';
-      
-      print('📸 IMAGE_DEBUG: Copying image to permanent location: $permanentPath');
+
+      print(
+          '📸 IMAGE_DEBUG: Copying image to permanent location: $permanentPath');
 
       // Copy the image to permanent storage
       final permanentFile = await imageFile.copy(permanentPath);
-      
+
       print('📸 IMAGE_DEBUG: Image copied successfully');
-      print('📸 IMAGE_DEBUG: Permanent file exists: ${permanentFile.existsSync()}');
-      
+      print(
+          '📸 IMAGE_DEBUG: Permanent file exists: ${permanentFile.existsSync()}');
+
       // Simulate upload delay
       await Future.delayed(const Duration(seconds: 1));
 
       // In a real app, you would upload to a server and get back a URL
       // For now, return the permanent local path
       return permanentFile.path;
-      
     } catch (e) {
       print('❌ IMAGE_DEBUG: Error in _uploadImage: $e');
       throw Exception('Failed to process image: $e');

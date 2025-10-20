@@ -205,7 +205,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       child: OutlinedButton.icon(
                         onPressed: () => _quickLogin('patient'),
                         icon: const Icon(Icons.person, size: 16),
-                        label: const Text('Patient', style: TextStyle(fontSize: 13)),
+                        label: const Text('Patient',
+                            style: TextStyle(fontSize: 13)),
                       ),
                     ),
                     const SizedBox(width: AppConstants.smallSpacing),
@@ -213,7 +214,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       child: OutlinedButton.icon(
                         onPressed: () => _quickLogin('doctor'),
                         icon: const Icon(Icons.local_hospital, size: 16),
-                        label: const Text('Doctor', style: TextStyle(fontSize: 13)),
+                        label: const Text('Doctor',
+                            style: TextStyle(fontSize: 13)),
                       ),
                     ),
                   ],
@@ -355,10 +357,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       });
 
       print('� Starting Optimized Google Sign-In...');
-      
+
       // Use the optimized Google Auth Service
       final userData = await GoogleAuthService.signInWithGoogleDirect();
-      
+
       if (userData == null) {
         print('❌ Google Sign-In cancelled by user');
         if (mounted) {
@@ -371,28 +373,30 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         }
         return;
       }
-      
+
       print('✅ Google authentication successful, proceeding to app...');
       print('� User: ${userData['name']}');
       print('📧 Email: ${userData['email']}');
-      
+
       // Handle successful authentication
       await _handleSuccessfulAuth(null, userData['name'], userData['email']);
-      
     } catch (e) {
       print('❌ Google Sign-In error: $e');
-      
+
       if (mounted) {
         String errorMessage = 'Google Sign-In failed';
-        
-        if (e.toString().contains('network') || e.toString().contains('Network')) {
-          errorMessage = 'Network error. Please check your internet connection.';
+
+        if (e.toString().contains('network') ||
+            e.toString().contains('Network')) {
+          errorMessage =
+              'Network error. Please check your internet connection.';
         } else if (e.toString().contains('cancelled')) {
           errorMessage = 'Sign-in was cancelled';
         } else if (e.toString().contains('PlatformException')) {
-          errorMessage = 'Google Sign-In configuration error. Please try again.';
+          errorMessage =
+              'Google Sign-In configuration error. Please try again.';
         }
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
@@ -417,26 +421,28 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   // Helper method to handle successful authentication
-  Future<void> _handleSuccessfulAuth(dynamic firebaseUser, String? displayName, [String? email]) async {
+  Future<void> _handleSuccessfulAuth(dynamic firebaseUser, String? displayName,
+      [String? email]) async {
     print('✅ Authentication process completed successfully');
     print('👤 User: ${displayName ?? 'Google User'}');
     print('📧 Email: ${email ?? 'No email provided'}');
-    
+
     // Update the user provider state with Google user information
     try {
       await ref.read(userProvider.notifier).registerUser(
-        name: displayName ?? 'Google User',
-        email: email ?? 'google.user@example.com', // Use actual Google email or fallback
-        phone: '1234567890', // Default phone number
-        password: 'google_auth_temp', // Temporary password for Google users
-        userType: 'patient',
-      );
+            name: displayName ?? 'Google User',
+            email: email ??
+                'google.user@example.com', // Use actual Google email or fallback
+            phone: '1234567890', // Default phone number
+            password: 'google_auth_temp', // Temporary password for Google users
+            userType: 'patient',
+          );
       print('✅ User state updated successfully');
     } catch (userUpdateError) {
       print('⚠️ User state update failed, but continuing: $userUpdateError');
       // Continue anyway since Google authentication was successful
     }
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -453,7 +459,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           duration: const Duration(seconds: 3),
         ),
       );
-      
+
       // Navigate directly to home
       print('🏠 Navigating to home screen...');
       Navigator.of(context).pushReplacementNamed(AppRoutes.home);

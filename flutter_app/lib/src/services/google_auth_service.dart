@@ -3,11 +3,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class GoogleAuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   // Using the Web Client ID from your google-services.json for better compatibility
   static final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
-    serverClientId: '4692045271-1j2k5i3salcqvpccjrvve78nlcv6hcu1.apps.googleusercontent.com',
+    serverClientId:
+        '4692045271-1j2k5i3salcqvpccjrvve78nlcv6hcu1.apps.googleusercontent.com',
   );
 
   /// Direct Google Sign-In (bypassing Firebase for compatibility)
