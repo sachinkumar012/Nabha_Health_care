@@ -16,6 +16,8 @@ import '../../features/symptom_checker/presentation/pages/symptom_checker_page.d
 import '../../features/hospitals/presentation/pages/hospitals_page.dart';
 import '../../features/health_records/presentation/pages/health_records_page.dart';
 import '../../features/video_call/presentation/pages/video_call_page.dart';
+import '../../features/abha/presentation/pages/abha_page.dart';
+import '../../features/common/presentation/pages/coming_soon_page.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -31,6 +33,7 @@ class AppRoutes {
   static const String hospitals = '/hospitals';
   static const String healthRecords = '/health-records';
   static const String videoCall = '/video-call';
+  static const String abha = '/abha';
 
   static Map<String, WidgetBuilder> get routes {
     return {
@@ -47,6 +50,7 @@ class AppRoutes {
       hospitals: (context) => const HospitalsPage(),
       healthRecords: (context) => const HealthRecordsPage(),
       videoCall: (context) => const VideoCallPage(),
+      abha: (context) => const AbhaPage(),
     };
   }
 }

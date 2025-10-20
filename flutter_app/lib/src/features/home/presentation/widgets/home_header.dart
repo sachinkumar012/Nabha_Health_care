@@ -60,22 +60,40 @@ class HomeHeader extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: [
-                  Text(
-                    '${_getGreetingEmoji()} ${_getGreeting()}',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AppColors.white.withOpacity(0.9),
-                        ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.menu),
+                      color: AppColors.white,
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    userName,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: AppColors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  const SizedBox(width: AppConstants.mediumSpacing),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${_getGreetingEmoji()} ${_getGreeting()}',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: AppColors.white.withOpacity(0.9),
+                            ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        userName,
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ],
                   ),
                 ],
               ),

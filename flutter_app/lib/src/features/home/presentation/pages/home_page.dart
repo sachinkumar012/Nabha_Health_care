@@ -7,6 +7,7 @@ import '../widgets/home_header.dart';
 import '../widgets/quick_actions_grid.dart';
 import '../widgets/health_tips_section.dart';
 import '../widgets/recent_activities.dart';
+import '../widgets/app_drawer.dart';
 import '../../../profile/presentation/pages/profile_page.dart';
 import '../../../pharmacy/presentation/pages/pharmacy_page.dart';
 import '../widgets/ai_chat_bot.dart';
@@ -31,6 +32,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const AppDrawer(),
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,
