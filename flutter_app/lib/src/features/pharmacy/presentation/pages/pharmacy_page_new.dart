@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/routes/app_routes.dart';
 import '../../../auth/presentation/providers/user_provider.dart';
 import '../../../auth/domain/models/user.dart';
 import 'cart_page.dart';
@@ -396,7 +397,7 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
             ElevatedButton.icon(
               onPressed: () {
                 // Navigate to login/auth page
-                Navigator.pushNamed(context, '/patient/auth');
+                Navigator.pushNamed(context, AppRoutes.login);
               },
               icon: const Icon(Icons.login),
               label: const Text('Login as Patient'),

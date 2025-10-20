@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@zegocloud/zego-uikit-prebuilt": "^2.16.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "framer-motion": "^12.23.12",
     "lucide-react": "^0.543.0",

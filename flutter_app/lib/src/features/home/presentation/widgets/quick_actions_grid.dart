@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/routes/app_routes.dart';
 
 class QuickActionsGrid extends StatelessWidget {
   const QuickActionsGrid({super.key});
@@ -24,6 +25,12 @@ class QuickActionsGrid extends StatelessWidget {
       subtitle: 'Order medicines',
       icon: Icons.local_pharmacy,
       color: AppColors.pharmacy,
+    ),
+    QuickAction(
+      title: 'My Orders',
+      subtitle: 'Track orders',
+      icon: Icons.shopping_bag,
+      color: AppColors.primary,
     ),
     QuickAction(
       title: 'Health Records',
@@ -151,6 +158,9 @@ class QuickActionsGrid extends StatelessWidget {
         break;
       case 'Pharmacy':
         Navigator.of(context).pushNamed('/pharmacy');
+        break;
+      case 'My Orders':
+        Navigator.of(context).pushNamed(AppRoutes.orderHistory);
         break;
       case 'Book Appointment':
         Navigator.of(context).pushNamed('/appointments');

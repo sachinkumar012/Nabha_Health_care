@@ -54,9 +54,54 @@ class UserNotifier extends StateNotifier<User?> {
       final prefs = await SharedPreferences.getInstance();
       final userJson = json.encode(user.toJson());
       await prefs.setString('user_data', userJson);
+
+      // Also save to users database (for persistent login)
+      await _saveUserToDatabase(user);
     } catch (e) {
       // Handle error
       throw Exception('Failed to save user data');
+    }
+  }
+
+  Future<void> _saveUserToDatabase(User user) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      // Get existing users database
+      List<String> usersDb = prefs.getStringList('users_database') ?? [];
+
+      // Remove existing user with same email if exists
+      usersDb.removeWhere((userString) {
+        final userData = json.decode(userString);
+        return userData['email'] == user.email;
+      });
+
+      // Add the user
+      usersDb.add(json.encode(user.toJson()));
+
+      // Save back to database
+      await prefs.setStringList('users_database', usersDb);
+      print('DEBUG: User added to permanent database');
+    } catch (e) {
+      print('ERROR: Failed to save user to database: $e');
+    }
+  }
+
+  Future<User?> _getUserFromDatabase(String email) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      List<String> usersDb = prefs.getStringList('users_database') ?? [];
+
+      for (String userString in usersDb) {
+        final userData = json.decode(userString);
+        if (userData['email'] == email) {
+          return User.fromJson(userData);
+        }
+      }
+      return null;
+    } catch (e) {
+      print('ERROR: Failed to get user from database: $e');
+      return null;
     }
   }
 
@@ -104,19 +149,20 @@ class UserNotifier extends StateNotifier<User?> {
       // Simulate API call delay
       await Future.delayed(const Duration(seconds: 1));
 
-      // Load user from storage
-      await _loadUserFromStorage();
+      // Try to get user from permanent database
+      final user = await _getUserFromDatabase(email);
 
-      // Check if user exists and email matches
-      if (state == null || state!.email != email) {
-        print('DEBUG: Login failed - User not found or email mismatch');
+      if (user == null) {
+        print('DEBUG: Login failed - User not found in database');
         throw Exception('Invalid credentials');
       }
 
       // In a real app, you would validate the password hash here
       // For now, we just check if user exists with the email
-      print(
-          'DEBUG: Login successful for user: ${state!.name} (${state!.email})');
+      state = user;
+      await _saveUserToStorage(user); // Save to current session storage
+
+      print('DEBUG: Login successful for user: ${user.name} (${user.email})');
     } catch (e) {
       print('DEBUG: Login error: ${e.toString()}');
       throw Exception('Login failed: ${e.toString()}');

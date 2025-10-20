@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "4692045271",
+    "project_id": "nabha-healthcare-c5c80",
+    "storage_bucket": "nabha-healthcare-c5c80.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:4692045271:android:c58580ce98cbe6e795af92",
+        "android_client_info": {
+          "package_name": "com.example.nabha_healthcare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "4692045271-1j2k5i3salcqvpccjrvve78nlcv6hcu1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMR6U5VWa4VVWkmFVXHK1ICYd16G_QPns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "4692045271-1j2k5i3salcqvpccjrvve78nlcv6hcu1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:4692045271:android:47a4b00387c8d75095af92",
+        "android_client_info": {
+          "package_name": "com.nabhahealth.healthcare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "4692045271-3m1aol7oj0meaaudqlcr24q7bfkoqoo2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nabhahealth.healthcare",
+            "certificate_hash": "87fcfa15b76dc2c65ccc87d4336643b1f3e8bfc1"
+          }
+        },
+        {
+          "client_id": "4692045271-1j2k5i3salcqvpccjrvve78nlcv6hcu1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMR6U5VWa4VVWkmFVXHK1ICYd16G_QPns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "4692045271-1j2k5i3salcqvpccjrvve78nlcv6hcu1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -8,6 +8,35 @@ import '../../../auth/presentation/providers/user_provider.dart';
 class HomeHeader extends ConsumerWidget {
   const HomeHeader({super.key});
 
+  String _getGreeting() {
+    final now = DateTime.now();
+    final hour = now.hour;
+
+    if (hour >= 5 && hour < 12) {
+      return 'Good Morning'; // 5:00 AM - 11:59 AM
+    } else if (hour >= 12 && hour < 17) {
+      return 'Good Afternoon'; // 12:00 PM - 4:59 PM
+    } else if (hour >= 17 && hour < 21) {
+      return 'Good Evening'; // 5:00 PM - 8:59 PM
+    } else {
+      return 'Good Night'; // 9:00 PM - 4:59 AM
+    }
+  }
+
+  String _getGreetingEmoji() {
+    final hour = DateTime.now().hour;
+
+    if (hour >= 5 && hour < 12) {
+      return '🌅'; // Morning sunrise
+    } else if (hour >= 12 && hour < 17) {
+      return '☀️'; // Afternoon sun
+    } else if (hour >= 17 && hour < 21) {
+      return '🌆'; // Evening sunset
+    } else {
+      return '🌙'; // Night moon
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
@@ -35,7 +64,7 @@ class HomeHeader extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Good Morning',
+                    '${_getGreetingEmoji()} ${_getGreeting()}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: AppColors.white.withOpacity(0.9),
                         ),

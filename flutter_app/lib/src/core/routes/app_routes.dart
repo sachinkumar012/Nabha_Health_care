@@ -11,6 +11,7 @@ import '../../features/appointments/presentation/pages/appointments_page.dart'
     as AppointmentsModule;
 import '../../features/pharmacy/presentation/pages/pharmacy_page.dart'
     as PharmacyModule;
+import '../../features/pharmacy/presentation/pages/order_history_page.dart';
 import '../../features/symptom_checker/presentation/pages/symptom_checker_page.dart';
 import '../../features/hospitals/presentation/pages/hospitals_page.dart';
 import '../../features/health_records/presentation/pages/health_records_page.dart';
@@ -25,6 +26,7 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String appointments = '/appointments';
   static const String pharmacy = '/pharmacy';
+  static const String orderHistory = '/order-history';
   static const String symptomChecker = '/symptom-checker';
   static const String hospitals = '/hospitals';
   static const String healthRecords = '/health-records';
@@ -40,6 +42,7 @@ class AppRoutes {
       profile: (context) => const ProfileModule.ProfilePage(),
       appointments: (context) => const AppointmentsModule.AppointmentsPage(),
       pharmacy: (context) => const PharmacyModule.PharmacyPage(),
+      orderHistory: (context) => const OrderHistoryPage(),
       symptomChecker: (context) => SymptomCheckerPage(),
       hospitals: (context) => const HospitalsPage(),
       healthRecords: (context) => const HealthRecordsPage(),

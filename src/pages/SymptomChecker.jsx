@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Mic, MicOff, Send, Volume2, VolumeX, Stethoscope, Calendar, Phone, MapPin, Clock, AlertCircle, CheckCircle, Activity } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 
-const API_KEY = "AIzaSyBEoyP49AjxnE6pTLhEivfNAylcGDaH_04"; // Replace with your key
+const API_KEY = "AIzaSyCAzGYeMcfLMCp1ghvQWBX2xdbLhbJS1Go"; // Updated with your new API key for appointment booking
 
 // Language Configuration
 const LANGUAGES = {

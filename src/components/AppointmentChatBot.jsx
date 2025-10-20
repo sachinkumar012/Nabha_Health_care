@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Mic, MicOff, Send, Volume2, VolumeX, Calendar, X, MessageCircle } from "lucide-react";
 
-const API_KEY = "AIzaSyBEoyP49AjxnE6pTLhEivfNAylcGDaH_04"; // Replace with your key
+const API_KEY = "AIzaSyCAzGYeMcfLMCp1ghvQWBX2xdbLhbJS1Go"; // Updated with your new API key for appointment booking
 
 // SMS API Configuration - Multiple Services Support
 const SMS_CONFIG = {

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../auth/presentation/providers/user_provider.dart';
+import '../../../../services/payment_service.dart';
+import '../../data/models/order_model.dart';
+import '../../data/services/order_storage_service.dart';
 import 'pharmacy_page.dart';
 
 class CheckoutPage extends ConsumerStatefulWidget {
@@ -22,6 +26,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   final _streetController = TextEditingController();
   final _pincodeController = TextEditingController();
   String _selectedPaymentMethod = 'cod'; // 'cod' or 'online'
+  PaymentService? _paymentService;
+  final OrderStorageService _orderService = OrderStorageService();
 
   @override
   void initState() {
@@ -44,6 +50,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     _addressController.dispose();
     _streetController.dispose();
     _pincodeController.dispose();
+    _paymentService?.dispose();
     super.dispose();
   }
 
@@ -446,53 +453,399 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
 
   void _placeOrder() {
     if (_formKey.currentState!.validate()) {
-      // Generate order ID
+      print('🛒 CHECKOUT_DEBUG: Starting order placement');
+      print('🛒 CHECKOUT_DEBUG: Payment method: $_selectedPaymentMethod');
+
+      final cart = ref.read(cartProvider);
+      final total = ref.read(cartProvider.notifier).totalAmount;
+      final deliveryFee = total > 500 ? 0.0 : 50.0;
+      final finalTotal = total + deliveryFee;
+
+      final orderData = {
+        'name': _nameController.text,
+        'email': _emailController.text,
+        'phone': _phoneController.text,
+        'address': _addressController.text,
+        'street': _streetController.text,
+        'pincode': _pincodeController.text,
+        'paymentMethod': _selectedPaymentMethod,
+        'total': finalTotal,
+        'items': cart,
+      };
+
+      if (_selectedPaymentMethod == 'online') {
+        print('🔥🔥🔥 CHECKOUT_DEBUG: Processing online payment via Razorpay');
+        _processRazorpayPayment(context, orderData);
+      } else {
+        print('🔥🔥🔥 CHECKOUT_DEBUG: Processing Cash on Delivery');
+        _showOrderConfirmation(context, orderData, null);
+      }
+    }
+  }
+
+  void _processRazorpayPayment(
+      BuildContext context, Map<String, dynamic> orderData) {
+    print('🔥🔥🔥 PAYMENT_DEBUG: _processRazorpayPayment called');
+
+    try {
+      // Dispose previous payment service if exists
+      _paymentService?.dispose();
+
+      // Create new payment service
+      _paymentService = PaymentService(context: context);
+
+      // Generate order ID for tracking
       final orderId = 'NH${DateTime.now().millisecondsSinceEpoch}';
 
-      // Clear cart
-      ref.read(cartProvider.notifier).clearCart();
+      print('🔥🔥🔥 PAYMENT_DEBUG: Order ID: $orderId');
+      print('🔥🔥🔥 PAYMENT_DEBUG: Amount: ₹${orderData['total']}');
+      print(
+          '🔥🔥🔥 PAYMENT_DEBUG: Customer: ${orderData['name']} (${orderData['email']})');
 
-      // Show success dialog
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          title: const Row(
-            children: [
-              Icon(Icons.check_circle, color: AppColors.success),
-              SizedBox(width: 8),
-              Text('Order Confirmed!'),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Your order has been placed successfully.'),
-              const SizedBox(height: 8),
-              Text('Order ID: $orderId'),
-              const SizedBox(height: 8),
-              Text(
-                  'Payment Method: ${_selectedPaymentMethod == 'cod' ? 'Cash on Delivery' : 'Online Payment'}'),
-              const SizedBox(height: 16),
-              const Text('We will send you order updates via email and SMS.'),
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close success dialog
-                Navigator.of(context).pop(); // Go back to cart
-                Navigator.of(context).pop(); // Go back to pharmacy
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+      // Setup payment callbacks
+      _paymentService!.onPaymentSuccess = (PaymentSuccessResponse response) {
+        print('🔥🔥🔥 PAYMENT_DEBUG: ✅ Payment successful!');
+        print('🔥🔥🔥 PAYMENT_DEBUG: Payment ID: ${response.paymentId}');
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text('Payment successful! Processing order...'),
+                ],
               ),
-              child: const Text('Continue Shopping'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
             ),
-          ],
+          );
+
+          _showOrderConfirmation(context, orderData, response);
+        }
+      };
+
+      _paymentService!.onPaymentFailure = (PaymentFailureResponse response) {
+        print('🔥🔥🔥 PAYMENT_DEBUG: ❌ Payment failed');
+        print('🔥🔥🔥 PAYMENT_DEBUG: Error: ${response.message}');
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+
+          String errorMessage = 'Payment failed';
+          if (response.message != null) {
+            errorMessage = response.message!;
+          }
+
+          if (response.code == Razorpay.PAYMENT_CANCELLED) {
+            errorMessage = 'Payment was cancelled';
+          } else if (response.code == Razorpay.NETWORK_ERROR) {
+            errorMessage =
+                'Network error. Please check your internet connection.';
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.error, color: Colors.white),
+                      SizedBox(width: 8),
+                      Text('Payment Failed'),
+                    ],
+                  ),
+                  SizedBox(height: 4),
+                  Text(errorMessage, style: TextStyle(fontSize: 12)),
+                ],
+              ),
+              backgroundColor: AppColors.error,
+              duration: Duration(seconds: 5),
+              action: SnackBarAction(
+                label: 'Retry',
+                textColor: Colors.white,
+                onPressed: () => _processRazorpayPayment(context, orderData),
+              ),
+            ),
+          );
+        }
+      };
+
+      _paymentService!.onExternalWallet = (ExternalWalletResponse response) {
+        print('🔥🔥🔥 PAYMENT_DEBUG: External wallet: ${response.walletName}');
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Opening ${response.walletName}...'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      };
+
+      // Show loading indicator
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Initializing secure payment...'),
+                    Text('Amount: ₹${orderData['total']}',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white.withOpacity(0.8))),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          duration: Duration(seconds: 10),
+          backgroundColor: AppColors.primary,
         ),
       );
+
+      // Validate order data
+      if (orderData['total'] == null || orderData['total'] <= 0) {
+        throw Exception('Invalid payment amount');
+      }
+
+      // Start payment with delay
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (mounted && _paymentService != null) {
+          print('🔥🔥🔥 PAYMENT_DEBUG: 🚀 Starting Razorpay payment');
+          _paymentService!.startPayment(
+            amount: orderData['total'].toDouble(),
+            orderId: orderId,
+            customerName: orderData['name'].toString(),
+            customerEmail: orderData['email'].toString(),
+            customerPhone: orderData['phone'].toString(),
+            description:
+                'Nabha Healthcare - Medicine Purchase (₹${orderData['total']})',
+            notes: {
+              'order_type': 'pharmacy',
+              'customer_name': orderData['name'].toString(),
+              'customer_address': orderData['address'].toString(),
+              'pincode': orderData['pincode'].toString(),
+              'items_count': orderData['items'].length.toString(),
+              'total_amount': orderData['total'].toString(),
+              'payment_timestamp': DateTime.now().toIso8601String(),
+            },
+          );
+          print('🔥🔥🔥 PAYMENT_DEBUG: Payment initiation completed');
+        }
+      });
+    } catch (e, stackTrace) {
+      print('🔥🔥🔥 PAYMENT_DEBUG: ❌ Exception: $e');
+      print('🔥🔥🔥 PAYMENT_DEBUG: Stack trace: $stackTrace');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.error, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text('Payment Setup Failed'),
+                  ],
+                ),
+                SizedBox(height: 4),
+                Text(e.toString(), style: TextStyle(fontSize: 12)),
+              ],
+            ),
+            backgroundColor: AppColors.error,
+            duration: Duration(seconds: 6),
+            action: SnackBarAction(
+              label: 'Retry',
+              textColor: Colors.white,
+              onPressed: () => _processRazorpayPayment(context, orderData),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  void _showOrderConfirmation(
+      BuildContext context,
+      Map<String, dynamic> orderData,
+      PaymentSuccessResponse? paymentResponse) async {
+    print('🛒 ORDER_SAVE_DEBUG: Saving order after payment');
+
+    try {
+      final currentUser = ref.read(userProvider);
+      if (currentUser == null) {
+        throw Exception('User not logged in');
+      }
+
+      final cart = ref.read(cartProvider);
+      final orderId = paymentResponse?.orderId ??
+          'order_${DateTime.now().millisecondsSinceEpoch}';
+
+      // Convert cart items to order items
+      final orderItems = cart
+          .map((cartItem) => OrderItem(
+                medicineId: cartItem.medicine.id.toString(),
+                name: cartItem.medicine.name,
+                price: cartItem.medicine.price,
+                quantity: cartItem.quantity,
+                dosage: cartItem.medicine.type,
+                manufacturer: cartItem.medicine.pharmacy,
+              ))
+          .toList();
+
+      // Create customer info
+      final customerInfo = OrderCustomerInfo(
+        name: orderData['name'],
+        email: orderData['email'],
+        phone: orderData['phone'],
+        address: orderData['address'],
+        street: orderData['street'],
+        pincode: orderData['pincode'],
+      );
+
+      // Create payment info
+      final paymentInfo = OrderPaymentInfo(
+        paymentMethod: orderData['paymentMethod'] == 'cod'
+            ? PaymentMethod.cod
+            : PaymentMethod.online,
+        paymentStatus: paymentResponse != null
+            ? PaymentStatus.completed
+            : PaymentStatus.pending,
+        paymentId: paymentResponse?.paymentId,
+        transactionId: paymentResponse?.paymentId,
+        paymentDate: paymentResponse != null ? DateTime.now() : null,
+        amountPaid: orderData['total'].toDouble(),
+      );
+
+      // Create status history
+      final statusHistory = <OrderStatusUpdate>[
+        OrderStatusUpdate(
+          status: OrderStatus.pending,
+          timestamp: DateTime.now(),
+          message: 'Order placed successfully',
+        ),
+        if (paymentResponse != null)
+          OrderStatusUpdate(
+            status: OrderStatus.confirmed,
+            timestamp: DateTime.now(),
+            message: 'Payment confirmed and order processing started',
+          ),
+      ];
+
+      // Create the order
+      final order = PharmacyOrder(
+        orderId: orderId,
+        userId: currentUser.id,
+        items: orderItems,
+        customerInfo: customerInfo,
+        paymentInfo: paymentInfo,
+        status: paymentResponse != null
+            ? OrderStatus.confirmed
+            : OrderStatus.pending,
+        orderDate: DateTime.now(),
+        estimatedDelivery: DateTime.now().add(const Duration(days: 3)),
+        totalAmount: orderData['total'].toDouble(),
+        deliveryFee: 0.0,
+        statusHistory: statusHistory,
+      );
+
+      // Save the order
+      final saved = await _orderService.saveOrder(order);
+
+      if (saved) {
+        print('✅ Order saved successfully: $orderId');
+
+        // Clear cart
+        ref.read(cartProvider.notifier).clearCart();
+
+        // Show success dialog
+        if (mounted) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => AlertDialog(
+              title: const Row(
+                children: [
+                  Icon(Icons.check_circle, color: AppColors.success),
+                  SizedBox(width: 8),
+                  Text('Order Confirmed!'),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Your order has been placed successfully.'),
+                  const SizedBox(height: 8),
+                  Text('Order ID: $orderId'),
+                  const SizedBox(height: 8),
+                  Text(
+                      'Payment Method: ${orderData['paymentMethod'] == 'cod' ? 'Cash on Delivery' : 'Online Payment'}'),
+                  if (paymentResponse != null) ...[
+                    const SizedBox(height: 4),
+                    Text('Payment ID: ${paymentResponse.paymentId}',
+                        style: TextStyle(fontSize: 12)),
+                  ],
+                  const SizedBox(height: 16),
+                  const Text(
+                      'We will send you order updates via email and SMS.'),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close success dialog
+                    Navigator.of(context).pop(); // Go back to cart
+                    Navigator.of(context).pop(); // Go back to pharmacy
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                  ),
+                  child: const Text('Continue Shopping'),
+                ),
+              ],
+            ),
+          );
+        }
+      } else {
+        throw Exception('Failed to save order');
+      }
+    } catch (e) {
+      print('❌ Error saving order: $e');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error saving order: $e'),
+            backgroundColor: AppColors.error,
+            duration: Duration(seconds: 5),
+          ),
+        );
+      }
     }
   }
 }

@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/routes/app_routes.dart';
 import '../../../auth/presentation/providers/user_provider.dart';
 import '../../../auth/domain/models/user.dart';
+import '../../../../services/payment_service.dart';
+import '../../data/models/order_model.dart';
+import '../../data/services/order_storage_service.dart';
 import 'cart_page.dart';
 import 'wishlist_page.dart';
 
@@ -131,6 +136,19 @@ class PharmacyPage extends ConsumerStatefulWidget {
 class _PharmacyPageState extends ConsumerState<PharmacyPage> {
   String _searchQuery = '';
   String _selectedFilter = 'All';
+  PaymentService? _paymentService;
+
+  @override
+  void initState() {
+    super.initState();
+    print('🏥🏥🏥 PHARMACY_DEBUG: PharmacyPage loaded!');
+  }
+
+  @override
+  void dispose() {
+    _paymentService?.dispose();
+    super.dispose();
+  }
 
   // Sample medicines data as requested
   final List<Medicine> _medicines = [
@@ -358,6 +376,9 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
       body: user == null
           ? _buildLoginPrompt()
           : _buildMedicineStore(context, cart, wishlist),
+      bottomNavigationBar: user != null && cart.isNotEmpty
+          ? _buildCheckoutBar(context, cart)
+          : null,
     );
   }
 
@@ -396,7 +417,7 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
             ElevatedButton.icon(
               onPressed: () {
                 // Navigate to login/auth page
-                Navigator.pushNamed(context, '/patient/auth');
+                Navigator.pushNamed(context, AppRoutes.login);
               },
               icon: const Icon(Icons.login),
               label: const Text('Login as Patient'),
@@ -672,9 +693,13 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
                                               ),
                                             );
                                           } else {
+                                            print(
+                                                '🛒🛒🛒 CART_DEBUG: Adding ${medicine.name} to cart');
                                             ref
                                                 .read(cartProvider.notifier)
                                                 .addToCart(medicine);
+                                            print(
+                                                '🛒🛒🛒 CART_DEBUG: Cart now has ${ref.read(cartProvider.notifier).totalItems} items');
                                             ScaffoldMessenger.of(context)
                                                 .showSnackBar(
                                               SnackBar(
@@ -733,6 +758,69 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
     );
   }
 
+  Widget _buildCheckoutBar(BuildContext context, List<CartItem> cart) {
+    final totalAmount = ref.read(cartProvider.notifier).totalAmount;
+    final totalItems = ref.read(cartProvider.notifier).totalItems;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(
+        color: AppColors.white,
+        border: Border(
+          top: BorderSide(color: AppColors.grey300, width: 1),
+        ),
+      ),
+      child: SafeArea(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Cart summary
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '$totalItems items in cart',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.grey600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '₹${totalAmount.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Checkout button
+            ElevatedButton.icon(
+              onPressed: () => _showCheckoutDialog(context),
+              icon: const Icon(Icons.shopping_cart_checkout),
+              label: const Text('Checkout'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.success,
+                foregroundColor: AppColors.white,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showCheckoutDialog(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
     final _nameController = TextEditingController();
@@ -743,6 +831,7 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
     final _pincodeController = TextEditingController();
     String _selectedPaymentMethod = 'cod'; // 'cod' or 'online'
 
+    print('🛒🛒🛒 CHECKOUT_DIALOG_DEBUG: Opening checkout dialog');
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1010,8 +1099,17 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
           ),
           ElevatedButton.icon(
             onPressed: () {
+              print('🚨🚨🚨 CHECKOUT_DEBUG: Checkout button pressed!');
               if (_formKey.currentState!.validate()) {
+                print('🚨🚨🚨 CHECKOUT_DEBUG: Form validation passed!');
                 // Process the order
+                final cartItems = ref.read(cartProvider);
+                final totalAmount = ref.read(cartProvider.notifier).totalAmount;
+
+                print(
+                    '🚨🚨🚨 CHECKOUT_DEBUG: Cart items at checkout: ${cartItems.length}');
+                print('🚨🚨🚨 CHECKOUT_DEBUG: Total amount: ₹$totalAmount');
+
                 final orderData = {
                   'name': _nameController.text.trim(),
                   'email': _emailController.text.trim(),
@@ -1020,12 +1118,16 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
                   'street': _streetController.text.trim(),
                   'pincode': _pincodeController.text.trim(),
                   'paymentMethod': _selectedPaymentMethod,
-                  'total': ref.read(cartProvider.notifier).totalAmount,
-                  'items': ref.read(cartProvider),
+                  'total': totalAmount,
+                  'items': cartItems,
                 };
 
+                print('🚨🚨🚨 CHECKOUT_DEBUG: OrderData created: $orderData');
                 Navigator.of(context).pop();
+                print('🚨🚨🚨 CHECKOUT_DEBUG: About to call _processOrder');
                 _processOrder(context, orderData);
+              } else {
+                print('🚨🚨🚨 CHECKOUT_DEBUG: Form validation FAILED!');
               }
             },
             icon: Icon(
@@ -1044,7 +1146,433 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
   }
 
   void _processOrder(BuildContext context, Map<String, dynamic> orderData) {
-    // Show order confirmation
+    print(
+        '🔥🔥🔥 PAYMENT_DEBUG: _processOrder called with paymentMethod: ${orderData['paymentMethod']}');
+    print('🔥🔥🔥 PAYMENT_DEBUG: Full orderData: $orderData');
+
+    if (orderData['paymentMethod'] == 'online') {
+      print('🔥🔥🔥 PAYMENT_DEBUG: Processing online payment via Razorpay');
+      _processRazorpayPayment(context, orderData);
+    } else {
+      print(
+          '🔥🔥🔥 PAYMENT_DEBUG: Processing Cash on Delivery - showing order confirmation directly');
+      // Cash on Delivery
+      _showOrderConfirmation(context, orderData, null);
+    }
+  }
+
+  void _processRazorpayPayment(
+      BuildContext context, Map<String, dynamic> orderData) {
+    print(
+        '🔥🔥🔥 PAYMENT_DEBUG: _processRazorpayPayment called with orderData: $orderData');
+
+    try {
+      // Dispose previous payment service if exists
+      _paymentService?.dispose();
+
+      // Create new payment service
+      _paymentService = PaymentService(context: context);
+
+      // Generate order ID for tracking
+      final orderId = 'NH${DateTime.now().millisecondsSinceEpoch}';
+
+      debugPrint('Starting Razorpay payment for order: $orderId');
+      debugPrint('Payment amount: ${orderData['total']}');
+      debugPrint('Customer: ${orderData['name']} (${orderData['email']})');
+
+      print('🔥🔥🔥 PAYMENT_DEBUG: Setting up payment callbacks');
+
+      // Setup payment callbacks
+      _paymentService!.onPaymentSuccess = (PaymentSuccessResponse response) {
+        print('🔥🔥🔥 PAYMENT_DEBUG: Payment success callback triggered');
+        print('🔥🔥🔥 PAYMENT_DEBUG: Payment ID: ${response.paymentId}');
+        print('🔥🔥🔥 PAYMENT_DEBUG: Order ID: ${response.orderId}');
+        print('🔥🔥🔥 PAYMENT_DEBUG: Signature: ${response.signature}');
+
+        // Hide any loading indicators
+        if (mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text('Payment successful! Order confirmed.'),
+                ],
+              ),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
+            ),
+          );
+
+          // Process order confirmation
+          _showOrderConfirmation(context, orderData, response);
+        }
+      };
+
+      _paymentService!.onPaymentFailure = (PaymentFailureResponse response) {
+        print('🔥🔥🔥 PAYMENT_DEBUG: Payment failure callback triggered');
+        print('🔥🔥🔥 PAYMENT_DEBUG: Error Code: ${response.code}');
+        print('🔥🔥🔥 PAYMENT_DEBUG: Error Message: ${response.message}');
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+
+          String errorMessage = 'Payment failed';
+          if (response.message != null) {
+            errorMessage = response.message!;
+          }
+
+          // Show user-friendly error messages
+          if (response.code == Razorpay.PAYMENT_CANCELLED) {
+            errorMessage = 'Payment was cancelled by user';
+          } else if (response.code == Razorpay.NETWORK_ERROR) {
+            errorMessage =
+                'Network error. Please check your internet connection.';
+          } else if (response.code == Razorpay.TLS_ERROR) {
+            errorMessage = 'Security error. Please try again.';
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.error, color: Colors.white),
+                      SizedBox(width: 8),
+                      Text('Payment Failed'),
+                    ],
+                  ),
+                  SizedBox(height: 4),
+                  Text(errorMessage, style: TextStyle(fontSize: 12)),
+                ],
+              ),
+              backgroundColor: AppColors.error,
+              duration: Duration(seconds: 5),
+              action: SnackBarAction(
+                label: 'Retry',
+                textColor: Colors.white,
+                onPressed: () => _processRazorpayPayment(context, orderData),
+              ),
+            ),
+          );
+        }
+      };
+
+      _paymentService!.onExternalWallet = (ExternalWalletResponse response) {
+        print('🔥🔥🔥 PAYMENT_DEBUG: External wallet callback triggered');
+        print('🔥🔥🔥 PAYMENT_DEBUG: Wallet: ${response.walletName}');
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.account_balance_wallet, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text('Opening ${response.walletName}...'),
+                ],
+              ),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      };
+
+      print('🔥🔥🔥 PAYMENT_DEBUG: Showing loading indicator');
+
+      // Show improved loading indicator
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Initializing secure payment...'),
+                    Text('Amount: ₹${orderData['total']}',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white.withOpacity(0.8))),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          duration: Duration(seconds: 10),
+          backgroundColor: AppColors.primary,
+        ),
+      );
+
+      print(
+          '🔥🔥🔥 PAYMENT_DEBUG: About to start payment with enhanced validation');
+
+      // Validate order data before proceeding
+      if (orderData['total'] == null || orderData['total'] <= 0) {
+        throw Exception('Invalid payment amount');
+      }
+
+      if (orderData['name'] == null || orderData['name'].toString().isEmpty) {
+        throw Exception('Customer name is required');
+      }
+
+      if (orderData['email'] == null || orderData['email'].toString().isEmpty) {
+        throw Exception('Customer email is required');
+      }
+
+      if (orderData['phone'] == null || orderData['phone'].toString().isEmpty) {
+        throw Exception('Customer phone is required');
+      }
+
+      // Start payment with enhanced parameters
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (mounted && _paymentService != null) {
+          print('🔥🔥🔥 PAYMENT_DEBUG: Executing payment with validated data');
+          _paymentService!.startPayment(
+            amount: orderData['total'].toDouble(),
+            orderId: orderId,
+            customerName: orderData['name'].toString(),
+            customerEmail: orderData['email'].toString(),
+            customerPhone: orderData['phone'].toString(),
+            description:
+                'Nabha Healthcare - Medicine Purchase (₹${orderData['total']})',
+            notes: {
+              'order_type': 'pharmacy',
+              'customer_name': orderData['name'].toString(),
+              'customer_address': orderData['address'].toString(),
+              'pincode': orderData['pincode'].toString(),
+              'items_count': orderData['items'].length.toString(),
+              'total_amount': orderData['total'].toString(),
+              'payment_timestamp': DateTime.now().toIso8601String(),
+            },
+          );
+          print('🔥🔥🔥 PAYMENT_DEBUG: Payment initiation completed');
+        } else {
+          print(
+              '🔥🔥🔥 PAYMENT_DEBUG: Payment cancelled - widget unmounted or service null');
+        }
+      });
+
+      print('🔥🔥🔥 PAYMENT_DEBUG: _processRazorpayPayment method completing');
+    } catch (e, stackTrace) {
+      print('🔥🔥🔥 PAYMENT_DEBUG: Exception in _processRazorpayPayment: $e');
+      print('🔥🔥🔥 PAYMENT_DEBUG: Stack trace: $stackTrace');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.error, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text('Payment Initialization Failed'),
+                  ],
+                ),
+                SizedBox(height: 4),
+                Text(e.toString(), style: TextStyle(fontSize: 12)),
+                SizedBox(height: 8),
+                Text(
+                    'Please try again or contact support if the issue persists.',
+                    style: TextStyle(
+                        fontSize: 11, color: Colors.white.withOpacity(0.8))),
+              ],
+            ),
+            backgroundColor: AppColors.error,
+            duration: Duration(seconds: 6),
+            action: SnackBarAction(
+              label: 'Retry',
+              textColor: Colors.white,
+              onPressed: () => _processRazorpayPayment(context, orderData),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  void _showOrderConfirmation(
+      BuildContext context,
+      Map<String, dynamic> orderData,
+      PaymentSuccessResponse? paymentResponse) async {
+    print('🛒 ORDER_SAVE_DEBUG: _showOrderConfirmation called');
+    print('🛒 ORDER_SAVE_DEBUG: orderData = $orderData');
+    print('🛒 ORDER_SAVE_DEBUG: paymentResponse = $paymentResponse');
+
+    final orderId = paymentResponse?.orderId ??
+        'order_${DateTime.now().millisecondsSinceEpoch}';
+    print('🛒 ORDER_SAVE_DEBUG: Generated orderId = $orderId');
+
+    // Save order to local storage
+    try {
+      final orderStorageService = OrderStorageService();
+      final currentUser = ref.read(userProvider);
+
+      print('🛒 ORDER_SAVE_DEBUG: currentUser = ${currentUser?.id}');
+
+      if (currentUser != null) {
+        // Convert cart items to order items
+        final cartItems = ref.read(cartProvider);
+        print('🛒 ORDER_SAVE_DEBUG: cartItems count = ${cartItems.length}');
+
+        final orderItems = cartItems
+            .map((cartItem) => OrderItem(
+                  medicineId: cartItem.medicine.id.toString(),
+                  name: cartItem.medicine.name,
+                  price: cartItem.medicine.price,
+                  quantity: cartItem.quantity,
+                  dosage:
+                      cartItem.medicine.type, // Using type as dosage for now
+                  manufacturer: cartItem.medicine.pharmacy,
+                ))
+            .toList();
+
+        print(
+            '🛒 ORDER_SAVE_DEBUG: orderItems created, count = ${orderItems.length}');
+
+        // Create customer info
+        final customerInfo = OrderCustomerInfo(
+          name: orderData['name'],
+          email: orderData['email'],
+          phone: orderData['phone'],
+          address: orderData['address'],
+          street: orderData['street'],
+          pincode: orderData['pincode'],
+        );
+
+        // Create payment info
+        final paymentInfo = OrderPaymentInfo(
+          paymentMethod: orderData['paymentMethod'] == 'cod'
+              ? PaymentMethod.cod
+              : PaymentMethod.online,
+          paymentStatus: paymentResponse != null
+              ? PaymentStatus.completed
+              : PaymentStatus.pending,
+          paymentId: paymentResponse?.paymentId,
+          transactionId: paymentResponse?.paymentId,
+          paymentDate: paymentResponse != null ? DateTime.now() : null,
+          amountPaid: orderData['total'].toDouble(),
+        );
+
+        // Create initial status history
+        final statusHistory = <OrderStatusUpdate>[
+          OrderStatusUpdate(
+            status: OrderStatus.pending,
+            timestamp: DateTime.now(),
+            message: 'Order placed successfully',
+          ),
+          if (paymentResponse != null)
+            OrderStatusUpdate(
+              status: OrderStatus.confirmed,
+              timestamp: DateTime.now(),
+              message: 'Payment confirmed and order processing started',
+            ),
+        ];
+
+        print('🛒 ORDER_SAVE_DEBUG: Creating order object...');
+
+        // Create the order
+        final order = PharmacyOrder(
+          orderId: orderId,
+          userId: currentUser.id,
+          items: orderItems,
+          customerInfo: customerInfo,
+          paymentInfo: paymentInfo,
+          status: paymentResponse != null
+              ? OrderStatus.confirmed
+              : OrderStatus.pending,
+          orderDate: DateTime.now(),
+          estimatedDelivery: DateTime.now().add(const Duration(days: 3)),
+          totalAmount: orderData['total'].toDouble(),
+          deliveryFee: 0.0,
+          statusHistory: statusHistory,
+        );
+
+        print('🛒 ORDER_SAVE_DEBUG: Order object created successfully');
+        print('🛒 ORDER_SAVE_DEBUG: Order ID = ${order.orderId}');
+        print('🛒 ORDER_SAVE_DEBUG: User ID = ${order.userId}');
+        print('🛒 ORDER_SAVE_DEBUG: Items count = ${order.items.length}');
+        print('🛒 ORDER_SAVE_DEBUG: Total amount = ${order.totalAmount}');
+
+        // Test JSON serialization
+        try {
+          final orderJson = order.toJson();
+          print('🛒 ORDER_SAVE_DEBUG: ✅ Order JSON serialization successful');
+          print(
+              '🛒 ORDER_SAVE_DEBUG: JSON preview: ${orderJson.toString().substring(0, 100)}...');
+        } catch (jsonError) {
+          print(
+              '🛒 ORDER_SAVE_DEBUG: ❌ Order JSON serialization failed: $jsonError');
+        }
+
+        // Save the order
+        print('🛒 ORDER_SAVE_DEBUG: About to save order...');
+        final saved = await orderStorageService.saveOrder(order);
+        print('🛒 ORDER_SAVE_DEBUG: Save operation completed, result = $saved');
+
+        // Immediate verification - check if order was actually saved
+        try {
+          final allOrdersAfterSave = await orderStorageService.getAllOrders();
+          print(
+              '🛒 ORDER_SAVE_DEBUG: 🔍 Total orders after save: ${allOrdersAfterSave.length}');
+
+          final userOrdersAfterSave =
+              await orderStorageService.getOrdersForUser(currentUser.id);
+          print(
+              '🛒 ORDER_SAVE_DEBUG: 🔍 User orders after save: ${userOrdersAfterSave.length}');
+
+          final savedOrder =
+              await orderStorageService.getOrderById(order.orderId);
+          if (savedOrder != null) {
+            print(
+                '🛒 ORDER_SAVE_DEBUG: ✅ Order verification successful - order found by ID');
+          } else {
+            print(
+                '🛒 ORDER_SAVE_DEBUG: ❌ Order verification failed - order not found by ID');
+          }
+        } catch (verifyError) {
+          print(
+              '🛒 ORDER_SAVE_DEBUG: ❌ Order verification error: $verifyError');
+        }
+
+        if (saved) {
+          print('✅ Order saved successfully with ID: ${order.orderId}');
+          print('👤 User ID: ${currentUser.id}');
+          print('📦 Items count: ${order.items.length}');
+          print('💰 Total amount: ₹${order.totalAmount}');
+        } else {
+          print('❌ Failed to save order');
+        }
+      } else {
+        print('🛒 ORDER_SAVE_DEBUG: ❌ currentUser is null!');
+      }
+    } catch (e) {
+      print('🛒 ORDER_SAVE_DEBUG: ❌ Exception in order saving: $e');
+      print('🛒 ORDER_SAVE_DEBUG: ❌ Stack trace: ${StackTrace.current}');
+    }
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1081,11 +1609,24 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
                     children: [
                       const Text('Order ID:'),
                       Text(
-                        '#${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}',
+                        '#${orderId.substring(orderId.length > 10 ? orderId.length - 10 : 0)}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
+                  if (paymentResponse != null) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Payment ID:'),
+                        Text(
+                          paymentResponse.paymentId ?? '',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ],
                   const SizedBox(height: 4),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1108,8 +1649,13 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
                       Text(
                         orderData['paymentMethod'] == 'cod'
                             ? 'Cash on Delivery'
-                            : 'Online Payment',
-                        style: const TextStyle(fontWeight: FontWeight.w500),
+                            : 'Online Payment ✓',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: orderData['paymentMethod'] == 'cod'
+                              ? AppColors.grey700
+                              : AppColors.success,
+                        ),
                       ),
                     ],
                   ),
@@ -1124,6 +1670,14 @@ class _PharmacyPageState extends ConsumerState<PharmacyPage> {
           ],
         ),
         actions: [
+          OutlinedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // Navigate to order history
+              Navigator.pushNamed(context, AppRoutes.orderHistory);
+            },
+            child: const Text('View Orders'),
+          ),
           ElevatedButton(
             onPressed: () {
               ref.read(cartProvider.notifier).clearCart();

@@ -6,7 +6,7 @@ import 'dart:convert';
 import '../../../../core/theme/app_theme.dart';
 
 // API Configuration
-const String API_KEY = "AIzaSyBEoyP49AjxnE6pTLhEivfNAylcGDaH_04";
+const String API_KEY = "AIzaSyCAzGYeMcfLMCp1ghvQWBX2xdbLhbJS1Go";
 const String GEMINI_API_URL =
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
 
