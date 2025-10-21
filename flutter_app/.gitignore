@@ -1,3 +1,87 @@
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+
+# Generated plugin registrant
+.generated/
+
+# IntelliJ related
+*.iml
+.idea/
+
+# VS Code related
+.vscode/
+
+# iOS
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/ephemeral/
+ios/Pods/
+ios/Runner.xcworkspace/
+
+# Android
+**/android/**/local.properties
+**/android/**/app/*.keystore
+**/android/**/app/debug.keystore
+**/android/**/.gradle
+**/android/**/.idea
+**/android/**/build
+
+# Keystore
+/*.jks
+/*.keystore
+
+# Mac
+*.DS_Store
+
+# Logs
+*.log
+
+# Firebase & google-services
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
+# Sensitive files
+.env
+.env.*
+
+# Obfuscation/Mapping
+mapping.txt
+
+# Flutter build folder
+build/
+
+# Flutter generated files
+.flutter-plugins
+.packages
+.flutter-plugins-dependencies
+
+# Misc
+*.lock
+
+# Coverage
+coverage/
+
+# Local generated files
+generated_plugin_registrant.dart
+
+# Temporary files
+*.tmp
+
+# JetBrains
+*.ipr
+*.iws
+
+# Others
+pubspec.lock
+
+# Uncomment if you want to ignore the pubspec.lock
+# pubspec.lock
 # Miscellaneous
 *.class
 *.log
