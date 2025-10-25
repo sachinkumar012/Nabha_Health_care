@@ -26,3 +26,15 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+allprojects {
+    afterEvaluate {
+        if (it.hasProperty("android")) {
+            val android = it.extensions.getByName("android") as com.android.build.gradle.BaseExtension
+            android.apply {
+                val kotlinVersion = "1.9.10"
+                dependencies.add("implementation", "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion")
+            }
+        }
+    }
+}
