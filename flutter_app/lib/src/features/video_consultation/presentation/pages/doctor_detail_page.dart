@@ -17,7 +17,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
   final VideoConsultationService _service = VideoConsultationService();
   final TextEditingController _symptomsController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
-  
+
   DateTime _selectedDate = DateTime.now().add(Duration(days: 1));
   TimeSlot? _selectedSlot;
   bool _isBooking = false;
@@ -119,7 +119,8 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                                 lang,
                                 style: GoogleFonts.poppins(fontSize: 12),
                               ),
-                              backgroundColor: Color(0xFF1E3A8A).withOpacity(0.1),
+                              backgroundColor:
+                                  Color(0xFF1E3A8A).withOpacity(0.1),
                             ))
                         .toList(),
                   ),
@@ -134,7 +135,8 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                       scrollDirection: Axis.horizontal,
                       itemCount: 7,
                       itemBuilder: (context, index) {
-                        final date = DateTime.now().add(Duration(days: index + 1));
+                        final date =
+                            DateTime.now().add(Duration(days: index + 1));
                         final isSelected = _selectedDate.day == date.day &&
                             _selectedDate.month == date.month;
                         return _buildDateCard(date, isSelected);
@@ -163,7 +165,8 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Color(0xFF1E3A8A), width: 2),
+                        borderSide:
+                            BorderSide(color: Color(0xFF1E3A8A), width: 2),
                       ),
                     ),
                   ),
@@ -189,7 +192,8 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Color(0xFF1E3A8A), width: 2),
+                        borderSide:
+                            BorderSide(color: Color(0xFF1E3A8A), width: 2),
                       ),
                     ),
                   ),
@@ -276,14 +280,17 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
   Widget _buildStatsRow() {
     return Row(
       children: [
-        Expanded(child: _buildStatCard('Rating', '${widget.doctor.rating} ⭐', Colors.amber)),
-        SizedBox(width: 12),
         Expanded(
-            child: _buildStatCard('Experience', '${widget.doctor.experience} yrs', Colors.blue)),
+            child: _buildStatCard(
+                'Rating', '${widget.doctor.rating} ⭐', Colors.amber)),
         SizedBox(width: 12),
         Expanded(
             child: _buildStatCard(
-                'Patients', '${widget.doctor.totalConsultations}+', Colors.green)),
+                'Experience', '${widget.doctor.experience} yrs', Colors.blue)),
+        SizedBox(width: 12),
+        Expanded(
+            child: _buildStatCard('Patients',
+                '${widget.doctor.totalConsultations}+', Colors.green)),
       ],
     );
   }
@@ -387,7 +394,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
       children: widget.doctor.availableSlots.map((slot) {
         final isSelected = _selectedSlot?.id == slot.id;
         final timeStr = DateFormat('hh:mm a').format(slot.startTime);
-        
+
         return GestureDetector(
           onTap: slot.isBooked
               ? null
@@ -463,7 +470,9 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
         doctorId: widget.doctor.id,
         scheduledTime: scheduledTime,
         symptoms: _symptomsController.text.trim(),
-        notes: _notesController.text.trim().isNotEmpty ? _notesController.text.trim() : null,
+        notes: _notesController.text.trim().isNotEmpty
+            ? _notesController.text.trim()
+            : null,
       );
 
       setState(() => _isBooking = false);
@@ -473,7 +482,8 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Column(
             children: [
               Container(

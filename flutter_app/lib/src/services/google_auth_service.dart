@@ -17,7 +17,7 @@ class GoogleAuthService {
       print('🔐 Starting Direct Google Sign-In...');
 
       // Sign out first to ensure clean sign-in
-      try{
+      try {
         await _googleSignIn.signOut();
       } catch (signOutError) {
         print('🔄 Sign out skipped: $signOutError');

@@ -20,7 +20,7 @@ class VideoCallPage extends StatefulWidget {
 
 class _VideoCallPageState extends State<VideoCallPage> {
   final VideoConsultationService _service = VideoConsultationService();
-  
+
   bool _isMuted = false;
   bool _isVideoOff = false;
   bool _isSpeakerOn = true;
@@ -220,7 +220,11 @@ class _VideoCallPageState extends State<VideoCallPage> {
 
   Widget _buildTopBar() {
     return Container(
-      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 10, left: 20, right: 20, bottom: 20),
+      padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top + 10,
+          left: 20,
+          right: 20,
+          bottom: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -413,7 +417,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
   Future<void> _endCall() async {
     try {
       await _service.endVideoCall(widget.consultation.id);
-      
+
       // Show feedback dialog
       _showFeedbackDialog();
     } catch (e) {
@@ -426,13 +430,14 @@ class _VideoCallPageState extends State<VideoCallPage> {
 
   void _showFeedbackDialog() {
     int rating = 0;
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text(
             'Rate Your Consultation',
             style: GoogleFonts.poppins(fontWeight: FontWeight.w600),

@@ -15,7 +15,7 @@ class CreateAbhaScreen extends ConsumerStatefulWidget {
 class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
   final AbhaService _abhaService = AbhaService();
   final PageController _pageController = PageController();
-  
+
   // Step controllers
   final TextEditingController _aadhaarController = TextEditingController();
   final TextEditingController _aadhaarOtpController = TextEditingController();
@@ -24,13 +24,13 @@ class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
   final TextEditingController _abhaAddressController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  
+
   int _currentStep = 0;
   bool _isLoading = false;
   String? _errorMessage;
   String? _txnId;
   List<String> _suggestedAddresses = [];
-  
+
   final List<String> _steps = [
     'Aadhaar',
     'Verify OTP',
@@ -82,7 +82,7 @@ class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
 
   Future<void> _generateAadhaarOtp() async {
     final aadhaar = _aadhaarController.text.trim();
-    
+
     if (!_abhaService.isValidAadhaar(aadhaar)) {
       setState(() {
         _errorMessage = 'Please enter a valid 12-digit Aadhaar number';
@@ -111,7 +111,7 @@ class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
 
   Future<void> _verifyAadhaarOtp() async {
     final otp = _aadhaarOtpController.text.trim();
-    
+
     if (otp.length != 6) {
       setState(() {
         _errorMessage = 'Please enter a valid 6-digit OTP';
@@ -140,7 +140,7 @@ class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
 
   Future<void> _generateMobileOtp() async {
     final mobile = _mobileController.text.trim();
-    
+
     if (mobile.length != 10) {
       setState(() {
         _errorMessage = 'Please enter a valid 10-digit mobile number';
@@ -169,7 +169,7 @@ class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
 
   Future<void> _verifyMobileOtp() async {
     final otp = _mobileOtpController.text.trim();
-    
+
     if (otp.length != 6) {
       setState(() {
         _errorMessage = 'Please enter a valid 6-digit OTP';
@@ -184,13 +184,13 @@ class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
 
     try {
       _txnId = await _abhaService.verifyMobileOtp(otp, _txnId!);
-      
+
       // Get suggested ABHA addresses
       final suggestions = await _abhaService.getSuggestedAbhaAddresses(_txnId!);
       setState(() {
         _suggestedAddresses = suggestions;
       });
-      
+
       _nextStep();
     } catch (e) {
       setState(() {
@@ -205,10 +205,11 @@ class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
 
   Future<void> _createAbhaId() async {
     final abhaAddress = _abhaAddressController.text.trim();
-    
+
     if (!_abhaService.isValidAbhaAddress(abhaAddress)) {
       setState(() {
-        _errorMessage = 'ABHA address must be 4-18 characters (letters, numbers, dots, underscores)';
+        _errorMessage =
+            'ABHA address must be 4-18 characters (letters, numbers, dots, underscores)';
       });
       return;
     }
@@ -220,11 +221,13 @@ class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
 
     try {
       // Check availability
-      final isAvailable = await _abhaService.checkAbhaAddressAvailability(abhaAddress);
-      
+      final isAvailable =
+          await _abhaService.checkAbhaAddressAvailability(abhaAddress);
+
       if (!isAvailable) {
         setState(() {
-          _errorMessage = 'This ABHA address is already taken. Please choose another.';
+          _errorMessage =
+              'This ABHA address is already taken. Please choose another.';
           _isLoading = false;
         });
         return;
@@ -234,8 +237,12 @@ class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
       final abhaCard = await _abhaService.createAbhaId(
         txnId: _txnId!,
         abhaAddress: abhaAddress,
-        email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
-        password: _passwordController.text.trim().isEmpty ? null : _passwordController.text.trim(),
+        email: _emailController.text.trim().isEmpty
+            ? null
+            : _emailController.text.trim(),
+        password: _passwordController.text.trim().isEmpty
+            ? null
+            : _passwordController.text.trim(),
       );
 
       // Navigate to success screen
@@ -288,7 +295,7 @@ class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
         children: [
           // Progress Indicator
           _buildProgressIndicator(),
-          
+
           // Content
           Expanded(
             child: PageView(
@@ -316,7 +323,7 @@ class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
         children: List.generate(_steps.length, (index) {
           final isActive = index == _currentStep;
           final isCompleted = index < _currentStep;
-          
+
           return Expanded(
             child: Row(
               children: [
@@ -334,11 +341,14 @@ class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
                         ),
                         child: Center(
                           child: isCompleted
-                              ? const Icon(Icons.check, color: Colors.white, size: 18)
+                              ? const Icon(Icons.check,
+                                  color: Colors.white, size: 18)
                               : Text(
                                   '${index + 1}',
                                   style: TextStyle(
-                                    color: isActive ? Colors.white : Colors.grey[600],
+                                    color: isActive
+                                        ? Colors.white
+                                        : Colors.grey[600],
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
                                   ),
@@ -350,8 +360,11 @@ class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
                         _steps[index],
                         style: TextStyle(
                           fontSize: 10,
-                          color: isActive ? const Color(0xFF00BCD4) : Colors.grey[600],
-                          fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                          color: isActive
+                              ? const Color(0xFF00BCD4)
+                              : Colors.grey[600],
+                          fontWeight:
+                              isActive ? FontWeight.w600 : FontWeight.normal,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -362,7 +375,9 @@ class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
                   Container(
                     width: 8,
                     height: 2,
-                    color: isCompleted ? const Color(0xFF00BCD4) : Colors.grey[300],
+                    color: isCompleted
+                        ? const Color(0xFF00BCD4)
+                        : Colors.grey[300],
                   ),
               ],
             ),
@@ -658,7 +673,8 @@ class _CreateAbhaScreenState extends ConsumerState<CreateAbhaScreen> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              helperText: '4-18 characters (letters, numbers, dots, underscores)',
+              helperText:
+                  '4-18 characters (letters, numbers, dots, underscores)',
             ),
           ),
           const SizedBox(height: 16),

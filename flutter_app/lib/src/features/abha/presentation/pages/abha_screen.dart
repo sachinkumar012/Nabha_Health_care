@@ -92,9 +92,9 @@ class AbhaScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Benefits Section
             const Text(
               'Benefits of ABHA',
@@ -104,14 +104,14 @@ class AbhaScreen extends StatelessWidget {
                 color: Colors.black87,
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Benefits List
             ...abhaBenefits.map((benefit) => _buildBenefitCard(benefit)),
-            
+
             const SizedBox(height: 32),
-            
+
             // Create ABHA Button
             ElevatedButton(
               onPressed: () {
@@ -140,9 +140,9 @@ class AbhaScreen extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             // Link Existing ABHA Button
             OutlinedButton(
               onPressed: () {
@@ -173,9 +173,9 @@ class AbhaScreen extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Info Text
             Container(
               padding: const EdgeInsets.all(16),
@@ -293,7 +293,7 @@ class AbhaScreen extends StatelessWidget {
       default:
         iconData = Icons.check_circle_outline;
     }
-    
+
     return Icon(
       iconData,
       color: const Color(0xFF00BCD4),

@@ -14,7 +14,7 @@ class _LinkAbhaScreenState extends ConsumerState<LinkAbhaScreen> {
   final AbhaService _abhaService = AbhaService();
   final TextEditingController _abhaAddressController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  
+
   bool _isLoading = false;
   String? _errorMessage;
   bool _obscurePassword = true;
@@ -29,14 +29,14 @@ class _LinkAbhaScreenState extends ConsumerState<LinkAbhaScreen> {
   Future<void> _linkAbha() async {
     final abhaAddress = _abhaAddressController.text.trim();
     final password = _passwordController.text.trim();
-    
+
     if (abhaAddress.isEmpty) {
       setState(() {
         _errorMessage = 'Please enter your ABHA address';
       });
       return;
     }
-    
+
     if (password.isEmpty) {
       setState(() {
         _errorMessage = 'Please enter your password';
@@ -132,9 +132,9 @@ class _LinkAbhaScreenState extends ConsumerState<LinkAbhaScreen> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Title
             const Text(
               'Link Your ABHA ID',
@@ -144,9 +144,9 @@ class _LinkAbhaScreenState extends ConsumerState<LinkAbhaScreen> {
                 color: Colors.black87,
               ),
             ),
-            
+
             const SizedBox(height: 8),
-            
+
             Text(
               'Enter your ABHA address and password',
               style: TextStyle(
@@ -155,9 +155,9 @@ class _LinkAbhaScreenState extends ConsumerState<LinkAbhaScreen> {
                 height: 1.4,
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Error Message
             if (_errorMessage != null)
               Container(
@@ -184,7 +184,7 @@ class _LinkAbhaScreenState extends ConsumerState<LinkAbhaScreen> {
                   ],
                 ),
               ),
-            
+
             // ABHA Address Input
             TextField(
               controller: _abhaAddressController,
@@ -199,9 +199,9 @@ class _LinkAbhaScreenState extends ConsumerState<LinkAbhaScreen> {
                 fillColor: Colors.white,
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Password Input
             TextField(
               controller: _passwordController,
@@ -227,9 +227,9 @@ class _LinkAbhaScreenState extends ConsumerState<LinkAbhaScreen> {
                 fillColor: Colors.white,
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Link Button
             SizedBox(
               width: double.infinity,
@@ -249,7 +249,8 @@ class _LinkAbhaScreenState extends ConsumerState<LinkAbhaScreen> {
                         width: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
                     : const Text(
@@ -262,9 +263,9 @@ class _LinkAbhaScreenState extends ConsumerState<LinkAbhaScreen> {
                       ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Forgot Password
             Center(
               child: TextButton(
@@ -272,7 +273,8 @@ class _LinkAbhaScreenState extends ConsumerState<LinkAbhaScreen> {
                   // TODO: Implement forgot password flow
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Please visit ABHA website to reset your password'),
+                      content: Text(
+                          'Please visit ABHA website to reset your password'),
                       duration: Duration(seconds: 3),
                     ),
                   );
@@ -286,9 +288,9 @@ class _LinkAbhaScreenState extends ConsumerState<LinkAbhaScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Divider
             Row(
               children: [
@@ -306,9 +308,9 @@ class _LinkAbhaScreenState extends ConsumerState<LinkAbhaScreen> {
                 Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
               ],
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Alternative Method
             OutlinedButton.icon(
               onPressed: () {
@@ -334,9 +336,9 @@ class _LinkAbhaScreenState extends ConsumerState<LinkAbhaScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Help Text
             Container(
               padding: const EdgeInsets.all(16),

@@ -227,7 +227,8 @@ class AppDrawer extends ConsumerWidget {
                     icon: Icons.video_call,
                     title: 'Video Consultation',
                     color: const Color(0xFF9C27B0),
-                    onTap: () => _navigateToPage(context, '/video-consultation'),
+                    onTap: () =>
+                        _navigateToPage(context, '/video-consultation'),
                   ),
                   _buildMenuItem(
                     icon: Icons.psychology,
@@ -321,7 +322,7 @@ class AppDrawer extends ConsumerWidget {
 
   void _navigateToPage(BuildContext context, String route) {
     Navigator.pop(context); // Close drawer c
-    
+
     print('🔍 DEBUG: Navigating to route: $route');
 
     // Check if route exists in app routes

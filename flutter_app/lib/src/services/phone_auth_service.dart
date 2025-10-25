@@ -22,7 +22,7 @@ class PhoneAuthService {
       await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         timeout: const Duration(seconds: 60),
-        
+
         // Called when verification is done automatically (Android auto-retrieval)
         verificationCompleted: (PhoneAuthCredential credential) async {
           if (kDebugMode) {
@@ -35,15 +35,15 @@ class PhoneAuthService {
             await signInWithCredential(credential);
           }
         },
-        
+
         // Called when verification fails
         verificationFailed: (FirebaseAuthException e) {
           if (kDebugMode) {
             print('❌ Phone verification failed: ${e.code} - ${e.message}');
           }
-          
+
           String errorMessage = 'Verification failed. Please try again.';
-          
+
           switch (e.code) {
             case 'invalid-phone-number':
               errorMessage = 'The phone number format is invalid.';
@@ -60,10 +60,10 @@ class PhoneAuthService {
             default:
               errorMessage = e.message ?? errorMessage;
           }
-          
+
           onVerificationFailed(errorMessage);
         },
-        
+
         // Called when OTP is sent successfully
         codeSent: (String verificationId, int? resendToken) {
           if (kDebugMode) {
@@ -73,7 +73,7 @@ class PhoneAuthService {
           _resendToken = resendToken;
           onCodeSent(verificationId);
         },
-        
+
         // Called when auto-retrieval times out
         codeAutoRetrievalTimeout: (String verificationId) {
           if (kDebugMode) {
@@ -84,7 +84,7 @@ class PhoneAuthService {
             onCodeAutoRetrievalTimeout(verificationId);
           }
         },
-        
+
         // Use resend token for subsequent requests
         forceResendingToken: _resendToken,
       );
@@ -106,13 +106,13 @@ class PhoneAuthService {
         verificationId: verificationId,
         smsCode: smsCode,
       );
-      
+
       return await signInWithCredential(credential);
     } on FirebaseAuthException catch (e) {
       if (kDebugMode) {
         print('❌ Sign-in failed: ${e.code} - ${e.message}');
       }
-      
+
       switch (e.code) {
         case 'invalid-verification-code':
           throw 'Invalid OTP. Please check and try again.';
@@ -146,20 +146,21 @@ class PhoneAuthService {
         print('⚠️ Type error during sign-in (likely Pigeon conflict): $e');
         print('⚠️ Checking if user is actually signed in...');
       }
-      
+
       // Wait a moment for Firebase to update
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       // Check if user is actually signed in despite the error
       final currentUser = _auth.currentUser;
       if (currentUser != null && currentUser.phoneNumber != null) {
         if (kDebugMode) {
-          print('✅ User is signed in despite type error: ${currentUser.phoneNumber}');
+          print(
+              '✅ User is signed in despite type error: ${currentUser.phoneNumber}');
         }
         // Return null but the user is authenticated
         return null;
       }
-      
+
       throw 'Authentication completed but verification failed. Please try logging in again.';
     } catch (e) {
       if (kDebugMode) {
@@ -190,7 +191,7 @@ class PhoneAuthService {
       if (kDebugMode) {
         print('❌ Link phone number failed: ${e.code} - ${e.message}');
       }
-      
+
       switch (e.code) {
         case 'provider-already-linked':
           throw 'This phone number is already linked to your account.';
@@ -239,12 +240,12 @@ class PhoneAuthService {
   String formatPhoneNumber(String phoneNumber, String countryCode) {
     // Remove any non-digit characters
     final cleaned = phoneNumber.replaceAll(RegExp(r'\D'), '');
-    
+
     // Add country code if not present
     if (!cleaned.startsWith(countryCode.replaceAll('+', ''))) {
       return '+$countryCode$cleaned';
     }
-    
+
     return '+$cleaned';
   }
 }

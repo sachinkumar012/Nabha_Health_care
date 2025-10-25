@@ -14,7 +14,8 @@ class AbhaCardDisplayScreen extends ConsumerStatefulWidget {
   }) : super(key: key);
 
   @override
-  ConsumerState<AbhaCardDisplayScreen> createState() => _AbhaCardDisplayScreenState();
+  ConsumerState<AbhaCardDisplayScreen> createState() =>
+      _AbhaCardDisplayScreenState();
 }
 
 class _AbhaCardDisplayScreenState extends ConsumerState<AbhaCardDisplayScreen> {
@@ -23,7 +24,7 @@ class _AbhaCardDisplayScreenState extends ConsumerState<AbhaCardDisplayScreen> {
   Future<void> _downloadCard() async {
     try {
       final path = await _abhaService.downloadAbhaCard(widget.abhaCard);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -72,7 +73,8 @@ class _AbhaCardDisplayScreenState extends ConsumerState<AbhaCardDisplayScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.white),
-          onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+          onPressed: () =>
+              Navigator.of(context).popUntil((route) => route.isFirst),
         ),
         actions: [
           IconButton(
@@ -100,9 +102,9 @@ class _AbhaCardDisplayScreenState extends ConsumerState<AbhaCardDisplayScreen> {
                 color: Colors.green[600],
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Success Message
             const Text(
               'ABHA ID Created Successfully!',
@@ -113,9 +115,9 @@ class _AbhaCardDisplayScreenState extends ConsumerState<AbhaCardDisplayScreen> {
               ),
               textAlign: TextAlign.center,
             ),
-            
+
             const SizedBox(height: 8),
-            
+
             Text(
               'Your digital health identity is ready',
               style: TextStyle(
@@ -124,9 +126,9 @@ class _AbhaCardDisplayScreenState extends ConsumerState<AbhaCardDisplayScreen> {
               ),
               textAlign: TextAlign.center,
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // ABHA Card
             Container(
               decoration: BoxDecoration(
@@ -188,9 +190,9 @@ class _AbhaCardDisplayScreenState extends ConsumerState<AbhaCardDisplayScreen> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Name
                   Text(
                     'Name',
@@ -210,9 +212,9 @@ class _AbhaCardDisplayScreenState extends ConsumerState<AbhaCardDisplayScreen> {
                       letterSpacing: 0.5,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // ABHA Number
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -253,9 +255,9 @@ class _AbhaCardDisplayScreenState extends ConsumerState<AbhaCardDisplayScreen> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // ABHA Address
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -295,9 +297,9 @@ class _AbhaCardDisplayScreenState extends ConsumerState<AbhaCardDisplayScreen> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Footer
                   Container(
                     padding: const EdgeInsets.all(12),
@@ -329,9 +331,9 @@ class _AbhaCardDisplayScreenState extends ConsumerState<AbhaCardDisplayScreen> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Details Card
             Container(
               padding: const EdgeInsets.all(20),
@@ -360,7 +362,8 @@ class _AbhaCardDisplayScreenState extends ConsumerState<AbhaCardDisplayScreen> {
                   const SizedBox(height: 16),
                   _buildDetailRow('Gender', widget.abhaCard.gender),
                   _buildDetailRow('Date of Birth', widget.abhaCard.dateOfBirth),
-                  _buildDetailRow('Mobile', '+91 ${widget.abhaCard.mobileNumber}'),
+                  _buildDetailRow(
+                      'Mobile', '+91 ${widget.abhaCard.mobileNumber}'),
                   if (widget.abhaCard.email != null)
                     _buildDetailRow('Email', widget.abhaCard.email!),
                   if (widget.abhaCard.stateName != null)
@@ -370,9 +373,9 @@ class _AbhaCardDisplayScreenState extends ConsumerState<AbhaCardDisplayScreen> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Action Buttons
             Row(
               children: [
@@ -419,9 +422,9 @@ class _AbhaCardDisplayScreenState extends ConsumerState<AbhaCardDisplayScreen> {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Done Button
             SizedBox(
               width: double.infinity,
@@ -429,7 +432,7 @@ class _AbhaCardDisplayScreenState extends ConsumerState<AbhaCardDisplayScreen> {
                 onPressed: () {
                   // Save to user profile and go back to home
                   Navigator.of(context).popUntil((route) => route.isFirst);
-                  
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('ABHA ID linked to your profile'),

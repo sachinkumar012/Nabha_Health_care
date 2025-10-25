@@ -9,7 +9,7 @@ class VideoConsultationService {
   // Set to false to use real MongoDB backend, true for demo mode
   // IMPORTANT: Set to false after setting up MongoDB backend
   static const bool demoMode = true;
-  
+
   final http.Client _client = http.Client();
 
   // Get current user ID from storage
@@ -64,17 +64,18 @@ class VideoConsultationService {
   }) async {
     if (demoMode) {
       await Future.delayed(Duration(seconds: 2));
-      final consultation = _createDemoConsultation(doctorId, scheduledTime, symptoms, notes);
-      
+      final consultation =
+          _createDemoConsultation(doctorId, scheduledTime, symptoms, notes);
+
       // Store in SharedPreferences for demo mode
       await _storeDemoConsultation(consultation);
-      
+
       return consultation;
     }
 
     try {
       final userId = await _getCurrentUserId();
-      
+
       final response = await _client.post(
         Uri.parse(ApiConfig.bookConsultation),
         headers: {'Content-Type': 'application/json'},
@@ -105,7 +106,7 @@ class VideoConsultationService {
       final prefs = await SharedPreferences.getInstance();
       final consultationsJson = prefs.getString('demo_consultations') ?? '[]';
       final List<dynamic> consultations = jsonDecode(consultationsJson);
-      
+
       consultations.add({
         'id': consultation.id,
         'patientId': consultation.patientId,
@@ -122,7 +123,7 @@ class VideoConsultationService {
         'notes': consultation.notes,
         'roomId': consultation.roomId,
       });
-      
+
       await prefs.setString('demo_consultations', jsonEncode(consultations));
       debugPrint('Demo consultation stored: ${consultation.id}');
     } catch (e) {
@@ -131,12 +132,13 @@ class VideoConsultationService {
   }
 
   // Get stored demo consultations
-  Future<List<VideoConsultation>> _getStoredDemoConsultations(String? status) async {
+  Future<List<VideoConsultation>> _getStoredDemoConsultations(
+      String? status) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final consultationsJson = prefs.getString('demo_consultations') ?? '[]';
       final List<dynamic> consultations = jsonDecode(consultationsJson);
-      
+
       List<VideoConsultation> result = consultations.map((json) {
         return VideoConsultation(
           id: json['id'],
@@ -155,15 +157,15 @@ class VideoConsultationService {
           roomId: json['roomId'],
         );
       }).toList();
-      
+
       // Filter by status if provided
       if (status != null) {
         result = result.where((c) => c.status == status).toList();
       }
-      
+
       // Sort by scheduled time
       result.sort((a, b) => b.scheduledTime.compareTo(a.scheduledTime));
-      
+
       debugPrint('Retrieved ${result.length} stored demo consultations');
       return result;
     } catch (e) {
@@ -173,14 +175,15 @@ class VideoConsultationService {
   }
 
   // Update stored consultation status (for demo mode cancel)
-  Future<void> _updateStoredConsultationStatus(String consultationId, String newStatus) async {
+  Future<void> _updateStoredConsultationStatus(
+      String consultationId, String newStatus) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final String? consultationsJson = prefs.getString('demo_consultations');
-      
+
       if (consultationsJson != null) {
         List<dynamic> consultations = jsonDecode(consultationsJson);
-        
+
         // Find and update the consultation
         for (var i = 0; i < consultations.length; i++) {
           if (consultations[i]['id'] == consultationId) {
@@ -188,7 +191,7 @@ class VideoConsultationService {
             break;
           }
         }
-        
+
         // Save updated list
         await prefs.setString('demo_consultations', jsonEncode(consultations));
         debugPrint('Updated consultation $consultationId status to $newStatus');
@@ -199,14 +202,15 @@ class VideoConsultationService {
   }
 
   // Update stored consultation time (for demo mode reschedule)
-  Future<void> _updateStoredConsultationTime(String consultationId, DateTime newDateTime) async {
+  Future<void> _updateStoredConsultationTime(
+      String consultationId, DateTime newDateTime) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final String? consultationsJson = prefs.getString('demo_consultations');
-      
+
       if (consultationsJson != null) {
         List<dynamic> consultations = jsonDecode(consultationsJson);
-        
+
         // Find and update the consultation
         for (var i = 0; i < consultations.length; i++) {
           if (consultations[i]['id'] == consultationId) {
@@ -214,7 +218,7 @@ class VideoConsultationService {
             break;
           }
         }
-        
+
         // Save updated list
         await prefs.setString('demo_consultations', jsonEncode(consultations));
         debugPrint('Updated consultation $consultationId time to $newDateTime');
@@ -299,7 +303,8 @@ class VideoConsultationService {
 
     try {
       final response = await _client.post(
-        Uri.parse('${ApiConfig.baseUrl}/api/video-consultations/$consultationId/end'),
+        Uri.parse(
+            '${ApiConfig.baseUrl}/api/video-consultations/$consultationId/end'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -339,7 +344,8 @@ class VideoConsultationService {
   }
 
   // Reschedule consultation
-  Future<void> rescheduleConsultation(String consultationId, DateTime newDateTime) async {
+  Future<void> rescheduleConsultation(
+      String consultationId, DateTime newDateTime) async {
     if (demoMode) {
       await Future.delayed(Duration(seconds: 1));
       // Update stored consultation time
@@ -380,7 +386,8 @@ class VideoConsultationService {
         totalConsultations: 1250,
         consultationFee: 800,
         languages: ['English', 'Hindi', 'Punjabi'],
-        about: 'Experienced cardiologist specializing in heart diseases and interventional cardiology.',
+        about:
+            'Experienced cardiologist specializing in heart diseases and interventional cardiology.',
         isAvailable: true,
         availableSlots: _generateTimeSlots(),
       ),
@@ -395,7 +402,8 @@ class VideoConsultationService {
         totalConsultations: 2100,
         consultationFee: 500,
         languages: ['English', 'Hindi'],
-        about: 'General physician with expertise in primary care and preventive medicine.',
+        about:
+            'General physician with expertise in primary care and preventive medicine.',
         isAvailable: true,
         availableSlots: _generateTimeSlots(),
       ),
@@ -410,7 +418,8 @@ class VideoConsultationService {
         totalConsultations: 980,
         consultationFee: 700,
         languages: ['English', 'Hindi', 'Gujarati'],
-        about: 'Skin specialist with focus on cosmetic dermatology and skin diseases.',
+        about:
+            'Skin specialist with focus on cosmetic dermatology and skin diseases.',
         isAvailable: true,
         availableSlots: _generateTimeSlots(),
       ),
@@ -425,7 +434,8 @@ class VideoConsultationService {
         totalConsultations: 1560,
         consultationFee: 600,
         languages: ['English', 'Hindi', 'Telugu'],
-        about: 'Pediatrician specializing in child healthcare and immunization.',
+        about:
+            'Pediatrician specializing in child healthcare and immunization.',
         isAvailable: true,
         availableSlots: _generateTimeSlots(),
       ),
@@ -440,7 +450,8 @@ class VideoConsultationService {
         totalConsultations: 875,
         consultationFee: 900,
         languages: ['English', 'Hindi'],
-        about: 'Orthopedic surgeon with expertise in joint replacement and sports injuries.',
+        about:
+            'Orthopedic surgeon with expertise in joint replacement and sports injuries.',
         isAvailable: true,
         availableSlots: _generateTimeSlots(),
       ),
@@ -458,9 +469,10 @@ class VideoConsultationService {
     final slots = <TimeSlot>[];
 
     for (int hour = 9; hour < 18; hour++) {
-      final startTime = DateTime(tomorrow.year, tomorrow.month, tomorrow.day, hour, 0);
+      final startTime =
+          DateTime(tomorrow.year, tomorrow.month, tomorrow.day, hour, 0);
       final endTime = startTime.add(Duration(minutes: 30));
-      
+
       slots.add(TimeSlot(
         id: 'slot_$hour',
         startTime: startTime,

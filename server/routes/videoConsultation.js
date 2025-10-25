@@ -1,7 +1,7 @@
 // Video Consultation Backend Routes for MongoDB
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { ObjectId } = require('mongodb');
+const { ObjectId } = require("mongodb");
 
 // Assuming you have a MongoDB connection set up
 let db;
@@ -12,50 +12,54 @@ function initDB(database) {
 }
 
 // Get all available doctors
-router.get('/doctors', async (req, res) => {
+router.get("/doctors", async (req, res) => {
   try {
     const { specialty } = req.query;
-    
-    const query = specialty ? { specialty, isAvailable: true } : { isAvailable: true };
-    
-    const doctors = await db.collection('doctors').find(query).toArray();
-    
+
+    const query = specialty
+      ? { specialty, isAvailable: true }
+      : { isAvailable: true };
+
+    const doctors = await db.collection("doctors").find(query).toArray();
+
     res.status(200).json({
       success: true,
-      doctors: doctors
+      doctors: doctors,
     });
   } catch (error) {
-    console.error('Error fetching doctors:', error);
+    console.error("Error fetching doctors:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch doctors',
-      error: error.message
+      message: "Failed to fetch doctors",
+      error: error.message,
     });
   }
 });
 
 // Book a video consultation
-router.post('/book', async (req, res) => {
+router.post("/book", async (req, res) => {
   try {
     const { userId, doctorId, scheduledTime, symptoms, notes } = req.body;
-    
+
     if (!userId || !doctorId || !scheduledTime) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required fields'
+        message: "Missing required fields",
       });
     }
-    
+
     // Get doctor details
-    const doctor = await db.collection('doctors').findOne({ _id: new ObjectId(doctorId) });
-    
+    const doctor = await db
+      .collection("doctors")
+      .findOne({ _id: new ObjectId(doctorId) });
+
     if (!doctor) {
       return res.status(404).json({
         success: false,
-        message: 'Doctor not found'
+        message: "Doctor not found",
       });
     }
-    
+
     // Create consultation
     const consultation = {
       userId: userId,
@@ -66,185 +70,188 @@ router.post('/book', async (req, res) => {
       scheduledTime: new Date(scheduledTime),
       symptoms: symptoms,
       notes: notes,
-      status: 'scheduled',
+      status: "scheduled",
       consultationFee: doctor.consultationFee,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
-    
-    const result = await db.collection('video_consultations').insertOne(consultation);
+
+    const result = await db
+      .collection("video_consultations")
+      .insertOne(consultation);
     consultation._id = result.insertedId;
     consultation.id = result.insertedId.toString();
-    
+
     res.status(201).json({
       success: true,
-      message: 'Consultation booked successfully',
-      consultation: consultation
+      message: "Consultation booked successfully",
+      consultation: consultation,
     });
   } catch (error) {
-    console.error('Error booking consultation:', error);
+    console.error("Error booking consultation:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to book consultation',
-      error: error.message
+      message: "Failed to book consultation",
+      error: error.message,
     });
   }
 });
 
 // Get user's consultations
-router.get('/my-consultations', async (req, res) => {
+router.get("/my-consultations", async (req, res) => {
   try {
     const { userId, status } = req.query;
-    
+
     if (!userId) {
       return res.status(400).json({
         success: false,
-        message: 'User ID is required'
+        message: "User ID is required",
       });
     }
-    
+
     const query = { userId: userId };
     if (status) {
       query.status = status;
     }
-    
-    const consultations = await db.collection('video_consultations')
+
+    const consultations = await db
+      .collection("video_consultations")
       .find(query)
       .sort({ scheduledTime: -1 })
       .toArray();
-    
+
     // Add id field for Flutter
-    consultations.forEach(consultation => {
+    consultations.forEach((consultation) => {
       consultation.id = consultation._id.toString();
     });
-    
+
     res.status(200).json({
       success: true,
-      consultations: consultations
+      consultations: consultations,
     });
   } catch (error) {
-    console.error('Error fetching consultations:', error);
+    console.error("Error fetching consultations:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch consultations',
-      error: error.message
+      message: "Failed to fetch consultations",
+      error: error.message,
     });
   }
 });
 
 // Cancel consultation
-router.post('/cancel/:consultationId', async (req, res) => {
+router.post("/cancel/:consultationId", async (req, res) => {
   try {
     const { consultationId } = req.params;
     const { reason } = req.body;
-    
-    const result = await db.collection('video_consultations').updateOne(
+
+    const result = await db.collection("video_consultations").updateOne(
       { _id: new ObjectId(consultationId) },
       {
         $set: {
-          status: 'cancelled',
+          status: "cancelled",
           cancellationReason: reason,
           cancelledAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       }
     );
-    
+
     if (result.matchedCount === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Consultation not found'
+        message: "Consultation not found",
       });
     }
-    
+
     res.status(200).json({
       success: true,
-      message: 'Consultation cancelled successfully'
+      message: "Consultation cancelled successfully",
     });
   } catch (error) {
-    console.error('Error cancelling consultation:', error);
+    console.error("Error cancelling consultation:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to cancel consultation',
-      error: error.message
+      message: "Failed to cancel consultation",
+      error: error.message,
     });
   }
 });
 
 // Reschedule consultation
-router.post('/reschedule/:consultationId', async (req, res) => {
+router.post("/reschedule/:consultationId", async (req, res) => {
   try {
     const { consultationId } = req.params;
     const { newDateTime } = req.body;
-    
+
     if (!newDateTime) {
       return res.status(400).json({
         success: false,
-        message: 'New date time is required'
+        message: "New date time is required",
       });
     }
-    
-    const result = await db.collection('video_consultations').updateOne(
+
+    const result = await db.collection("video_consultations").updateOne(
       { _id: new ObjectId(consultationId) },
       {
         $set: {
           scheduledTime: new Date(newDateTime),
           rescheduled: true,
           rescheduledAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       }
     );
-    
+
     if (result.matchedCount === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Consultation not found'
+        message: "Consultation not found",
       });
     }
-    
+
     res.status(200).json({
       success: true,
-      message: 'Consultation rescheduled successfully'
+      message: "Consultation rescheduled successfully",
     });
   } catch (error) {
-    console.error('Error rescheduling consultation:', error);
+    console.error("Error rescheduling consultation:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to reschedule consultation',
-      error: error.message
+      message: "Failed to reschedule consultation",
+      error: error.message,
     });
   }
 });
 
 // Join video call (get token/room details)
-router.post('/join/:consultationId', async (req, res) => {
+router.post("/join/:consultationId", async (req, res) => {
   try {
     const { consultationId } = req.params;
-    
-    const consultation = await db.collection('video_consultations').findOne({
-      _id: new ObjectId(consultationId)
+
+    const consultation = await db.collection("video_consultations").findOne({
+      _id: new ObjectId(consultationId),
     });
-    
+
     if (!consultation) {
       return res.status(404).json({
         success: false,
-        message: 'Consultation not found'
+        message: "Consultation not found",
       });
     }
-    
+
     // Update consultation status to in-progress
-    await db.collection('video_consultations').updateOne(
+    await db.collection("video_consultations").updateOne(
       { _id: new ObjectId(consultationId) },
       {
         $set: {
-          status: 'in-progress',
+          status: "in-progress",
           startedAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       }
     );
-    
+
     // Generate Agora token or room details
     // For now, returning basic call data
     res.status(200).json({
@@ -252,18 +259,18 @@ router.post('/join/:consultationId', async (req, res) => {
       callData: {
         roomId: consultationId,
         channelName: `consultation_${consultationId}`,
-        token: 'demo_token_' + consultationId,
-        appId: 'your_agora_app_id'
-      }
+        token: "demo_token_" + consultationId,
+        appId: "your_agora_app_id",
+      },
     });
   } catch (error) {
-    console.error('Error joining call:', error);
+    console.error("Error joining call:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to join call',
-      error: error.message
+      message: "Failed to join call",
+      error: error.message,
     });
   }
 });
 
-module.exports = {router, initDB};
+module.exports = { router, initDB };

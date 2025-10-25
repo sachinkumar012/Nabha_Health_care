@@ -387,7 +387,8 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileCompletion(BuildContext context, WidgetRef ref, User user) {
+  Widget _buildProfileCompletion(
+      BuildContext context, WidgetRef ref, User user) {
     final completionPercentage = user.profileCompletionPercentage;
 
     return Container(

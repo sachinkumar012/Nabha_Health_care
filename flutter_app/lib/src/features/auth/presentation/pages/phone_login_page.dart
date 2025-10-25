@@ -19,7 +19,7 @@ class _PhoneLoginPageState extends ConsumerState<PhoneLoginPage> {
   final _phoneAuthService = PhoneAuthService();
   final _phoneController = TextEditingController(text: '+91');
   final _otpController = TextEditingController();
-  
+
   String? _verificationId;
   bool _codeSent = false;
   bool _isLoading = false;
@@ -33,7 +33,7 @@ class _PhoneLoginPageState extends ConsumerState<PhoneLoginPage> {
     {'code': '+44', 'name': 'UK', 'flag': '🇬🇧'},
     {'code': '+971', 'name': 'UAE', 'flag': '🇦🇪'},
   ];
-  
+
   String _selectedCountryCode = '+91';
 
   @override
@@ -69,15 +69,16 @@ class _PhoneLoginPageState extends ConsumerState<PhoneLoginPage> {
 
   Future<void> _sendOTP() async {
     final phone = _phoneController.text.trim();
-    
+
     if (phone.length < 10) {
       _showSnack('Please enter a valid phone number', isError: true);
       return;
     }
 
     // Format phone number with country code
-    final fullPhone = _phoneAuthService.formatPhoneNumber(phone, _selectedCountryCode);
-    
+    final fullPhone =
+        _phoneAuthService.formatPhoneNumber(phone, _selectedCountryCode);
+
     if (!_phoneAuthService.isValidPhoneNumber(fullPhone)) {
       _showSnack('Invalid phone number format', isError: true);
       return;
@@ -109,7 +110,8 @@ class _PhoneLoginPageState extends ConsumerState<PhoneLoginPage> {
         if (mounted) {
           setState(() => _isLoading = true);
           try {
-            final userCredential = await _phoneAuthService.signInWithCredential(credential);
+            final userCredential =
+                await _phoneAuthService.signInWithCredential(credential);
             // Check if user is signed in (even if userCredential is null due to type error)
             final currentUser = FirebaseAuth.instance.currentUser;
             if (currentUser != null) {
@@ -131,7 +133,7 @@ class _PhoneLoginPageState extends ConsumerState<PhoneLoginPage> {
 
   Future<void> _verifyOTP() async {
     final code = _otpController.text.trim();
-    
+
     if (code.length != 6) {
       _showSnack('Please enter a valid 6-digit OTP', isError: true);
       return;
@@ -149,7 +151,7 @@ class _PhoneLoginPageState extends ConsumerState<PhoneLoginPage> {
         verificationId: _verificationId!,
         smsCode: code,
       );
-      
+
       // Check if user is signed in (even if userCredential is null due to type error)
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
@@ -181,12 +183,12 @@ class _PhoneLoginPageState extends ConsumerState<PhoneLoginPage> {
 
     // Wait a moment to show success message
     await Future.delayed(const Duration(milliseconds: 800));
-    
+
     if (mounted) {
       // Simply pop back to previous screen (login page)
       // The Firebase auth state will automatically handle the logged-in state
       Navigator.of(context).pop();
-      
+
       // Then navigate to home
       await Future.delayed(const Duration(milliseconds: 300));
       if (mounted) {
@@ -206,10 +208,11 @@ class _PhoneLoginPageState extends ConsumerState<PhoneLoginPage> {
 
   Future<void> _resendOTP() async {
     if (_resendTimer > 0) return;
-    
+
     final phone = _phoneController.text.trim();
-    final fullPhone = _phoneAuthService.formatPhoneNumber(phone, _selectedCountryCode);
-    
+    final fullPhone =
+        _phoneAuthService.formatPhoneNumber(phone, _selectedCountryCode);
+
     setState(() => _isLoading = true);
 
     await _phoneAuthService.resendOTP(

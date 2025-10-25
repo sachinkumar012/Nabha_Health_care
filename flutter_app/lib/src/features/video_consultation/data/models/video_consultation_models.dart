@@ -58,7 +58,8 @@ class VideoConsultation {
       token: json['token'],
       symptoms: json['symptoms'],
       notes: json['notes'],
-      startedAt: json['startedAt'] != null ? DateTime.parse(json['startedAt']) : null,
+      startedAt:
+          json['startedAt'] != null ? DateTime.parse(json['startedAt']) : null,
       endedAt: json['endedAt'] != null ? DateTime.parse(json['endedAt']) : null,
       prescription: json['prescription'],
       recordingUrl: json['recordingUrl'],

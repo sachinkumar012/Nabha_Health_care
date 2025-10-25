@@ -125,15 +125,19 @@ class _VideoConsultationPageState extends State<VideoConsultationPage> {
                       return GestureDetector(
                         onTap: () {
                           setState(() {
-                            _selectedSpecialty = specialty == 'All' ? null : specialty;
+                            _selectedSpecialty =
+                                specialty == 'All' ? null : specialty;
                           });
                           _loadDoctors();
                         },
                         child: Container(
                           margin: EdgeInsets.only(right: 10),
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
                           decoration: BoxDecoration(
-                            color: isSelected ? Colors.white : Colors.white.withOpacity(0.2),
+                            color: isSelected
+                                ? Colors.white
+                                : Colors.white.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(25),
                           ),
                           child: Text(
@@ -141,7 +145,8 @@ class _VideoConsultationPageState extends State<VideoConsultationPage> {
                             style: GoogleFonts.poppins(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
-                              color: isSelected ? Color(0xFF1E3A8A) : Colors.white,
+                              color:
+                                  isSelected ? Color(0xFF1E3A8A) : Colors.white,
                             ),
                           ),
                         ),
@@ -362,7 +367,8 @@ class _VideoConsultationPageState extends State<VideoConsultationPage> {
                           ),
                         ),
                         SizedBox(width: 12),
-                        Icon(Icons.work_outline, size: 16, color: Colors.grey[600]),
+                        Icon(Icons.work_outline,
+                            size: 16, color: Colors.grey[600]),
                         SizedBox(width: 4),
                         Text(
                           '${doctor.experience} yrs',
@@ -390,7 +396,8 @@ class _VideoConsultationPageState extends State<VideoConsultationPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => DoctorDetailPage(doctor: doctor),
+                                builder: (context) =>
+                                    DoctorDetailPage(doctor: doctor),
                               ),
                             );
                           },
@@ -399,7 +406,8 @@ class _VideoConsultationPageState extends State<VideoConsultationPage> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
                           ),
                           child: Text(
                             'Book Now',

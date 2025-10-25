@@ -8,26 +8,27 @@ class AbhaService {
   // For production, use production URLs
   static const String baseUrl = 'https://healthidsbx.abdm.gov.in/api/v2';
   static const String publicUrl = 'https://healthidsbx.abdm.gov.in/api/v1';
-  
+
   // Client ID and Secret (Replace with your ABDM credentials)
   // Get these from: https://sandbox.abdm.gov.in/
   static const String clientId = 'SBX_002777';
   static const String clientSecret = 'your_client_secret';
-  
+
   // Demo mode for testing UI without ABDM credentials
-  static const bool demoMode = true; // Set to false when you have real credentials
+  static const bool demoMode =
+      true; // Set to false when you have real credentials
 
   String? _accessToken;
   DateTime? _tokenExpiry;
-  
+
   // Store transaction ID for demo mode
   String? _demoTransactionId;
 
   // Get access token for ABDM API
   Future<String> _getAccessToken() async {
     // Check if token is still valid
-    if (_accessToken != null && 
-        _tokenExpiry != null && 
+    if (_accessToken != null &&
+        _tokenExpiry != null &&
         DateTime.now().isBefore(_tokenExpiry!)) {
       return _accessToken!;
     }
@@ -62,13 +63,14 @@ class AbhaService {
     if (demoMode) {
       await Future.delayed(Duration(seconds: 2)); // Simulate network delay
       _demoTransactionId = 'DEMO_TXN_${DateTime.now().millisecondsSinceEpoch}';
-      debugPrint('DEMO MODE: OTP sent to Aadhaar-linked mobile. Use any 6-digit OTP.');
+      debugPrint(
+          'DEMO MODE: OTP sent to Aadhaar-linked mobile. Use any 6-digit OTP.');
       return _demoTransactionId!;
     }
-    
+
     try {
       final token = await _getAccessToken();
-      
+
       final response = await http.post(
         Uri.parse('$baseUrl/registration/aadhaar/generateOtp'),
         headers: {
@@ -105,10 +107,10 @@ class AbhaService {
         throw Exception('OTP must be 6 digits');
       }
     }
-    
+
     try {
       final token = await _getAccessToken();
-      
+
       final response = await http.post(
         Uri.parse('$baseUrl/registration/aadhaar/verifyOTP'),
         headers: {
@@ -139,13 +141,14 @@ class AbhaService {
     // Demo mode
     if (demoMode) {
       await Future.delayed(Duration(seconds: 2));
-      debugPrint('DEMO MODE: Mobile OTP sent to $mobileNumber. Use any 6-digit OTP.');
+      debugPrint(
+          'DEMO MODE: Mobile OTP sent to $mobileNumber. Use any 6-digit OTP.');
       return txnId;
     }
-    
+
     try {
       final token = await _getAccessToken();
-      
+
       final response = await http.post(
         Uri.parse('$baseUrl/registration/mobile/generateOtp'),
         headers: {
@@ -183,10 +186,10 @@ class AbhaService {
         throw Exception('OTP must be 6 digits');
       }
     }
-    
+
     try {
       final token = await _getAccessToken();
-      
+
       final response = await http.post(
         Uri.parse('$baseUrl/registration/mobile/verifyOtp'),
         headers: {
@@ -220,10 +223,10 @@ class AbhaService {
       debugPrint('DEMO MODE: ABHA address $abhaAddress is available');
       return true;
     }
-    
+
     try {
       final token = await _getAccessToken();
-      
+
       final response = await http.post(
         Uri.parse('$baseUrl/registration/beneficiary/checkAvailability'),
         headers: {
@@ -273,10 +276,10 @@ class AbhaService {
         createdDate: DateTime.now(),
       );
     }
-    
+
     try {
       final token = await _getAccessToken();
-      
+
       final response = await http.post(
         Uri.parse('$baseUrl/registration/beneficiary/createHealthId'),
         headers: {
@@ -328,10 +331,10 @@ class AbhaService {
         createdDate: DateTime.now(),
       );
     }
-    
+
     try {
       final token = await _getAccessToken();
-      
+
       final response = await http.post(
         Uri.parse('$baseUrl/auth/authPassword'),
         headers: {
@@ -347,7 +350,7 @@ class AbhaService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final String xToken = data['token'];
-        
+
         // Get ABHA card details
         return await _getAbhaCardDetails(xToken);
       } else {
@@ -408,7 +411,7 @@ class AbhaService {
   Future<List<String>> getSuggestedAbhaAddresses(String txnId) async {
     try {
       final token = await _getAccessToken();
-      
+
       final response = await http.post(
         Uri.parse('$baseUrl/registration/beneficiary/generateHealthId'),
         headers: {
@@ -443,12 +446,12 @@ class AbhaService {
   bool isValidAadhaar(String aadhaar) {
     // Remove spaces and dashes
     final cleaned = aadhaar.replaceAll(RegExp(r'[\s-]'), '');
-    
+
     // Check if it's 12 digits
     if (cleaned.length != 12 || !RegExp(r'^\d+$').hasMatch(cleaned)) {
       return false;
     }
-    
+
     return true;
   }
 
@@ -459,7 +462,7 @@ class AbhaService {
     if (address.length < 4 || address.length > 18) {
       return false;
     }
-    
+
     return RegExp(r'^[a-zA-Z0-9._]+$').hasMatch(address);
   }
 }

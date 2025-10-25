@@ -16,7 +16,7 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
     with SingleTickerProviderStateMixin {
   final VideoConsultationService _service = VideoConsultationService();
   late TabController _tabController;
-  
+
   List<VideoConsultation> _scheduledConsultations = [];
   List<VideoConsultation> _completedConsultations = [];
   bool _isLoading = true;
@@ -33,7 +33,7 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
     try {
       final scheduled = await _service.getMyConsultations(status: 'scheduled');
       final completed = await _service.getMyConsultations(status: 'completed');
-      
+
       setState(() {
         _scheduledConsultations = scheduled;
         _completedConsultations = completed;
@@ -162,8 +162,9 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
 
   Widget _buildScheduledCard(VideoConsultation consultation) {
     final now = DateTime.now();
-    final canJoin = consultation.scheduledTime.difference(now).inMinutes.abs() <= 10;
-    
+    final canJoin =
+        consultation.scheduledTime.difference(now).inMinutes.abs() <= 10;
+
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -243,10 +244,12 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
               ),
               child: Row(
                 children: [
-                  Icon(Icons.calendar_today, size: 16, color: Color(0xFF1E3A8A)),
+                  Icon(Icons.calendar_today,
+                      size: 16, color: Color(0xFF1E3A8A)),
                   SizedBox(width: 8),
                   Text(
-                    DateFormat('EEEE, MMM d, yyyy').format(consultation.scheduledTime),
+                    DateFormat('EEEE, MMM d, yyyy')
+                        .format(consultation.scheduledTime),
                     style: GoogleFonts.poppins(fontSize: 13),
                   ),
                   SizedBox(width: 16),
@@ -284,7 +287,8 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
                       ),
                       padding: EdgeInsets.symmetric(vertical: 12),
                     ),
-                    icon: Icon(Icons.schedule, size: 18, color: Color(0xFF1E3A8A)),
+                    icon: Icon(Icons.schedule,
+                        size: 18, color: Color(0xFF1E3A8A)),
                     label: Text(
                       'Reschedule',
                       style: GoogleFonts.poppins(
@@ -320,9 +324,7 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
                 Expanded(
                   flex: 2,
                   child: ElevatedButton(
-                    onPressed: canJoin
-                        ? () => _joinCall(consultation)
-                        : null,
+                    onPressed: canJoin ? () => _joinCall(consultation) : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: canJoin ? Colors.green : Colors.grey,
                       shape: RoundedRectangleBorder(
@@ -428,7 +430,8 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
             ),
             SizedBox(height: 12),
             Text(
-              DateFormat('EEEE, MMM d, yyyy').format(consultation.scheduledTime),
+              DateFormat('EEEE, MMM d, yyyy')
+                  .format(consultation.scheduledTime),
               style: GoogleFonts.poppins(
                 fontSize: 13,
                 color: Colors.grey[600],
@@ -448,7 +451,8 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.medical_services, size: 16, color: Colors.green),
+                        Icon(Icons.medical_services,
+                            size: 16, color: Colors.green),
                         SizedBox(width: 8),
                         Text(
                           'Prescription',
@@ -524,10 +528,12 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
             onPressed: () async {
               Navigator.pop(context);
               try {
-                await _service.cancelConsultation(consultation.id, 'User cancelled');
+                await _service.cancelConsultation(
+                    consultation.id, 'User cancelled');
                 _loadConsultations();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Consultation cancelled successfully')),
+                  SnackBar(
+                      content: Text('Consultation cancelled successfully')),
                 );
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -551,7 +557,7 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
   void _joinCall(VideoConsultation consultation) async {
     try {
       final callData = await _service.joinVideoCall(consultation.id);
-      
+
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -576,7 +582,8 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text(
             'Reschedule Consultation',
             style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
@@ -591,7 +598,7 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
                   style: GoogleFonts.poppins(fontSize: 14),
                 ),
                 SizedBox(height: 20),
-                
+
                 // Date Picker
                 Container(
                   decoration: BoxDecoration(
@@ -599,14 +606,17 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: ListTile(
-                    leading: Icon(Icons.calendar_today, color: Color(0xFF1E3A8A)),
+                    leading:
+                        Icon(Icons.calendar_today, color: Color(0xFF1E3A8A)),
                     title: Text(
                       'Date',
-                      style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
+                      style:
+                          GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
                     ),
                     subtitle: Text(
                       DateFormat('EEEE, MMM d, yyyy').format(selectedDate),
-                      style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500),
+                      style: GoogleFonts.poppins(
+                          fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                     onTap: () async {
                       final pickedDate = await showDatePicker(
@@ -632,7 +642,7 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
                   ),
                 ),
                 SizedBox(height: 12),
-                
+
                 // Time Picker
                 Container(
                   decoration: BoxDecoration(
@@ -643,11 +653,13 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
                     leading: Icon(Icons.access_time, color: Color(0xFF1E3A8A)),
                     title: Text(
                       'Time',
-                      style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
+                      style:
+                          GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
                     ),
                     subtitle: Text(
                       selectedTime.format(context),
-                      style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500),
+                      style: GoogleFonts.poppins(
+                          fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                     onTap: () async {
                       final pickedTime = await showTimePicker(
@@ -671,7 +683,7 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
                   ),
                 ),
                 SizedBox(height: 16),
-                
+
                 // Current appointment info
                 Container(
                   padding: EdgeInsets.all(12),
@@ -712,7 +724,7 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
             ElevatedButton(
               onPressed: () async {
                 Navigator.pop(context);
-                
+
                 final newDateTime = DateTime(
                   selectedDate.year,
                   selectedDate.month,
@@ -720,9 +732,10 @@ class _MyConsultationsPageState extends State<MyConsultationsPage>
                   selectedTime.hour,
                   selectedTime.minute,
                 );
-                
+
                 try {
-                  await _service.rescheduleConsultation(consultation.id, newDateTime);
+                  await _service.rescheduleConsultation(
+                      consultation.id, newDateTime);
                   _loadConsultations();
                   ScaffoldMessenger.of(this.context).showSnackBar(
                     SnackBar(
