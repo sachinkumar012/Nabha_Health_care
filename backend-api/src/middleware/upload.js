@@ -1,6 +1,6 @@
-const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const cloudinary = require('cloudinary').v2;
+const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("cloudinary").v2;
 
 // Configure Cloudinary
 cloudinary.config({
@@ -13,27 +13,27 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'nabha_healthcare/profiles',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+    folder: "nabha_healthcare/profiles",
+    allowed_formats: ["jpg", "jpeg", "png", "gif", "webp"],
     transformation: [
-      { width: 400, height: 400, crop: 'fill', gravity: 'face' },
-      { quality: 'auto', fetch_format: 'auto' }
+      { width: 400, height: 400, crop: "fill", gravity: "face" },
+      { quality: "auto", fetch_format: "auto" },
     ],
     public_id: (req, file) => {
       // Generate unique filename
       const timestamp = Date.now();
-      const userId = req.user?.id || 'unknown';
+      const userId = req.user?.id || "unknown";
       return `profile_${userId}_${timestamp}`;
-    }
+    },
   },
 });
 
 // File filter to accept only images
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image/')) {
+  if (file.mimetype.startsWith("image/")) {
     cb(null, true);
   } else {
-    cb(new Error('Only image files are allowed'), false);
+    cb(new Error("Only image files are allowed"), false);
   }
 };
 
@@ -47,35 +47,35 @@ const upload = multer({
 });
 
 // Single file upload middleware
-const uploadProfileImage = upload.single('profileImage');
+const uploadProfileImage = upload.single("profileImage");
 
 // Error handling middleware
 const handleUploadError = (error, req, res, next) => {
   if (error instanceof multer.MulterError) {
-    if (error.code === 'LIMIT_FILE_SIZE') {
+    if (error.code === "LIMIT_FILE_SIZE") {
       return res.status(400).json({
         success: false,
-        message: 'File size too large. Maximum size is 5MB'
+        message: "File size too large. Maximum size is 5MB",
       });
     }
     return res.status(400).json({
       success: false,
-      message: `Upload error: ${error.message}`
+      message: `Upload error: ${error.message}`,
     });
   }
-  
-  if (error.message === 'Only image files are allowed') {
+
+  if (error.message === "Only image files are allowed") {
     return res.status(400).json({
       success: false,
-      message: 'Only image files are allowed'
+      message: "Only image files are allowed",
     });
   }
-  
+
   next(error);
 };
 
 module.exports = {
   uploadProfileImage,
   handleUploadError,
-  cloudinary
+  cloudinary,
 };
