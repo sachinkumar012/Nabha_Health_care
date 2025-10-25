@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 // User model
 class User {
@@ -61,10 +62,11 @@ class User {
 }
 
 // User state notifier
-class UserNotifier extends StateNotifier<User?> {
-  UserNotifier() : super(null) {
-    // Initialize with a default user for testing
-    _initializeDefaultUser();
+class UserNotifier extends Notifier<User?> {
+  @override
+  User? build() {
+    // Initialize with null, will be set when user logs in
+    return null;
   }
 
   void _initializeDefaultUser() {
@@ -108,7 +110,7 @@ class UserNotifier extends StateNotifier<User?> {
 }
 
 // User provider
-final userProvider = StateNotifierProvider<UserNotifier, User?>((ref) {
+final userProvider = NotifierProvider<UserNotifier, User?>(() {
   return UserNotifier();
 });
 

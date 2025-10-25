@@ -1,11 +1,11 @@
 {
-    "name": "nabha_healthcare",
-    "short_name": "nabha_healthcare",
+    "name": "Nabha Health Care",
+    "short_name": "Nabha Healthcare",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
+    "background_color": "#FFFFFF",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "A comprehensive healthcare mobile application for Nabha Healthcare providing video consultation, pharmacy services, and health management.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

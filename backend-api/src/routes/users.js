@@ -126,7 +126,7 @@ router.post(
     }
 
     // Check if password matches
-    const isMatch = await user.matchPassword(password);
+    const isMatch = await user.comparePassword(password);
 
     if (!isMatch) {
       return res.status(401).json({
@@ -150,13 +150,15 @@ router.post(
     // Generate token
     const token = generateToken(user._id);
 
-    // Remove password from response
-    user.password = undefined;
+    // Get user without sensitive fields
+    const userResponse = await User.findById(user._id).select(
+      "-password -refreshTokens -resetPasswordToken -resetPasswordExpire -emailVerificationToken -emailVerificationExpire"
+    );
 
     res.status(200).json({
       success: true,
       token,
-      data: user,
+      data: userResponse,
     });
   })
 );
@@ -168,7 +170,16 @@ router.get(
   "/me",
   protect,
   asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).select(
+      "-password -refreshTokens -resetPasswordToken -resetPasswordExpire -emailVerificationToken -emailVerificationExpire"
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
 
     res.status(200).json({
       success: true,
@@ -291,7 +302,7 @@ router.put(
     const user = await User.findById(req.user.id).select("+password");
 
     // Check current password
-    const isMatch = await user.matchPassword(currentPassword);
+    const isMatch = await user.comparePassword(currentPassword);
 
     if (!isMatch) {
       return res.status(400).json({

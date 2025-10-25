@@ -5,6 +5,7 @@ import '../../../../core/routes/app_routes.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../providers/user_provider.dart';
 import '../../../../services/google_auth_service.dart';
+import 'phone_login_page.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -158,6 +159,34 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 ),
 
                 const SizedBox(height: AppConstants.largeSpacing),
+
+                // Phone Sign-In Button
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: _signInWithPhone,
+                    icon: const Icon(Icons.phone_android,
+                        size: 20, color: AppColors.primary),
+                    label: const Text(
+                      'Continue with Phone',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      side:
+                          const BorderSide(color: AppColors.primary, width: 2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: AppConstants.mediumSpacing),
 
                 // Google Sign-In Button
                 SizedBox(
@@ -348,6 +377,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         }
       }
     }
+  }
+
+  void _signInWithPhone() {
+    // Navigate to phone login page
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const PhoneLoginPage(),
+      ),
+    );
   }
 
   void _signInWithGoogle() async {

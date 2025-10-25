@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  // Primary Colors
-  static const Color primary = Color(0xFF22C55E); // Green
-  static const Color primaryDark = Color(0xFF16A34A);
-  static const Color primaryLight = Color(0xFF86EFAC);
+  // Primary Colors - Professional Dark Blue
+  static const Color primary = Color(0xFF1E3A8A); // Deep Professional Blue
+  static const Color primaryDark = Color(0xFF1E293B); // Darker Blue-Grey
+  static const Color primaryLight = Color(0xFF3B82F6); // Lighter Blue
 
-  // Secondary Colors
-  static const Color secondary = Color(0xFF3B82F6); // Blue
-  static const Color secondaryDark = Color(0xFF1D4ED8);
-  static const Color secondaryLight = Color(0xFF93C5FD);
+  // Secondary Colors - Complementary Blue Tones
+  static const Color secondary = Color(0xFF0EA5E9); // Sky Blue
+  static const Color secondaryDark = Color(0xFF0284C7); // Dark Sky Blue
+  static const Color secondaryLight = Color(0xFF7DD3FC); // Light Sky Blue
 
-  // Accent Colors
-  static const Color accent = Color(0xFF8B5CF6); // Purple
-  static const Color accentDark = Color(0xFF7C3AED);
-  static const Color accentLight = Color(0xFFC4B5FD);
+  // Accent Colors - Gold/Amber for contrast
+  static const Color accent = Color(0xFFF59E0B); // Professional Gold
+  static const Color accentDark = Color(0xFFD97706); // Dark Gold
+  static const Color accentLight = Color(0xFFFCD34D); // Light Gold
 
   // Neutral Colors
   static const Color white = Color(0xFFFFFFFF);
@@ -38,10 +38,10 @@ class AppColors {
   static const Color info = Color(0xFF3B82F6);
 
   // Healthcare Specific Colors
-  static const Color medical = Color(0xFF06B6D4); // Cyan
-  static const Color pharmacy = Color(0xFF22C55E); // Green
-  static const Color emergency = Color(0xFFEF4444); // Red
-  static const Color appointment = Color(0xFF8B5CF6); // Purple
+  static const Color medical = Color(0xFF0EA5E9); // Sky Blue
+  static const Color pharmacy = Color(0xFF3B82F6); // Blue
+  static const Color emergency = Color(0xFFEF4444); // Red (keep for safety)
+  static const Color appointment = Color(0xFF1E3A8A); // Deep Blue
 }
 
 class AppTheme {

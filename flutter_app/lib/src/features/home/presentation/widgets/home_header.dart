@@ -139,7 +139,14 @@ class HomeHeader extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(AppConstants.mediumSpacing),
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(0.15),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.secondary.withOpacity(0.9),
+                  AppColors.secondary.withOpacity(0.7),
+                ],
+              ),
               borderRadius: BorderRadius.circular(AppConstants.mediumRadius),
               border: Border.all(
                 color: AppColors.white.withOpacity(0.3),
@@ -151,7 +158,7 @@ class HomeHeader extends ConsumerWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: AppColors.white.withOpacity(0.2),
+                    color: AppColors.white.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(

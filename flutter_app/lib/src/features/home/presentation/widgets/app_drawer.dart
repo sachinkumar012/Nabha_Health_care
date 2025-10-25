@@ -227,7 +227,7 @@ class AppDrawer extends ConsumerWidget {
                     icon: Icons.video_call,
                     title: 'Video Consultation',
                     color: const Color(0xFF9C27B0),
-                    onTap: () => _navigateToPage(context, '/video-call'),
+                    onTap: () => _navigateToPage(context, '/video-consultation'),
                   ),
                   _buildMenuItem(
                     icon: Icons.psychology,
@@ -320,19 +320,23 @@ class AppDrawer extends ConsumerWidget {
   }
 
   void _navigateToPage(BuildContext context, String route) {
-    Navigator.pop(context); // Close drawer
+    Navigator.pop(context); // Close drawer c
+    
+    print('🔍 DEBUG: Navigating to route: $route');
 
     // Check if route exists in app routes
     if (route == '/pharmacy' ||
         route == '/hospitals' ||
         route == '/symptom-checker' ||
-        route == '/video-call' ||
+        route == '/video-consultation' ||
         route == '/health-records' ||
         route == '/appointments' ||
         route == '/abha' ||
         route == AppRoutes.orderHistory) {
+      print('✅ DEBUG: Route found, navigating to: $route');
       Navigator.pushNamed(context, route);
     } else {
+      print('❌ DEBUG: Route not found, showing coming soon for: $route');
       // Show coming soon for unimplemented features
       _showComingSoonDialog(context, route);
     }

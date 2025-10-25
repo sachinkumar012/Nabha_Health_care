@@ -6,7 +6,7 @@ class AppConstants {
       'Comprehensive healthcare services for rural communities';
 
   // API Configuration
-  static const String baseUrl = 'https://api.nabhahealthcare.com';
+  static const String baseUrl = 'http://localhost:5000';
   static const String apiVersion = 'v1';
 
   // Storage Keys

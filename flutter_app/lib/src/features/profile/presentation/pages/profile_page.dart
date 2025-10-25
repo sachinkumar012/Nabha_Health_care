@@ -1,7 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
 import '../../../../core/theme/app_theme.dart';
@@ -9,6 +8,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../auth/presentation/providers/user_provider.dart';
 import '../../../auth/domain/models/user.dart';
+import 'complete_profile_page.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -40,6 +40,8 @@ class ProfilePage extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () async {
+              // First refresh from backend, then fallback to local reload
+              await ref.read(userProvider.notifier).refreshFromBackend();
               await ref.read(userProvider.notifier).reloadUser();
             },
           ),
@@ -136,6 +138,8 @@ class ProfilePage extends ConsumerWidget {
             // Refresh Profile Button (smaller, less prominent)
             TextButton.icon(
               onPressed: () async {
+                // First refresh from backend, then fallback to local reload
+                await ref.read(userProvider.notifier).refreshFromBackend();
                 await ref.read(userProvider.notifier).reloadUser();
               },
               icon: const Icon(Icons.refresh, size: 18),
@@ -263,7 +267,7 @@ class ProfilePage extends ConsumerWidget {
       padding: const EdgeInsets.all(AppConstants.largeSpacing),
       child: Column(
         children: [
-          _buildProfileHeader(context, ref, user),
+          _buildProfileCompletion(context, ref, user),
           const SizedBox(height: AppConstants.extraLargeSpacing),
           _buildProfileDetails(user),
           const SizedBox(height: AppConstants.extraLargeSpacing),
@@ -378,6 +382,250 @@ class ProfilePage extends ConsumerWidget {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileCompletion(BuildContext context, WidgetRef ref, User user) {
+    final completionPercentage = user.profileCompletionPercentage;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.secondary.withOpacity(0.1),
+            AppColors.primary.withOpacity(0.05),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Profile Image and Info Row
+          Row(
+            children: [
+              // Profile Image
+              GestureDetector(
+                onTap: () => _showImagePickerOptions(context, ref),
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.primary, width: 2),
+                  ),
+                  child: ClipOval(
+                    child: user.profileImageUrl?.isNotEmpty == true
+                        ? Image.network(
+                            user.profileImageUrl!,
+                            width: 56,
+                            height: 56,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppColors.primary.withOpacity(0.1),
+                                child: const Icon(
+                                  Icons.person,
+                                  size: 30,
+                                  color: AppColors.primary,
+                                ),
+                              );
+                            },
+                          )
+                        : Container(
+                            color: AppColors.primary.withOpacity(0.1),
+                            child: const Icon(
+                              Icons.person,
+                              size: 30,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Name and Email
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.name,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      user.email,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.grey600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'View and edit profile',
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.grey600,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Completion percentage badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: completionPercentage == 100
+                  ? AppColors.success.withOpacity(0.2)
+                  : AppColors.warning.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              '$completionPercentage% completed',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: completionPercentage == 100
+                    ? AppColors.success
+                    : AppColors.warning,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Care Plan Section (if profile is complete)
+          if (completionPercentage >= 80) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.favorite, color: AppColors.white, size: 24),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Care Plan',
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '12 FREE Appointments for a Year',
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.arrow_forward_ios,
+                      color: AppColors.white, size: 16),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          // Complete Profile Button (if not 100% complete)
+          if (completionPercentage < 100)
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  final result = await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const CompleteProfilePage(),
+                    ),
+                  );
+
+                  // If profile was updated, refresh the current page
+                  if (result == true) {
+                    // The user provider will automatically update
+                  }
+                },
+                icon: const Icon(Icons.edit, color: AppColors.white),
+                label: const Text(
+                  'Complete Profile',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.white,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+
+          // Modify Profile Button (if 100% complete)
+          if (completionPercentage == 100)
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  final result = await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const CompleteProfilePage(),
+                    ),
+                  );
+
+                  // If profile was updated, refresh the current page
+                  if (result == true) {
+                    // The user provider will automatically update
+                  }
+                },
+                icon: const Icon(Icons.edit_outlined, color: AppColors.primary),
+                label: const Text(
+                  'Modify Profile',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.primary, width: 2),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -824,47 +1072,81 @@ class ProfilePage extends ConsumerWidget {
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(
         source: source,
-        maxWidth: 512,
-        maxHeight: 512,
-        imageQuality: 80,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
       );
 
       if (pickedFile != null) {
         print('📸 IMAGE_DEBUG: Selected image path: ${pickedFile.path}');
 
+        // Show loading dialog
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return const AlertDialog(
+                content: Row(
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(width: 20),
+                    Text('Uploading image...'),
+                  ],
+                ),
+              );
+            },
+          );
+        }
+
         try {
-          // Process image without showing loading dialog to avoid context issues
-          print('📸 IMAGE_DEBUG: Processing image...');
+          print('📸 IMAGE_DEBUG: Starting backend upload process...');
 
-          // In a real app, you would upload the image to a server
-          // For now, we'll convert it to a local file path
-          final imageUrl = await _uploadImage(File(pickedFile.path));
-
-          print('📸 IMAGE_DEBUG: Image URL to save: $imageUrl');
-
-          // Update user profile with new image URL
-          await ref.read(userProvider.notifier).updateProfile(
-                profileImageUrl: imageUrl,
+          // Upload to backend (Cloudinary + database)
+          await ref.read(userProvider.notifier).uploadProfileImage(
+                File(pickedFile.path),
               );
 
-          print('📸 IMAGE_DEBUG: Profile updated successfully');
+          print('📸 IMAGE_DEBUG: Backend upload completed successfully');
 
-          // Show success message only if context is still mounted
+          // Close loading dialog
+          if (context.mounted) {
+            Navigator.of(context).pop();
+          }
+
+          // Show success message
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Profile image updated successfully!'),
                 backgroundColor: AppColors.success,
+                duration: Duration(seconds: 3),
               ),
             );
           }
         } catch (uploadError) {
-          print('❌ IMAGE_DEBUG: Error during upload/update: $uploadError');
+          print('❌ IMAGE_DEBUG: Error during backend upload: $uploadError');
+
+          // Close loading dialog
+          if (context.mounted) {
+            Navigator.of(context).pop();
+          }
+
+          // Show error message
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Error updating profile image: $uploadError'),
+                content:
+                    Text('Failed to upload image: ${uploadError.toString()}'),
                 backgroundColor: AppColors.error,
+                duration: const Duration(seconds: 5),
+                action: SnackBarAction(
+                  label: 'Retry',
+                  textColor: AppColors.white,
+                  onPressed: () {
+                    _pickImage(source, ref, context);
+                  },
+                ),
               ),
             );
           }
@@ -874,10 +1156,20 @@ class ProfilePage extends ConsumerWidget {
       }
     } catch (e) {
       print('❌ IMAGE_DEBUG: Error in _pickImage: $e');
+
+      // Make sure loading dialog is closed
+      if (context.mounted) {
+        try {
+          Navigator.of(context).pop();
+        } catch (_) {
+          // Dialog might not be open
+        }
+      }
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error selecting image: $e'),
+            content: Text('Error selecting image: ${e.toString()}'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -885,54 +1177,36 @@ class ProfilePage extends ConsumerWidget {
     }
   }
 
-  Future<String> _uploadImage(File imageFile) async {
-    try {
-      print('📸 IMAGE_DEBUG: Processing image file: ${imageFile.path}');
-      print('📸 IMAGE_DEBUG: File exists: ${imageFile.existsSync()}');
-
-      // Get the app's documents directory for permanent storage
-      final appDir = await getApplicationDocumentsDirectory();
-      final profileImagesDir = Directory('${appDir.path}/profile_images');
-
-      // Create the directory if it doesn't exist
-      if (!profileImagesDir.existsSync()) {
-        await profileImagesDir.create(recursive: true);
-        print(
-            '📸 IMAGE_DEBUG: Created profile images directory: ${profileImagesDir.path}');
-      }
-
-      // Create a unique filename using timestamp
-      final fileName = 'profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final permanentPath = '${profileImagesDir.path}/$fileName';
-
-      print(
-          '📸 IMAGE_DEBUG: Copying image to permanent location: $permanentPath');
-
-      // Copy the image to permanent storage
-      final permanentFile = await imageFile.copy(permanentPath);
-
-      print('📸 IMAGE_DEBUG: Image copied successfully');
-      print(
-          '📸 IMAGE_DEBUG: Permanent file exists: ${permanentFile.existsSync()}');
-
-      // Simulate upload delay
-      await Future.delayed(const Duration(seconds: 1));
-
-      // In a real app, you would upload to a server and get back a URL
-      // For now, return the permanent local path
-      return permanentFile.path;
-    } catch (e) {
-      print('❌ IMAGE_DEBUG: Error in _uploadImage: $e');
-      throw Exception('Failed to process image: $e');
-    }
-  }
-
   Future<void> _removeProfileImage(WidgetRef ref, BuildContext context) async {
     try {
-      await ref.read(userProvider.notifier).updateProfile(
-            profileImageUrl: null,
-          );
+      // Show loading indicator
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return const AlertDialog(
+              content: Row(
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(width: 20),
+                  Text('Removing image...'),
+                ],
+              ),
+            );
+          },
+        );
+      }
 
+      // Use backend API to update profile with null avatar
+      await ref.read(userProvider.notifier).updateProfileViaApi();
+
+      // Close loading dialog
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+
+      // Show success message
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -942,10 +1216,19 @@ class ProfilePage extends ConsumerWidget {
         );
       }
     } catch (e) {
+      // Close loading dialog
+      if (context.mounted) {
+        try {
+          Navigator.of(context).pop();
+        } catch (_) {
+          // Dialog might not be open
+        }
+      }
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error removing profile image: $e'),
+            content: Text('Error removing profile image: ${e.toString()}'),
             backgroundColor: AppColors.error,
           ),
         );

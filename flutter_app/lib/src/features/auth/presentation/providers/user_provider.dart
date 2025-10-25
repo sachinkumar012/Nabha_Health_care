@@ -1,9 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'dart:io';
 
 import '../../domain/models/user.dart';
 import '../../../home/data/chat_storage_service.dart';
+import '../../../../services/profile_service.dart';
+import '../../../../services/cloudinary_service.dart';
 
 // User state provider
 final userProvider = StateNotifierProvider<UserNotifier, User?>((ref) {
@@ -63,6 +66,22 @@ class UserNotifier extends StateNotifier<User?> {
     }
   }
 
+  Future<User?> _getUserFromStorage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userJson = prefs.getString('user_data');
+
+      if (userJson != null && userJson.isNotEmpty) {
+        final userMap = json.decode(userJson) as Map<String, dynamic>;
+        return User.fromJson(userMap);
+      }
+      return null;
+    } catch (e) {
+      print('ERROR: Failed to get user from storage: $e');
+      return null;
+    }
+  }
+
   Future<void> _saveUserToDatabase(User user) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -105,6 +124,23 @@ class UserNotifier extends StateNotifier<User?> {
     }
   }
 
+  // Initialize provider with stored user data and refresh from backend
+  Future<void> initializeUser() async {
+    final user = await _getUserFromStorage();
+    if (user != null) {
+      state = user;
+      print('DEBUG: User initialized from storage: ${user.name}');
+
+      // Try to refresh user data from backend in the background
+      try {
+        await refreshFromBackend();
+      } catch (e) {
+        print('DEBUG: Background refresh from backend failed: $e');
+        // Continue with local data
+      }
+    }
+  }
+
   // Register new user
   Future<void> registerUser({
     required String name,
@@ -140,20 +176,56 @@ class UserNotifier extends StateNotifier<User?> {
     }
   }
 
-  // Login user
+  // Login user with backend integration
   Future<void> loginUser({
     required String email,
     required String password,
   }) async {
     try {
-      // Simulate API call delay
+      print('🔐 Attempting backend login for: $email');
+
+      // Try backend authentication first
+      final response = await ProfileService.login(
+        email: email,
+        password: password,
+      );
+
+      if (response['success'] == true && response['data'] != null) {
+        print('✅ Backend login successful');
+
+        // Save authentication token
+        final prefs = await SharedPreferences.getInstance();
+        final token = response['token'];
+        if (token != null) {
+          await prefs.setString('auth_token', token);
+          print('🔑 Auth token saved');
+        }
+
+        // Map backend user data to local user
+        final userData = response['data'] as Map<String, dynamic>;
+        final user = _mapBackendUserToLocal(userData);
+
+        // Update state and save to storage
+        state = user;
+        await _saveUserToStorage(user);
+
+        print('✅ Backend login completed successfully for: ${user.name}');
+        return;
+      }
+    } catch (backendError) {
+      print('❌ Backend login failed: $backendError');
+      print('🔄 Falling back to local authentication...');
+    }
+
+    try {
+      // Fallback to local authentication
       await Future.delayed(const Duration(seconds: 1));
 
       // Try to get user from permanent database
       final user = await _getUserFromDatabase(email);
 
       if (user == null) {
-        print('DEBUG: Login failed - User not found in database');
+        print('DEBUG: Local login failed - User not found in database');
         throw Exception('Invalid credentials');
       }
 
@@ -162,7 +234,8 @@ class UserNotifier extends StateNotifier<User?> {
       state = user;
       await _saveUserToStorage(user); // Save to current session storage
 
-      print('DEBUG: Login successful for user: ${user.name} (${user.email})');
+      print(
+          'DEBUG: Local login successful for user: ${user.name} (${user.email})');
     } catch (e) {
       print('DEBUG: Login error: ${e.toString()}');
       throw Exception('Login failed: ${e.toString()}');
@@ -202,7 +275,7 @@ class UserNotifier extends StateNotifier<User?> {
     await _loadUserFromStorage();
   }
 
-  // Update specific user fields
+  // Update specific user fields (local only - for backward compatibility)
   Future<void> updateProfile({
     String? name,
     String? phone,
@@ -223,5 +296,150 @@ class UserNotifier extends StateNotifier<User?> {
     );
 
     await updateUser(updatedUser);
+  }
+
+  // Upload profile image to Cloudinary and save to backend
+  Future<void> uploadProfileImage(File imageFile) async {
+    if (state == null) {
+      throw Exception('User not logged in');
+    }
+
+    try {
+      print('🚀 Starting profile image upload process...');
+
+      // Step 1: Upload to Cloudinary
+      print('📤 Uploading to Cloudinary...');
+      final cloudinaryUrl = await CloudinaryService.uploadImage(imageFile);
+      print('✅ Cloudinary upload successful: $cloudinaryUrl');
+
+      // Step 2: Get authentication token
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      if (token == null) {
+        throw Exception('Authentication token not found. Please login again.');
+      }
+
+      // Step 3: Update profile via backend API
+      print('💾 Updating profile in backend...');
+      final response = await ProfileService.updateProfile(
+        token: token,
+        avatar: cloudinaryUrl,
+      );
+
+      if (response['success'] == true && response['data'] != null) {
+        // Step 4: Update local state with backend response
+        final userData = response['data'] as Map<String, dynamic>;
+        final updatedUser = _mapBackendUserToLocal(userData);
+
+        state = updatedUser;
+        await _saveUserToStorage(updatedUser);
+
+        print('✅ Profile image updated successfully!');
+      } else {
+        throw Exception(
+            'Backend update failed: ${response['message'] ?? 'Unknown error'}');
+      }
+    } catch (e) {
+      print('❌ Profile image upload failed: $e');
+      rethrow;
+    }
+  }
+
+  // Update profile via backend API
+  Future<void> updateProfileViaApi({
+    String? name,
+    String? phone,
+    String? address,
+    String? dateOfBirth,
+    String? gender,
+  }) async {
+    if (state == null) {
+      throw Exception('User not logged in');
+    }
+
+    try {
+      // Get authentication token
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      if (token == null) {
+        throw Exception('Authentication token not found. Please login again.');
+      }
+
+      // Update profile via backend API
+      final response = await ProfileService.updateProfile(
+        token: token,
+        name: name,
+        phone: phone,
+      );
+
+      if (response['success'] == true && response['data'] != null) {
+        // Update local state with backend response
+        final userData = response['data'] as Map<String, dynamic>;
+        final updatedUser = _mapBackendUserToLocal(userData);
+
+        state = updatedUser;
+        await _saveUserToStorage(updatedUser);
+
+        print('✅ Profile updated successfully via API!');
+      } else {
+        throw Exception(
+            'Profile update failed: ${response['message'] ?? 'Unknown error'}');
+      }
+    } catch (e) {
+      print('❌ Profile update failed: $e');
+      rethrow;
+    }
+  }
+
+  // Refresh user data from backend
+  Future<void> refreshFromBackend() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      if (token == null) {
+        print('No auth token found, skipping backend refresh');
+        return;
+      }
+
+      final response = await ProfileService.getCurrentUser(token: token);
+
+      if (response['success'] == true && response['data'] != null) {
+        final userData = response['data'] as Map<String, dynamic>;
+        final updatedUser = _mapBackendUserToLocal(userData);
+
+        state = updatedUser;
+        await _saveUserToStorage(updatedUser);
+
+        print('✅ User data refreshed from backend');
+      }
+    } catch (e) {
+      print('❌ Failed to refresh user data from backend: $e');
+      // Don't throw error - user can continue with local data
+    }
+  }
+
+  // Map backend user data to local User model
+  User _mapBackendUserToLocal(Map<String, dynamic> userData) {
+    return User(
+      id: userData['_id'] ?? userData['id'] ?? state!.id,
+      name: userData['name'] ?? state!.name,
+      email: userData['email'] ?? state!.email,
+      phone: userData['phone'] ?? state!.phone,
+      userType: userData['role'] ?? state!.userType,
+      createdAt: userData['createdAt'] != null
+          ? DateTime.parse(userData['createdAt'])
+          : state!.createdAt,
+      profileImageUrl: userData['avatar'] ?? userData['profileImageUrl'],
+      address: userData['address'] is Map
+          ? '${userData['address']['street'] ?? ''}, ${userData['address']['city'] ?? ''}'
+          : userData['address'],
+      dateOfBirth: userData['dateOfBirth'] != null
+          ? DateTime.parse(userData['dateOfBirth']).toIso8601String()
+          : state!.dateOfBirth,
+      gender: userData['gender'] ?? state!.gender,
+    );
   }
 }

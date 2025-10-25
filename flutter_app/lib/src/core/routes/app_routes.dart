@@ -7,6 +7,7 @@ import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart'
     as ProfileModule;
+import '../../features/profile/presentation/pages/complete_profile_page.dart';
 import '../../features/appointments/presentation/pages/appointments_page.dart'
     as AppointmentsModule;
 import '../../features/pharmacy/presentation/pages/pharmacy_page.dart'
@@ -15,8 +16,8 @@ import '../../features/pharmacy/presentation/pages/order_history_page.dart';
 import '../../features/symptom_checker/presentation/pages/symptom_checker_page.dart';
 import '../../features/hospitals/presentation/pages/hospitals_page.dart';
 import '../../features/health_records/presentation/pages/health_records_page.dart';
-import '../../features/video_call/presentation/pages/video_call_page.dart';
-import '../../features/abha/presentation/pages/abha_page.dart';
+import '../../features/video_consultation/presentation/pages/video_consultation_page.dart';
+import '../../features/abha/presentation/pages/abha_screen.dart';
 import '../../features/common/presentation/pages/coming_soon_page.dart';
 
 class AppRoutes {
@@ -26,6 +27,7 @@ class AppRoutes {
   static const String register = '/register';
   static const String home = '/home';
   static const String profile = '/profile';
+  static const String completeProfile = '/complete-profile';
   static const String appointments = '/appointments';
   static const String pharmacy = '/pharmacy';
   static const String orderHistory = '/order-history';
@@ -33,6 +35,7 @@ class AppRoutes {
   static const String hospitals = '/hospitals';
   static const String healthRecords = '/health-records';
   static const String videoCall = '/video-call';
+  static const String videoConsultation = '/video-consultation';
   static const String abha = '/abha';
 
   static Map<String, WidgetBuilder> get routes {
@@ -43,14 +46,16 @@ class AppRoutes {
       register: (context) => const RegisterPage(),
       home: (context) => const HomePage(),
       profile: (context) => const ProfileModule.ProfilePage(),
+      completeProfile: (context) => const CompleteProfilePage(),
       appointments: (context) => const AppointmentsModule.AppointmentsPage(),
       pharmacy: (context) => const PharmacyModule.PharmacyPage(),
       orderHistory: (context) => const OrderHistoryPage(),
       symptomChecker: (context) => SymptomCheckerPage(),
       hospitals: (context) => const HospitalsPage(),
       healthRecords: (context) => const HealthRecordsPage(),
-      videoCall: (context) => const VideoCallPage(),
-      abha: (context) => const AbhaPage(),
+      videoCall: (context) => const ComingSoonPage(title: 'Video Call'),
+      videoConsultation: (context) => const VideoConsultationPage(),
+      abha: (context) => const AbhaScreen(),
     };
   }
 }

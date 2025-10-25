@@ -169,7 +169,7 @@ class QuickActionsGrid extends StatelessWidget {
         Navigator.of(context).pushNamed('/health-records');
         break;
       case 'Video Consultation':
-        Navigator.of(context).pushNamed('/video-call');
+        Navigator.of(context).pushNamed('/video-consultation');
         break;
       case 'Symptom Checker':
         Navigator.of(context).pushNamed('/symptom-checker');
